@@ -27,6 +27,13 @@ export const memberingCollectTypes = {
     All: 4, // без фильтрации, все сборы
 }
 
+export const cityTournamentAdmins = 
+[
+    {
+        Id: 0, Name: "Тестовый админ", UserProfileId: 49, CityId: 71, ErrorMessage: "", Published: true, Deleted: false, 
+    },
+]
+
 export const geo = {
     Cities: [
         {

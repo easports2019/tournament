@@ -293,3 +293,32 @@ export const ProfileAPI = {
         }
     }
 }
+
+export const CityTournamentAdminAPI = {
+    // запрос всех админов города
+    // startindex - индекс, с которого начинать ответ
+    getAll(startindex = 0) {
+        //let formData = new FormData();
+        //formData.append("startindex", startindex);
+        return PostJsonInstance.post("SimpeCityTournamentAdmin/GetAll" + authQueryString/*, formData*/).then(data => {
+            
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+        .catch(error => {
+            
+            return errorObj(error)
+        })},
+    
+    getAllInCityByCityId(cityUmbracoId, startindex = 0) {
+        let formData = new FormData();
+        formData.append("startindex", startindex);
+        formData.append("cityumbracoid", cityUmbracoId);
+        return PostJsonInstance.post("SimpeCityTournamentAdmin/GetAllInCity" + authQueryString, formData).then(data => {
+            
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+        .catch(error => {
+            
+            return errorObj(error)
+        })},
+}

@@ -7,7 +7,9 @@ import { setActiveMenuItem } from './store/mainMenuReducer';
 import { getAllPlaces, getAllPlacesInCityByCityId } from './store/placeReducer';
 import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
 import { setGlobalPopout } from './store/systemReducer';
+import { getAllCityTournamentAdminsByCityId } from './store/tournamentsReducer';
 import { getAllCitiesFromServer } from './store/cityReducer';
+import { setShowAdminTourneyTab } from './store/systemReducer';
 
 
 import { Epic, Tabbar, TabbarItem, Panel, PanelHeader, PanelHeaderButton, PanelHeaderBack, Tabs, TabsItem, Div, Avatar, Group, SimpleCell, InfoRow } from '@vkontakte/vkui';
@@ -89,7 +91,7 @@ const App = (props) => {
 
 
 	}, []);
-	/*
+	
 		useEffect(() => {
 	
 			// а это уже когда прогрузился и выбран город профиля
@@ -97,7 +99,11 @@ const App = (props) => {
 				props.myProfile.CityUmbracoId != -1 && new Date(props.myProfile.Birth).getFullYear() >= 1920 && props.places.length == 0) {
 				// загружаем места этого города
 	
+				// получаем список мест по umbId города
 				props.getAllPlacesInCityByCityId(props.myProfile.CityUmbracoId);
+
+				// получаем список админов турниров города по umbId города
+				props.getAllCityTournamentAdminsByCityId(props.myProfile.CityUmbracoId);
 			}
 	
 			// это пока не прогрузился город профиля (не выбран)
@@ -126,9 +132,9 @@ const App = (props) => {
 			else {
 				setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 			}
-		}, [props.globalPopout, props.errorObject])*/
+		}, [props.globalPopout, props.errorObject])
 
-	/*
+	
 		// при загрузке профиля (по факту приложения)
 		useEffect(() => {
 			// нужно узнать город, далее если этого города нет в списке поддерживаемых, предлжить выбрать другой город и отправить заявку на добавление города. Всё это в модалке
@@ -201,7 +207,21 @@ const App = (props) => {
 			// 	setModalWindow(<ModalCommon modalName="MyProfile" data={props.myProfile} Close={() => setModalWindow(null)}></ModalCommon>)
 			// }
 		}, [props.myProfile])
-	*/
+	
+		useEffect(() => {
+			// если загрузились админы города
+			if ((props.tournamentAdmins != undefined) && (props.tournamentAdmins.length > 0)){
+				// отображаем пункт меню администрирование турниров
+				if (props.tournamentAdmins.find(x => x.UserProfileId == props.myProfile.UserProfileId) != undefined){
+					props.setShowAdminTourneyTab(true)
+				}
+				else
+				{
+					props.setShowAdminTourneyTab(false)
+				}
+			}
+		}, [props.tournamentAdmins])
+
 	const changeView = (e) => {
 
 		props.setActiveMenuItem(e.currentTarget.dataset.story)
@@ -226,6 +246,7 @@ const App = (props) => {
 								<TabbarItem onClick={changeView} selected={"hot" === props.mainMenu.activeItem.name} data-story="hot" text="Горячее"></TabbarItem>
 								<TabbarItem onClick={changeView} selected={"allTournaments" === props.mainMenu.activeItem.name} data-story="allTournaments" text="Турниры"></TabbarItem>
 								<TabbarItem onClick={changeView} selected={"profile" === props.mainMenu.activeItem.name} data-story="profile" text="Профиль"></TabbarItem>
+								{props.ShowAdminTourneyTab && <TabbarItem onClick={changeView} selected={"admintournament" === props.mainMenu.activeItem.name} data-story="admintournament" text="Управление турнирами"></TabbarItem>}
 							</Tabbar>}>
 
 						<View id="hot" activePanel="main" modal={modalWindow} popout={popout}>
@@ -297,7 +318,7 @@ const App = (props) => {
 const mapStateToProps = (state) => {
 	return {
 		mainMenu: state.mainMenu,
-		//activeCollect: state.collectEntity.selected,
+		ShowAdminTourneyTab: state.system.ShowAdminTourneyTab,
 		cities: state.cityEntity.cities,
 		places: state.placeEntity.places,
 		globalPopout: state.system.GlobalPopout,
@@ -305,10 +326,11 @@ const mapStateToProps = (state) => {
 		myProfile: state.profileEntity.myProfile,
 		errorObject: state.system.ErrorObject,
 		triedToGetProfile: state.profileEntity.triedToGetProfile,
+		tournamentAdmins: state.tournamentsEntity.cityTournamentAdmins, 
 	}
 }
 
 export default connect(mapStateToProps, {
 	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile,
-	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId,
+	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab,
 })(App);
