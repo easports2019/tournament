@@ -19,6 +19,7 @@ import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
 import BackButton from './components/Panels/Common/BackButton/BackButton';
 import { memberingCollectTypes } from './store/constants/commonConstants'
 import ModalCommon from './components/Modals/ModalCommon/ModalCommon';
+import TournamentAdminPanel from './components/Panels/AdminPanel/Tournament/TournamentAdminPanel';
 
 
 const App = (props) => {
@@ -292,6 +293,20 @@ const App = (props) => {
 									<InfoRow header="Город привязки">{props.myProfile && props.myProfile.CityUmbracoName}</InfoRow>
 								</>
 								}
+								</Group>
+								<ProfilePanel></ProfilePanel>
+							</Panel>
+						</View>
+						<View id="admintournament" activePanel="main" modal={modalWindow} popout={popout}>
+							<Panel id="main">
+								<PanelHeader
+									left={<BackButton isBack={true} />}
+								//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+								>
+									Управление турнирами
+						</PanelHeader>
+								<Group>
+									<TournamentAdminPanel></TournamentAdminPanel>
 								</Group>
 								<ProfilePanel></ProfilePanel>
 							</Panel>
