@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { RichCell, Avatar } from '@vkontakte/vkui'
-import {defaultPhotoPath} from '../../../../store/datatypes/common'
+import {defaultPhotoPath} from '../../../../store/dataTypes/common'
+
 
 
 const TournamentListItem = (props) => {

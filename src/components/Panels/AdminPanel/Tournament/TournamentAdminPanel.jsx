@@ -1,6 +1,6 @@
 import React from 'react'
 import { RichCell, Avatar, Button } from '@vkontakte/vkui'
-import {defaultPhotoPath} from '../../../../store/datatypes/common'
+import {defaultPhotoPath} from '../../../../store/dataTypes/common'
 import TournamentList from './TournamentList'
 import { setActiveMenuItem } from './../../../../store/mainMenuReducer';
 import {setTournamentMode} from './../../../../store/tournamentsReducer'

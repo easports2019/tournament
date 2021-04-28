@@ -1,6 +1,7 @@
 import React from 'react'
 import { RichCell, Avatar } from '@vkontakte/vkui'
-import {defaultPhotoPath} from '../../../../store/datatypes/common'
+import {defaultPhotoPath} from '../../../../store/dataTypes/common'
+
 
 
 
