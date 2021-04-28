@@ -17,9 +17,11 @@ import { connect } from 'react-redux';
 import ProfilePanel from './components/Panels/ProfilePanel/ProfilePanel';
 import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
 import BackButton from './components/Panels/Common/BackButton/BackButton';
+import TabbarItemWithHistory from './components/Panels/Common/TabbarItemWithHistory/TabbarItemWithHistory';
 import { memberingCollectTypes } from './store/constants/commonConstants'
 import ModalCommon from './components/Modals/ModalCommon/ModalCommon';
 import TournamentAdminPanel from './components/Panels/AdminPanel/Tournament/TournamentAdminPanel';
+import TournamentItem from './components/Panels/AdminPanel/Tournament/TournamentItem';
 
 
 const App = (props) => {
@@ -93,144 +95,143 @@ const App = (props) => {
 
 	}, []);
 	
-		useEffect(() => {
-	
-			// а это уже когда прогрузился и выбран город профиля
-			if (props.cities && props.cities.length > 0 && props.myProfile && props.myProfile.CityUmbracoId != null &&
-				props.myProfile.CityUmbracoId != -1 && new Date(props.myProfile.Birth).getFullYear() >= 1920 && props.places.length == 0) {
-				// загружаем места этого города
-	
-				// получаем список мест по umbId города
-				props.getAllPlacesInCityByCityId(props.myProfile.CityUmbracoId);
+	useEffect(() => {
 
-				// получаем список админов турниров города по umbId города
-				props.getAllCityTournamentAdminsByCityId(props.myProfile.CityUmbracoId);
+		// а это уже когда прогрузился и выбран город профиля
+		if (props.cities && props.cities.length > 0 && props.myProfile && props.myProfile.CityUmbracoId != null &&
+			props.myProfile.CityUmbracoId != -1 && new Date(props.myProfile.Birth).getFullYear() >= 1920 && props.places.length == 0) {
+			// загружаем места этого города
+
+			// получаем список мест по umbId города
+			props.getAllPlacesInCityByCityId(props.myProfile.CityUmbracoId);
+
+			// получаем список админов турниров города по umbId города
+			props.getAllCityTournamentAdminsByCityId(props.myProfile.CityUmbracoId);
+		}
+
+		// это пока не прогрузился город профиля (не выбран)
+		if (props.cities && props.cities.length > 0 && props.myProfile && props.myProfile.CityUmbracoId != null &&
+			props.myProfile.CityUmbracoId == -1 && new Date(props.myProfile.Birth).getFullYear() >= 1920) // важно, чтобы все это прогрузилось уже
+		{
+
+			// предлагаем выбрать город
+			setPopout(null);
+			setModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => setModalWindow(null)}></ModalCommon>)
+		}
+
+
+	}, [props.myProfile, props.vkProfile, props.cities])
+
+	useEffect(() => {
+		if (props.places && props.places.length > 0) {
+
+		}
+	}, [props.places])
+
+	// при смене глобального Popout и возникновении ошибки
+	useEffect(() => {
+		if (props.errorObject && props.errorObject.resultcode != 0)
+			setModalWindow(<ModalCommon modalName="Error" data={props.errorObject} Close={() => setModalWindow(null)}></ModalCommon>)
+		else {
+			setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
+		}
+	}, [props.globalPopout, props.errorObject])
+
+
+	// при загрузке профиля (по факту приложения)
+	useEffect(() => {
+		// нужно узнать город, далее если этого города нет в списке поддерживаемых, предлжить выбрать другой город и отправить заявку на добавление города. Всё это в модалке
+		// другой вопрос. если кто-то создает фейковый сбор, как гарантировать другим, что это не фейк?
+		// ввести в рейтинг поле "гарант сбора. если поступает жалоба на сбор (не было сбора), модератор засчитывает штрафной балл организатору"
+		// у людей, которые первый раз собирают, писать город из профиля, количество друзей и то, что человек еще не собирал ни разу, а значит может быть фейком
+		// еще нужно запрашивать права на доступ к инфе: город, дата рождения, друзья, 
+		// а еще в бэке надо сделать так, чтобы записи в Leg и City не плодились, а искали соответствующие из умбрако и ставили их Id
+
+		if (props.vkProfile && props.vkProfile.city) {
+
+			props.getUserProfile(props.vkProfile);
+		}
+
+	}, [props.vkProfile])
+
+
+	useEffect(() => {
+
+		if (props.vkProfile && props.vkProfile.city) {
+			if ((!props.myProfile) & (props.triedToGetProfile)) { // не зарегистрирован
+				props.getAuthInfo(props.vkProfile); // регаем
 			}
-	
-			// это пока не прогрузился город профиля (не выбран)
-			if (props.cities && props.cities.length > 0 && props.myProfile && props.myProfile.CityUmbracoId != null &&
-				props.myProfile.CityUmbracoId == -1 && new Date(props.myProfile.Birth).getFullYear() >= 1920) // важно, чтобы все это прогрузилось уже
+		}
+	}, [props.triedToGetProfile])
+
+	useEffect(() => {
+
+		if (props.vkProfile && props.vkProfile.city) {
+			if (props.myProfile) // зарегистрирован и получил данные
 			{
-	
-				// предлагаем выбрать город
-				setPopout(null);
-				setModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => setModalWindow(null)}></ModalCommon>)
-			}
-	
-	
-		}, [props.myProfile, props.vkProfile, props.cities])
-	
-		useEffect(() => {
-			if (props.places && props.places.length > 0) {
-	
-			}
-		}, [props.places])
-	
-		// при смене глобального Popout и возникновении ошибки
-		useEffect(() => {
-			if (props.errorObject && props.errorObject.resultcode != 0)
-				setModalWindow(<ModalCommon modalName="Error" data={props.errorObject} Close={() => setModalWindow(null)}></ModalCommon>)
-			else {
-				setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
-			}
-		}, [props.globalPopout, props.errorObject])
-
-	
-		// при загрузке профиля (по факту приложения)
-		useEffect(() => {
-			// нужно узнать город, далее если этого города нет в списке поддерживаемых, предлжить выбрать другой город и отправить заявку на добавление города. Всё это в модалке
-			// другой вопрос. если кто-то создает фейковый сбор, как гарантировать другим, что это не фейк?
-			// ввести в рейтинг поле "гарант сбора. если поступает жалоба на сбор (не было сбора), модератор засчитывает штрафной балл организатору"
-			// у людей, которые первый раз собирают, писать город из профиля, количество друзей и то, что человек еще не собирал ни разу, а значит может быть фейком
-			// еще нужно запрашивать права на доступ к инфе: город, дата рождения, друзья, 
-			// а еще в бэке надо сделать так, чтобы записи в Leg и City не плодились, а искали соответствующие из умбрако и ставили их Id
-	
-			if (props.vkProfile && props.vkProfile.city) {
-	
-				props.getUserProfile(props.vkProfile);
-			}
-	
-		}, [props.vkProfile])
-	
-	
-		useEffect(() => {
-	
-			if (props.vkProfile && props.vkProfile.city) {
-				if ((!props.myProfile) & (props.triedToGetProfile)) { // не зарегистрирован
-					props.getAuthInfo(props.vkProfile); // регаем
+				// если не год рождения скрыт настройками приватности и из-за этого при регистрации на бэкэнде дата рождения не определилась, 
+				// выводим окно выбора года рождения и после выбора правим его в профиле ВК
+				if ((props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() < 1920)) {
+					setPopout(null);
+					setModalWindow(<ModalCommon modalName="SelectBirth" data={props.vkProfile} action={props.setVkProfileInfo} Close={() => setModalWindow(null)}></ModalCommon>)
 				}
-			}
-		}, [props.triedToGetProfile])
-	
-		useEffect(() => {
-	
-			if (props.vkProfile && props.vkProfile.city) {
-				if (props.myProfile) // зарегистрирован и получил данные
-				{
-					// если не год рождения скрыт настройками приватности и из-за этого при регистрации на бэкэнде дата рождения не определилась, 
-					// выводим окно выбора года рождения и после выбора правим его в профиле ВК
-					if ((props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() < 1920)) {
+				else {
+
+					// после регистрации, загрузки новых данных с сервера и указания года рождения необходимо обновить данные на сервере
+					if (new Date(props.myProfile.Birth).getFullYear() < 1920) {
+						props.getAuthInfo(props.vkProfile);
+					}
+					else { // если данные обновлены и все в порядке с профилями
+						setModalWindow(null);
+					}
+
+					// поправка даты в vk профиле (правится, когда профиль грузится с бэкэнда без регистрации)
+					if ((props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() >= 1920)) {
+						props.setVkProfileInfo({ ...props.vkProfile, bdate: props.vkProfile.bdate + "." + new Date(props.myProfile.Birth).getFullYear().toString() })
+					}
+
+					if (props.myProfile.CityUmbracoId != null && props.myProfile.CityUmbracoId == -1) {
+						debugger
+						// предлагаем выбрать город
 						setPopout(null);
-						setModalWindow(<ModalCommon modalName="SelectBirth" data={props.vkProfile} action={props.setVkProfileInfo} Close={() => setModalWindow(null)}></ModalCommon>)
+						setModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => setModalWindow(null)}></ModalCommon>)
 					}
-					else {
-	
-						// после регистрации, загрузки новых данных с сервера и указания года рождения необходимо обновить данные на сервере
-						if (new Date(props.myProfile.Birth).getFullYear() < 1920) {
-							props.getAuthInfo(props.vkProfile);
-						}
-						else { // если данные обновлены и все в порядке с профилями
-							setModalWindow(null);
-						}
-	
-						// поправка даты в vk профиле (правится, когда профиль грузится с бэкэнда без регистрации)
-						if ((props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() >= 1920)) {
-							props.setVkProfileInfo({ ...props.vkProfile, bdate: props.vkProfile.bdate + "." + new Date(props.myProfile.Birth).getFullYear().toString() })
-						}
-	
-						if (props.myProfile.CityUmbracoId != null && props.myProfile.CityUmbracoId == -1) {
-							debugger
-							// предлагаем выбрать город
-							setPopout(null);
-							setModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => setModalWindow(null)}></ModalCommon>)
-						}
-	
-					}
-	
-	
-				}
-	
-	
-			}
-	
-			// if (props.myProfile.Name)
-			// {
-			// 	setModalWindow(<ModalCommon modalName="MyProfile" data={props.myProfile} Close={() => setModalWindow(null)}></ModalCommon>)
-			// }
-		}, [props.myProfile])
-	
-		useEffect(() => {
-			// если загрузились админы города
-			if ((props.tournamentAdmins != undefined) && (props.tournamentAdmins.length > 0)){
-				// отображаем пункт меню администрирование турниров
-				if (props.tournamentAdmins.find(x => x.UserProfileId == props.myProfile.UserProfileId) != undefined){
-					props.setShowAdminTourneyTab(true)
-				}
-				else
-				{
-					props.setShowAdminTourneyTab(false)
-				}
-			}
-		}, [props.tournamentAdmins])
 
-	const changeView = (e) => {
+				}
 
-		props.setActiveMenuItem(e.currentTarget.dataset.story)
-	}
+
+			}
+
+
+		}
+
+		// if (props.myProfile.Name)
+		// {
+		// 	setModalWindow(<ModalCommon modalName="MyProfile" data={props.myProfile} Close={() => setModalWindow(null)}></ModalCommon>)
+		// }
+	}, [props.myProfile])
+
+	useEffect(() => {
+		// если загрузились админы города
+		if ((props.tournamentAdmins != undefined) && (props.tournamentAdmins.length > 0)){
+			// отображаем пункт меню администрирование турниров
+			if (props.tournamentAdmins.find(x => x.UserProfileId == props.myProfile.UserProfileId) != undefined){
+				props.setShowAdminTourneyTab(true)
+			}
+			else
+			{
+				props.setShowAdminTourneyTab(false)
+			}
+		}
+	}, [props.tournamentAdmins])
+
+	// const changeView = (e) => {
+	// 	props.setActiveMenuItem(e.currentTarget.dataset.story)
+	// }
 
 	let menuTabBarItems = props.mainMenu.menuItems.map(menuItem => {
 		if (menuItem.enabled && menuItem.show)
-			return <TabbarItem onClick={changeView} selected={menuItem.name === props.mainMenu.activeItem.name} data-story={menuItem.name} text={menuItem.title}></TabbarItem>
+			return <TabbarItemWithHistory toMenuName={menuItem.name} selected={menuItem.name === props.mainMenu.activeItem.name} data-story={menuItem.name} text={menuItem.title}></TabbarItemWithHistory>
 		else
 			return null
 	}
@@ -244,10 +245,10 @@ const App = (props) => {
 						activeStory={props.mainMenu.activeItem.name}
 						tabbar={
 							<Tabbar>
-								<TabbarItem onClick={changeView} selected={"hot" === props.mainMenu.activeItem.name} data-story="hot" text="Горячее"></TabbarItem>
-								<TabbarItem onClick={changeView} selected={"allTournaments" === props.mainMenu.activeItem.name} data-story="allTournaments" text="Турниры"></TabbarItem>
-								<TabbarItem onClick={changeView} selected={"profile" === props.mainMenu.activeItem.name} data-story="profile" text="Профиль"></TabbarItem>
-								{props.ShowAdminTourneyTab && <TabbarItem onClick={changeView} selected={"admintournament" === props.mainMenu.activeItem.name} data-story="admintournament" text="Управление турнирами"></TabbarItem>}
+								<TabbarItemWithHistory toMenuName="hot" selected={"hot" === props.mainMenu.activeItem.name} data-story="hot" text="Горячее"></TabbarItemWithHistory>
+								<TabbarItemWithHistory toMenuName="allTournaments" selected={"allTournaments" === props.mainMenu.activeItem.name} data-story="allTournaments" text="Турниры"></TabbarItemWithHistory>
+								<TabbarItemWithHistory toMenuName="profile" selected={"profile" === props.mainMenu.activeItem.name} data-story="profile" text="Профиль"></TabbarItemWithHistory>
+								{props.ShowAdminTourneyTab && <TabbarItemWithHistory toMenuName="tournamentadmin" selected={"tournamentadmin" === props.mainMenu.activeItem.name} data-story="tournamentadmin" text="Управление турнирами"></TabbarItemWithHistory>}
 							</Tabbar>}>
 
 						<View id="hot" activePanel="main" modal={modalWindow} popout={popout}>
@@ -297,7 +298,7 @@ const App = (props) => {
 								<ProfilePanel></ProfilePanel>
 							</Panel>
 						</View>
-						<View id="admintournament" activePanel="main" modal={modalWindow} popout={popout}>
+						<View id="tournamentadmin" activePanel="main" modal={modalWindow} popout={popout}>
 							<Panel id="main">
 								<PanelHeader
 									left={<BackButton isBack={true} />}
@@ -307,6 +308,20 @@ const App = (props) => {
 						</PanelHeader>
 								<Group>
 									<TournamentAdminPanel></TournamentAdminPanel>
+								</Group>
+								<ProfilePanel></ProfilePanel>
+							</Panel>
+						</View>
+						<View id="tournamentitem" activePanel="main" modal={modalWindow} popout={popout}>
+							<Panel id="main">
+								<PanelHeader
+									left={<BackButton isBack={true} />}
+								//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+								>
+									Турнир
+								</PanelHeader>
+								<Group>
+									<TournamentItem mode={props.tournament.mode}></TournamentItem>
 								</Group>
 								<ProfilePanel></ProfilePanel>
 							</Panel>
@@ -342,6 +357,7 @@ const mapStateToProps = (state) => {
 		errorObject: state.system.ErrorObject,
 		triedToGetProfile: state.profileEntity.triedToGetProfile,
 		tournamentAdmins: state.tournamentsEntity.cityTournamentAdmins, 
+		tournament: state.tournamentsEntity, 
 	}
 }
 

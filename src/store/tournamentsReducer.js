@@ -7,14 +7,17 @@ import { authQueryString } from './../utils/api/server';
 let demoCityTournamentAdmins = cityTournamentAdmins;
 
 const TOURNAMENT_SET_ALL_TOURNAMENTS = "TOURNAMENT_SET_ALL_TOURNAMENTS";
+const TOURNAMENT_SET_MODE = "TOURNAMENT_SET_MODE";
 const TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS = "TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS";
 const TOURNAMENT_SET_TOURNAMENT_BY_ID = "TOURNAMENT_SET_TOURNAMENT_BY_ID";
 
 
 
 const initState = {
-    tournaments: [],
-    cityTournamentAdmins: [],
+    tournaments: [], // все турниры
+    myTournaments: [], // те, что я создал
+    cityTournamentAdmins: [], // админы текущего города
+    mode: "view", // режим отображения турнира ("view" - просмотр, "add" - добавление, "edit" - редактирование)
 }
 
 
@@ -24,6 +27,12 @@ let tournamentReducer = (state = initState, action) => {
             return {
                 ...state,
                 tournaments: [...action.tournaments],
+            };
+        }
+        case TOURNAMENT_SET_MODE: {
+            return {
+                ...state,
+                mode: action.mode,
             };
         }
         case TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS: {
@@ -42,6 +51,13 @@ export const setTournaments = (tournaments) => {
     return {
         type: TOURNAMENT_SET_ALL_TOURNAMENTS,
         tournaments
+    }
+}
+
+export const setTournamentMode = (mode) => {
+    return {
+        type: TOURNAMENT_SET_MODE,
+        mode
     }
 }
 

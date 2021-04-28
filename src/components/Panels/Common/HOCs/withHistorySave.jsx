@@ -6,7 +6,7 @@ import {pushToHistory, popFromHistory, goToPanel} from '../../../../store/system
 
 /*
 isBack={false} - флаг возврата на предыдущую панель
-toMenuName="viewcollect"  - куда переход
+toMenuName="viewcollect"  - куда переход (имя из id в View на главной странице в Epic на главной странице (также должно быть в mainMenuReducer в списке менюшек))
 item = {itm} - объект, передаваемый в параметр handleClick
 handleClick = {selectCollect} - функция, выполняемая по клику
 */
