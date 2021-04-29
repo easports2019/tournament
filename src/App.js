@@ -319,7 +319,6 @@ const App = (props) => {
 								<Group>
 									<TournamentAdminPanel></TournamentAdminPanel>
 								</Group>
-								<ProfilePanel></ProfilePanel>
 							</Panel>
 						</View>
 						<View id="tournamentitem" activePanel="main" modal={modalWindow} popout={popout}>
@@ -333,7 +332,6 @@ const App = (props) => {
 								<Group>
 									<TournamentItem mode={props.tournament.mode}></TournamentItem>
 								</Group>
-								<ProfilePanel></ProfilePanel>
 							</Panel>
 						</View>
 						<View id="viewuser" activePanel="main" modal={modalWindow} popout={popout}>
