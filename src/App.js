@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import bridge from '@vkontakte/vk-bridge';
-import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider } from '@vkontakte/vkui';
+import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider, Badge, Header } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 
 import { setActiveMenuItem } from './store/mainMenuReducer';
@@ -94,7 +94,7 @@ const App = (props) => {
 
 
 	}, []);
-	
+
 	useEffect(() => {
 
 		// а это уже когда прогрузился и выбран город профиля
@@ -213,13 +213,12 @@ const App = (props) => {
 
 	useEffect(() => {
 		// если загрузились админы города
-		if ((props.tournamentAdmins != undefined) && (props.tournamentAdmins.length > 0)){
+		if ((props.tournamentAdmins != undefined) && (props.tournamentAdmins.length > 0)) {
 			// отображаем пункт меню администрирование турниров
-			if (props.tournamentAdmins.find(x => x.UserProfileId == props.myProfile.UserProfileId) != undefined){
+			if (props.tournamentAdmins.find(x => x.UserProfileId == props.myProfile.UserProfileId) != undefined) {
 				props.setShowAdminTourneyTab(true)
 			}
-			else
-			{
+			else {
 				props.setShowAdminTourneyTab(false)
 			}
 		}
@@ -263,7 +262,18 @@ const App = (props) => {
 									{/* <AddCollectButton isBack={false} toMenuName="addcollect">Создать сбор</AddCollectButton> */}
 									<InfoRow header="Информация">
 										Турниры любительской лиги твоего города
-						</InfoRow>
+									</InfoRow>
+								</Group>
+								<Group header={<Header mode="secondary">Матчи</Header>}>
+									<Tabs>
+										<TabsItem after={<Badge mode="prominent" />}>Сегодня</TabsItem>
+										<TabsItem selected after={<Badge mode="prominent" />}>
+											Завтра
+        								</TabsItem>
+										<TabsItem after={<Badge mode="prominent" />}>
+											Позже
+        								</TabsItem>
+									</Tabs>
 								</Group>
 							</Panel>
 						</View>
@@ -356,8 +366,8 @@ const mapStateToProps = (state) => {
 		myProfile: state.profileEntity.myProfile,
 		errorObject: state.system.ErrorObject,
 		triedToGetProfile: state.profileEntity.triedToGetProfile,
-		tournamentAdmins: state.tournamentsEntity.cityTournamentAdmins, 
-		tournament: state.tournamentsEntity, 
+		tournamentAdmins: state.tournamentsEntity.cityTournamentAdmins,
+		tournament: state.tournamentsEntity,
 	}
 }
 
