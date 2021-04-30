@@ -1,5 +1,5 @@
 import React from 'react'
-import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea, File, CellButton, Button } from '@vkontakte/vkui'
+import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea, File, CellButton, Button, Header } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import { setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails } from '../../../../store/tournamentsReducer'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
@@ -30,9 +30,11 @@ const TournamentItem = (props) => {
         case "add": {
             return (
                 <Group>
-                    <InfoRow>Новый турнир</InfoRow>
-                    <InfoRow>Город (автоматически)</InfoRow>
+                    <Header>Новый турнир</Header>
                     <FormLayout>
+                        <FormItem top="Ваш город">
+                            <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
+                        </FormItem>
                         <FormItem top="Название турнира" bottom="Имя турнира должно быть уникальным">
                             <Input type="text" defaultValue={props.tournaments.selected.Name} onChange={e => props.setTournamentName(e.currentTarget.value)} placeholder="Например, II чемпионат города Истра 2023 года на призы..." />
                         </FormItem>
@@ -58,11 +60,11 @@ const TournamentItem = (props) => {
                         <FormItem top="Регламент турнира">
                             <Textarea defaultValue={props.tournaments.selected.Reglament} placeholder="Регламент турнира" onChange={e => props.setTournamentReglament(e.currentTarget.value)} />
                         </FormItem>
-                        <FormItem top="Загрузите ваше фото">
+                        {/* <FormItem top="Загрузите ваше фото">
                             <File before={<Icon24Camera />} controlSize="m">
                                 Выбрать фото
                             </File>
-                        </FormItem>
+                        </FormItem> */}
                         <FormItem top="Группы">
                             <CellButton before={<Icon28AddOutline />}>Добавить группу</CellButton>
                         </FormItem>
@@ -78,8 +80,10 @@ const TournamentItem = (props) => {
             return (
                 <Group>
                     <InfoRow>Управление турниром</InfoRow>
-                    <InfoRow>Город (автоматически)</InfoRow>
                     <FormLayout>
+                        <FormItem top="Ваш город">
+                            <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
+                        </FormItem>
                         <FormItem top="Название турнира" bottom="Имя турнира должно быть уникальным">
                             <Input type="text" defaultValue={props.tournaments.selected.Name} onChange={e => props.setTournamentName(e.currentTarget.value)} placeholder="Например, II чемпионат города Истра 2023 года на призы..." />
                         </FormItem>
@@ -125,6 +129,8 @@ const TournamentItem = (props) => {
 const mapStateToProps = (state) => {
     return {
         tournaments: state.tournamentsEntity,
+        cities: state.cityEntity.cities,
+        myProfile: state.profileEntity.myProfile,
     }
 }
 
