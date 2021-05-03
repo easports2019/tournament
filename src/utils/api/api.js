@@ -321,4 +321,34 @@ export const CityTournamentAdminAPI = {
             
             return errorObj(error)
         })},
+    
+    saveTournament(tournament, userprofile) {
+        debugger
+        let tournamentToSend = {...tournament, 
+        WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month-1, tournament.WhenBegin.day+1),
+        WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month-1, tournament.WhenEnd.day+1),
+        Year: tournament.WhenEnd.year,
+        CityId: userprofile.CityUmbracoId,
+    }
+        return PostJsonInstance.post("SimpleTournament/Add" + authQueryString, JSON.stringify({tournament: {...tournamentToSend}, userProfile: {...userprofile} })).then(data => {
+            debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+        .catch(error => {
+            debugger
+            return errorObj(error)
+        })},
+
+    // AddContact(contact){
+    //     debugger
+    //     //return instace.get('/contacts/getcontacts');
+    //     let Contact= contact;
+    //     return jsonInstace.post(baseUrl + 'Contacts/New', JSON.stringify({...Contact})).then(x => {
+    //         debugger
+    //         return x.data;
+    //     }).catch(y => {
+    //         debugger
+    //         console.log(y)
+    //     });
+    // },
 }
