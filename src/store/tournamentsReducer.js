@@ -7,6 +7,7 @@ import { authQueryString } from './../utils/api/server';
 let demoCityTournamentAdmins = cityTournamentAdmins;
 
 const TOURNAMENT_SET_ALL_TOURNAMENTS = "TOURNAMENT_SET_ALL_TOURNAMENTS";
+const TOURNAMENT_SET_MYTOURNAMENT = "TOURNAMENT_SET_MYTOURNAMENT";
 const TOURNAMENT_SET_MODE = "TOURNAMENT_SET_MODE";
 const TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS = "TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS";
 const TOURNAMENT_SET_WHEN_BEGIN = "TOURNAMENT_SET_WHEN_BEGIN";
@@ -20,6 +21,7 @@ const TOURNAMENT_SET_GROUP = "TOURNAMENT_RESET_TOURNAMENT";
 const TOURNAMENT_RESET_TOURNAMENT = "TOURNAMENT_SET_GROUP";
 const TOURNAMENT_PUBLISH = "TOURNAMENT_PUBLISH";
 const TOURNAMENT_UNPUBLISH = "TOURNAMENT_UNPUBLISH";
+const TOURNAMENT_SET_MY_TOURNAMENTS = "TOURNAMENT_SET_MY_TOURNAMENTS";
 const TOURNAMENT_SET_TOURNAMENT_BY_ID = "TOURNAMENT_SET_TOURNAMENT_BY_ID";
 
 const currentDate = new Date();
@@ -56,10 +58,29 @@ let tournamentReducer = (state = initState, action) => {
                 tournaments: [...action.tournaments],
             };
         }
+        case TOURNAMENT_SET_MY_TOURNAMENTS: {
+            return {
+                ...state,
+                myTournaments: [...action.myTournaments],
+            };
+        }
         case TOURNAMENT_SET_MODE: {
             return {
                 ...state,
                 mode: action.mode,
+            };
+        }
+        case TOURNAMENT_SET_MYTOURNAMENT: {
+            
+            return {
+                ...state,
+                myTournaments: [...state.myTournaments.map(tour => {
+                    
+                    if (tour.Id == action.mytournament.Id) {{
+                        tour = {...action.mytournament};
+                    }}
+                    return tour;
+                })],
             };
         }
         case TOURNAMENT_RESET_TOURNAMENT: {
@@ -175,6 +196,20 @@ export const setTournaments = (tournaments) => {
     return {
         type: TOURNAMENT_SET_ALL_TOURNAMENTS,
         tournaments
+    }
+}
+
+export const setMyTournament = (mytournament) => {
+    return {
+        type: TOURNAMENT_SET_MYTOURNAMENT,
+        mytournament
+    }
+}
+
+export const setMyTournaments = (myTournaments) => {
+    return {
+        type: TOURNAMENT_SET_MY_TOURNAMENTS,
+        myTournaments
     }
 }
 
@@ -336,7 +371,7 @@ export const getAllCityTournamentAdminsByCityId = (cityTournamentId, startindex 
     }
 }
 
-// все админы города с сервера по Id города
+// сохраняет (добавляет) в базу новый турнир
 export const saveSelectedTournament = (tournament = null, userprofile = null) => {
     return dispatch => {
         if (tournament != null){
@@ -365,6 +400,82 @@ export const saveSelectedTournament = (tournament = null, userprofile = null) =>
         }
         else {
             dispatch(setErrorMessage("Не удалось сохранить турнир, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// опубликовывает турнир
+export const publishTournament = (tournament = null, userprofile = null, publish = false) => {
+    
+    return dispatch => {
+        if ((tournament != null) || (userprofile == null)){
+            if (authQueryString && authQueryString.length > 0)
+                CityTournamentAdminAPI.publishTournament(tournament, userprofile, publish)
+                    .then(pl => {
+                        
+                        if (pl) {
+                            // изменить полученный турнир в списке
+                            dispatch(setMyTournament(pl.data))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось опубликовать турнир"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось опубликовать турнир: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            else {
+                dispatch(setErrorMessage("Не удалось опубликовать турнир"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось опубликовать турнир, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+
+// возвращает с сервера все турниры для админа по его UserProfileId
+export const getMyTournaments = (userProfileId = -1) => {
+    return dispatch => {
+        if (userProfileId != null){
+            if (authQueryString && authQueryString.length > 0)
+            
+                
+                CityTournamentAdminAPI.getAllByAdminProfileId(userProfileId)
+                    .then(pl => {
+                        if (pl && pl.data.length > 0) {
+                            
+                            dispatch(setMyTournaments(pl.data));
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось загрузить турниры"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось загрузить турниры: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            
+            else {
+                dispatch(setErrorMessage("Не удалось загрузить турниры"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось загрузить турниры, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }

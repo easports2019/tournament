@@ -1,11 +1,11 @@
-import {PostJsonInstance, authQueryString} from './server';
+import { PostJsonInstance, authQueryString } from './server';
 
 export let errorObj = (text) => {
-    return {resultcode: 1, result: "Error", data: null, message: text}
+    return { resultcode: 1, result: "Error", data: null, message: text }
 }
 
 export let okObj = (dat) => {
-    return {resultcode: 0, result: "Ok", data: dat, message: ""}
+    return { resultcode: 0, result: "Ok", data: dat, message: "" }
 }
 
 
@@ -50,13 +50,14 @@ export const CityAPI = {
         //let formData = new FormData();
         //formData.append("startindex", startindex);
         return PostJsonInstance.post("City/GetAllFromAreas" + authQueryString/*, formData*/).then(data => {
-            
-            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
-        .catch(error => {
-            
-            return errorObj(error)
-        })},
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
 }
 
 export const PlaceAPI = {
@@ -67,66 +68,67 @@ export const PlaceAPI = {
         let formData = new FormData();
         formData.append("startindex", startindex);
         return PostJsonInstance.post("Places/GetPlaces" + authQueryString, formData).then(data => {
-            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
-        .catch(error => {
-            return errorObj(error)
-        })},
-    
-    
+            .catch(error => {
+                return errorObj(error)
+            })
+    },
+
+
     // запрос всех мест города по Id города
     // startindex - индекс, с которого начинать ответ
     getAllInCityByCityUmbracoId(cityId, startindex = 0) {
         //debugger
         //if (!ApiSendInfo.checkRequest("PlaceAPIgetAllInCityByCityUmbracoId")){
-            //ApiSendInfo.addRequest("PlaceAPIgetAllInCityByCityUmbracoId");
-            let formData = new FormData();
-            formData.append("startindex", startindex);
-            formData.append("cityumbracoid", cityId);
-            return PostJsonInstance.post("Places/getAllInCityByCityUmbracoId" + authQueryString, formData).then(data => {
-                
-                return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
-            })
+        //ApiSendInfo.addRequest("PlaceAPIgetAllInCityByCityUmbracoId");
+        let formData = new FormData();
+        formData.append("startindex", startindex);
+        formData.append("cityumbracoid", cityId);
+        return PostJsonInstance.post("Places/getAllInCityByCityUmbracoId" + authQueryString, formData).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
             .catch(error => {
                 return errorObj(error)
             })
         //}
     },
-        
 
-      
+
+
     // запрос места по его Id
     // placeId - Id места
-    getById(placeId){
+    getById(placeId) {
         let formData = new FormData();
         formData.append("placeid", placeId);
         return PostJsonInstance.post("Places/GetPlaceById" + authQueryString, formData).then(data => {
-            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
-        .catch(error => {
-            return errorObj(error)
-        })
+            .catch(error => {
+                return errorObj(error)
+            })
     },
 
-    
-    
+
+
 }
 
 export const CollectAPI = {
 
-    getAll(){
+    getAll() {
         return PostJsonInstance.post("Collects/GetAll").then(data => {
             return okObj(data.data);
         })
-        .catch(error => {
-            return errorObj(error)
-        })
+            .catch(error => {
+                return errorObj(error)
+            })
     },
 
     // запрос всех сборов в месте по его Id
     // placeId - Id места
     // startindex - индекс, с которого начинать ответ
-    getAllInPlaceByPlaceId(placeId, startindex=0){
+    getAllInPlaceByPlaceId(placeId, startindex = 0) {
         let formData = new FormData();
         formData.append("startindex", startindex);
         formData.append("placeid", placeId);
@@ -134,86 +136,85 @@ export const CollectAPI = {
         return PostJsonInstance.post("Collects/GetAllInPlace" + authQueryString, formData).then(data => {
             return okObj(data.data);
         })
-        .catch(error => {
-            return errorObj(error)
-        })
+            .catch(error => {
+                return errorObj(error)
+            })
     },
 
     // запрос всех сборов в городе по его Id
     // cityId - Id города
     // startindex - индекс, с которого начинать ответ
-    getAllInCityByCityId(cityId, startindex=0){
+    getAllInCityByCityId(cityId, startindex = 0) {
         let formData = new FormData();
         formData.append("startindex", startindex);
         formData.append("cityid", cityId);
         return PostJsonInstance.post("Collects/GetAllInCityByCityId" + authQueryString, formData).then(data => {
             return okObj(data.data);
         })
-        .catch(error => {
-            return errorObj(error)
-        })
+            .catch(error => {
+                return errorObj(error)
+            })
     },
 
     add(collect_source) {
         debugger
-    
+
         let collect = {
-                'Id': collect_source.id,
-                'Place': collect_source.place,
-                'WhenDate': collect_source.date,
-                'Hour': collect_source.hour,
-                'Minute': collect_source.minute,
-                'DurationMinutes': collect_source.durationMinutes,
-                'Price': collect_source.price, // цена за весь период
-                'Options': [...collect_source.options],
-                'FixedByMemberPrice': collect_source.fixedByMemberPrice,
-                /*
-                описание доступа. выкладывается список доступных ролей на сборе. они описаны в usersGroups
-    
-                */
+            'Id': collect_source.id,
+            'Place': collect_source.place,
+            'WhenDate': collect_source.date,
+            'Hour': collect_source.hour,
+            'Minute': collect_source.minute,
+            'DurationMinutes': collect_source.durationMinutes,
+            'Price': collect_source.price, // цена за весь период
+            'Options': [...collect_source.options],
+            'FixedByMemberPrice': collect_source.fixedByMemberPrice,
+            /*
+            описание доступа. выкладывается список доступных ролей на сборе. они описаны в usersGroups
+ 
+            */
             'UsersGroups': [...collect_source.usersGroups.map(uGroup => {
                 return {
                     'Id': uGroup.id,
-                    'Amplua': {...uGroup.amplua},
+                    'Amplua': { ...uGroup.amplua },
                     'NumberOf': uGroup.numberOf,  // количество участников 
-                    'Access': {...uGroup.access}, // доступ на 
-                    'Players': [...(uGroup.players && uGroup.players.length ? uGroup.players.map(user => 
-                        {
-                            return {'User': {...user.user}, payment: {}}
-                        }): 
-                    [{}])],
+                    'Access': { ...uGroup.access }, // доступ на 
+                    'Players': [...(uGroup.players && uGroup.players.length ? uGroup.players.map(user => {
+                        return { 'User': { ...user.user }, payment: {} }
+                    }) :
+                        [{}])],
                     'Price': uGroup.price,
                     'OrganizatorIsMember': uGroup.organizatorIsMember,
                 }
             })],
-                'UsersInvited': [
-                    ...collect_source.usersInvited.map(uInvited => {
-                        
-                        return {
-                            'Id': uInvited.id,
-                            'ToBe': {...uInvited.toBe}, 
-                            'User': {...uInvited.user},
-                        }
-                    })
-                ],
-                'UsersWantsToParticipate': [
-                    ...collect_source.usersWantsToParticipate.map(uWP => {
-                        
-                        return {
-                            
-                            'Id': uWP.id,
-                            'ToBe': {...uWP.toBe}, 
-                            'User': {...uWP.user},
-                        }
-                    })
-                ],
-                'Access': collect_source.access.id,
-                'Permanent': collect_source.permanent,
-                'OrganizatorIsMember': collect_source.organizatorIsMember,
-               // 'AcceptedByPlaceOwner': collect_source.acceptedByPlaceOwner, // сбор подтвержден арендодателем и занесен в расписание. на это время больше нельзя бронировать. 
-                'Organizer': {...collect_source.organizer}
+            'UsersInvited': [
+                ...collect_source.usersInvited.map(uInvited => {
+
+                    return {
+                        'Id': uInvited.id,
+                        'ToBe': { ...uInvited.toBe },
+                        'User': { ...uInvited.user },
+                    }
+                })
+            ],
+            'UsersWantsToParticipate': [
+                ...collect_source.usersWantsToParticipate.map(uWP => {
+
+                    return {
+
+                        'Id': uWP.id,
+                        'ToBe': { ...uWP.toBe },
+                        'User': { ...uWP.user },
+                    }
+                })
+            ],
+            'Access': collect_source.access.id,
+            'Permanent': collect_source.permanent,
+            'OrganizatorIsMember': collect_source.organizatorIsMember,
+            // 'AcceptedByPlaceOwner': collect_source.acceptedByPlaceOwner, // сбор подтвержден арендодателем и занесен в расписание. на это время больше нельзя бронировать. 
+            'Organizer': { ...collect_source.organizer }
         }
-        return PostJsonInstance.post("Collects/Add2" + authQueryString, JSON.stringify({...collect}))
+        return PostJsonInstance.post("Collects/Add2" + authQueryString, JSON.stringify({ ...collect }))
         //return PostJsonInstance.post("Collects/Add" + authQueryString, JSON.stringify({...collect}))
         //.then(x => 
         //     {
@@ -229,35 +230,36 @@ export const CollectAPI = {
 export const ProfileAPI = {
     // запрос информации о пользователе
     getUserProfile(vkUserData) {
-        
-        return PostJsonInstance.post("Account/GetUserProfile" + authQueryString, JSON.stringify({...vkUserData})).then(data => {
-            
-            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+
+        return PostJsonInstance.post("Account/GetUserProfile" + authQueryString, JSON.stringify({ ...vkUserData })).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
-        .catch(error => {
-            return errorObj(error)
-        })},
+            .catch(error => {
+                return errorObj(error)
+            })
+    },
 
     // авторизация пользователя (авторегистрация в случае, если такой пользователь отсутствует в базе)
     getAuthInfo_old(formData) {
         return PostJsonInstance.post("Account/Auth" + authQueryString, formData).then(data => {
             return okObj(data.data);
         })
-        .catch(error => {
-            return errorObj(error)
-        })
+            .catch(error => {
+                return errorObj(error)
+            })
     },
 
     // регистрация/обновление даты рождения + получение данных о профиле
     getAuthInfo(vkUser) {
-        
+
         let [day, month, year] = vkUser.bdate.split('.');
-        let bDate = new Date(Date.UTC(year ? +year : 1, month ? (+month-1) : 1, day ? day : 1, 0, 0, 0));
-        
+        let bDate = new Date(Date.UTC(year ? +year : 1, month ? (+month - 1) : 1, day ? day : 1, 0, 0, 0));
+
         let vkUserData = {
             'bdate': bDate,
-            'city': {'id': vkUser.city.id, 'title': vkUser.city.title},
-            'country': {'id': vkUser.country.id, 'title': vkUser.country.title},
+            'city': { 'id': vkUser.city.id, 'title': vkUser.city.title },
+            'country': { 'id': vkUser.country.id, 'title': vkUser.country.title },
             'first_name': vkUser.first_name,
             'id': vkUser.id,
             'last_name': vkUser.last_name,
@@ -268,27 +270,27 @@ export const ProfileAPI = {
             'timezone': vkUser.timezone,
         }
 
-        return PostJsonInstance.post("Account/Register" + authQueryString, JSON.stringify({...vkUserData})).then(data => {
-            
-            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        return PostJsonInstance.post("Account/Register" + authQueryString, JSON.stringify({ ...vkUserData })).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
-        .catch(error => {
-            return errorObj(error)
-        })
+            .catch(error => {
+                return errorObj(error)
+            })
     },
 
     // изменение города привязки пользователя
     setUserProfileCity(userData) {
-        if (userData){
-            return PostJsonInstance.post("Account/UpdateUserProfileCity" + authQueryString, JSON.stringify({...userData})).then(data => {
-                
-                return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        if (userData) {
+            return PostJsonInstance.post("Account/UpdateUserProfileCity" + authQueryString, JSON.stringify({ ...userData })).then(data => {
+
+                return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
             })
-            .catch(error => {
-                return errorObj(error)
-            })
+                .catch(error => {
+                    return errorObj(error)
+                })
         }
-        else{
+        else {
             return errorObj("Внутренняя ошибка, не получены данные от провайдера в API");
         }
     }
@@ -300,44 +302,85 @@ export const CityTournamentAdminAPI = {
     getAll(startindex = 0) {
         //let formData = new FormData();
         //formData.append("startindex", startindex);
-        return PostJsonInstance.post("SimpeCityTournamentAdmin/GetAll" + authQueryString/*, formData*/).then(data => {
-            
-            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        return PostJsonInstance.post("SimpleCityTournamentAdmin/GetAll" + authQueryString/*, formData*/).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
-        .catch(error => {
-            
-            return errorObj(error)
-        })},
-    
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
+
     getAllInCityByCityId(cityUmbracoId, startindex = 0) {
         let formData = new FormData();
         formData.append("startindex", startindex);
         formData.append("cityumbracoid", cityUmbracoId);
-        return PostJsonInstance.post("SimpeCityTournamentAdmin/GetAllInCity" + authQueryString, formData).then(data => {
-            
-            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        return PostJsonInstance.post("SimpleCityTournamentAdmin/GetAllInCity" + authQueryString, formData).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
-        .catch(error => {
-            
-            return errorObj(error)
-        })},
-    
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
+
+    getAllByAdminProfileId(userProfileId, startindex = 0) {
+        let formData = new FormData();
+        formData.append("startindex", startindex);
+        formData.append("adminprofileid", userProfileId);
+        return PostJsonInstance.post("SimpleTournament/GetAllByAdminId" + authQueryString, formData).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
+
     saveTournament(tournament, userprofile) {
         debugger
-        let tournamentToSend = {...tournament, 
-        WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month-1, tournament.WhenBegin.day+1),
-        WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month-1, tournament.WhenEnd.day+1),
-        Year: tournament.WhenEnd.year,
-        CityId: userprofile.CityUmbracoId,
-    }
-        return PostJsonInstance.post("SimpleTournament/Add" + authQueryString, JSON.stringify({tournament: {...tournamentToSend}, userProfile: {...userprofile} })).then(data => {
+        let tournamentToSend = {
+            ...tournament,
+            WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
+            WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
+            Year: tournament.WhenEnd.year,
+            CityId: userprofile.CityUmbracoId,
+        }
+        return PostJsonInstance.post("SimpleTournament/Add" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
             debugger
-            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
-        .catch(error => {
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
+
+    /// публикация турнира (или снятие с публикации, если publish=false)
+    publishTournament(tournament, userprofile, publish) {
+        debugger
+        let tournamentToSend = {
+            ...tournament,
+            WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
+            WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
+            Published: publish,
+            Year: tournament.WhenEnd.year,
+            CityId: userprofile.CityUmbracoId,
+        }
+        return PostJsonInstance.post("SimpleTournament/Publish" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
             debugger
-            return errorObj(error)
-        })},
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
+
+
 
     // AddContact(contact){
     //     debugger

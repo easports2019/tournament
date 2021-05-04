@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar } from '@vkontakte/vkui'
-import {defaultPhotoPath} from '../../../../store/dataTypes/common'
+import { RichCell, Avatar, InfoRow, Group, List, Cell, Button } from '@vkontakte/vkui'
+import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import TournamentListItem from './TournamentListItem'
 
 
@@ -11,12 +11,23 @@ const TournamentList = (props) => {
     //     return <TournamentListItem>{x.Name}</TournamentListItem>
     // })
 
-        return (
-            <>
-            Список турниров
-                {/* {list} */}
-            </>
-        )
+    return (
+        <Group>
+            <List>
+                {(props.List && props.List.length > 0) ?
+                    props.List.map(item => {
+                        return (
+                            <RichCell>
+                                {item.Name}
+                            </RichCell>
+                        )
+                    })
+                    : <InfoRow>Нет турниров</InfoRow>
+                }
+
+            </List>
+        </Group>
+    )
 }
 
 export default TournamentList
