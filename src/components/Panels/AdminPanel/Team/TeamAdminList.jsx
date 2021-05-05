@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react'
 import { RichCell, Avatar, InfoRow, Group, List, Cell, Button } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
-import TournamentListItem from './TournamentListItem'
 import RichCellWithHistory from './../../Common/RichCellWithHistory/RichCellWithHistory'
 import { dateToString } from '../../../../utils/convertors/dateUtils'
 
 
 
-const TournamentAdminList = (props) => {
+const TeamAdminList = (props) => {
 
     //const [tournamentList, setTournamentList] = useState(props.tournaments)
     // const list = props.tournaments.map(x => {
@@ -52,4 +51,4 @@ const TournamentAdminList = (props) => {
     )
 }
 
-export default TournamentAdminList
+export default TeamAdminList

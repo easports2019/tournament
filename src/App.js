@@ -21,7 +21,9 @@ import TabbarItemWithHistory from './components/Panels/Common/TabbarItemWithHist
 import { memberingCollectTypes } from './store/constants/commonConstants'
 import ModalCommon from './components/Modals/ModalCommon/ModalCommon';
 import TournamentAdminPanel from './components/Panels/AdminPanel/Tournament/TournamentAdminPanel';
+import TeamAdminPanel from './components/Panels/AdminPanel/Team/TeamAdminPanel';
 import TournamentItem from './components/Panels/AdminPanel/Tournament/TournamentItem';
+import TeamItem from './components/Panels/AdminPanel/Team/TeamItem';
 
 
 const App = (props) => {
@@ -248,6 +250,7 @@ const App = (props) => {
 								<TabbarItemWithHistory toMenuName="allTournaments" selected={"allTournaments" === props.mainMenu.activeItem.name} data-story="allTournaments" text="Турниры"></TabbarItemWithHistory>
 								<TabbarItemWithHistory toMenuName="profile" selected={"profile" === props.mainMenu.activeItem.name} data-story="profile" text="Профиль"></TabbarItemWithHistory>
 								{props.ShowAdminTourneyTab && <TabbarItemWithHistory toMenuName="tournamentadmin" selected={"tournamentadmin" === props.mainMenu.activeItem.name} data-story="tournamentadmin" text="Управление турнирами"></TabbarItemWithHistory>}
+								{props.ShowAdminTeamTab && <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Управление командами"></TabbarItemWithHistory>}
 							</Tabbar>}>
 
 						<View id="hot" activePanel="main" modal={modalWindow} popout={popout}>
@@ -321,6 +324,19 @@ const App = (props) => {
 								</Group>
 							</Panel>
 						</View>
+						<View id="teamadmin" activePanel="main" modal={modalWindow} popout={popout}>
+							<Panel id="main">
+								<PanelHeader
+									left={<BackButton isBack={true} />}
+								//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+								>
+									Управление командами
+						</PanelHeader>
+								<Group>
+									<TeamAdminPanel></TeamAdminPanel>
+								</Group>
+							</Panel>
+						</View>
 						<View id="tournamentitem" activePanel="main" modal={modalWindow} popout={popout}>
 							<Panel id="main">
 								<PanelHeader
@@ -331,6 +347,19 @@ const App = (props) => {
 								</PanelHeader>
 								<Group>
 									<TournamentItem mode={props.tournament.mode}></TournamentItem>
+								</Group>
+							</Panel>
+						</View>
+						<View id="teamitem" activePanel="main" modal={modalWindow} popout={popout}>
+							<Panel id="main">
+								<PanelHeader
+									left={<BackButton isBack={true} />}
+								//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+								>
+									Команда
+								</PanelHeader>
+								<Group>
+									<TeamItem mode={props.team.mode}></TeamItem>
 								</Group>
 							</Panel>
 						</View>
@@ -357,6 +386,7 @@ const mapStateToProps = (state) => {
 	return {
 		mainMenu: state.mainMenu,
 		ShowAdminTourneyTab: state.system.ShowAdminTourneyTab,
+		ShowAdminTeamTab: state.system.ShowAdminTeamTab,
 		cities: state.cityEntity.cities,
 		places: state.placeEntity.places,
 		globalPopout: state.system.GlobalPopout,
@@ -366,6 +396,7 @@ const mapStateToProps = (state) => {
 		triedToGetProfile: state.profileEntity.triedToGetProfile,
 		tournamentAdmins: state.tournamentsEntity.cityTournamentAdmins,
 		tournament: state.tournamentsEntity,
+		team: state.teamsEntity,
 	}
 }
 

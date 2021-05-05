@@ -4,6 +4,7 @@ import collectReducer from './collectReducer.js'
 import userReducer from './userReducer.js'
 import hot from './hotReducer.js'
 import tournaments from './tournamentsReducer.js'
+import teams from './teamsReducer.js'
 import ampluaReducer from './ampluaReducer.js'
 import placeReducer from './placeReducer.js'
 import paymentReducer from './paymentReducer.js'
@@ -26,6 +27,7 @@ let reducers = combineReducers({
     collectEntity: collectReducer,
     hotEntity: hot,
     tournamentsEntity: tournaments,
+    teamsEntity: teams,
     userEntity: userReducer,
     cityEntity: cityReducer,
     ampluaEntity: ampluaReducer,

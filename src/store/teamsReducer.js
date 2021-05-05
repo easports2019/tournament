@@ -1,127 +1,128 @@
 import { setGlobalPopout, setErrorMessage } from "./systemReducer";
-import { CityTournamentAdminAPI } from './../utils/api/api.js'
-import { cityTournamentAdmins } from './constants/commonConstants'
+import { TeamAdminAPI } from './../utils/api/api.js'
+import { TeamAdmins } from './constants/commonConstants'
 
 import { authQueryString } from './../utils/api/server';
 
-let demoCityTournamentAdmins = cityTournamentAdmins;
+let demoCityTeamAdmins = TeamAdmins;
 
-const TOURNAMENT_SET_ALL_TOURNAMENTS = "TOURNAMENT_SET_ALL_TOURNAMENTS";
-const TOURNAMENT_SET_SELECTED_TOURNAMENT = "TOURNAMENT_SET_SELECTED_TOURNAMENT";
-const TOURNAMENT_SET_MYTOURNAMENT = "TOURNAMENT_SET_MYTOURNAMENT";
-const TOURNAMENT_DELETE_MYTOURNAMENT = "TOURNAMENT_DELETE_MYTOURNAMENT";
-const TOURNAMENT_SET_MODE = "TOURNAMENT_SET_MODE";
-const TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS = "TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS";
-const TOURNAMENT_SET_WHEN_BEGIN = "TOURNAMENT_SET_WHEN_BEGIN";
-const TOURNAMENT_SET_WHEN_END = "TOURNAMENT_SET_WHEN_END";
-const TOURNAMENT_SET_NAME = "TOURNAMENT_SET_NAME";
-const TOURNAMENT_SET_DETAILS = "TOURNAMENT_SET_DETAILS";
-const TOURNAMENT_SET_REGLAMENT = "TOURNAMENT_SET_REGLAMENT";
-const TOURNAMENT_DEL_GROUP = "TOURNAMENT_DEL_GROUP";
-const TOURNAMENT_ADD_GROUP = "TOURNAMENT_ADD_GROUP";
-const TOURNAMENT_SET_GROUP = "TOURNAMENT_RESET_TOURNAMENT";
-const TOURNAMENT_RESET_TOURNAMENT = "TOURNAMENT_SET_GROUP";
-const TOURNAMENT_PUBLISH = "TOURNAMENT_PUBLISH";
-const TOURNAMENT_UNPUBLISH = "TOURNAMENT_UNPUBLISH";
-const TOURNAMENT_SET_MY_TOURNAMENTS = "TOURNAMENT_SET_MY_TOURNAMENTS";
-const TOURNAMENT_SET_TOURNAMENT_BY_ID = "TOURNAMENT_SET_TOURNAMENT_BY_ID";
+const TEAM_SET_ALL_TEAMS = "TEAM_SET_ALL_TEAMS";
+const TEAM_SET_SELECTED_TEAM = "TEAM_SET_SELECTED_TEAM";
+const TEAM_SET_MYTEAM = "TEAM_SET_MYTEAM";
+const TEAM_DELETE_MYTEAM = "TEAM_DELETE_MYTEAM";
+const TEAM_SET_MODE = "TEAM_SET_MODE";
+const TEAM_SET_ALL_CITYTEAMADMINS = "TEAM_SET_ALL_CITYTEAMADMINS";
+const TEAM_SET_WHEN_BEGIN = "TEAM_SET_WHEN_BEGIN";
+const TEAM_SET_WHEN_END = "TEAM_SET_WHEN_END";
+const TEAM_SET_NAME = "TEAM_SET_NAME";
+const TEAM_SET_DETAILS = "TEAM_SET_DETAILS";
+const TEAM_SET_REGLAMENT = "TEAM_SET_REGLAMENT";
+const TEAM_DEL_GROUP = "TEAM_DEL_GROUP";
+const TEAM_ADD_GROUP = "TEAM_ADD_GROUP";
+const TEAM_SET_GROUP = "TEAM_RESET_TEAM";
+const TEAM_RESET_TEAM = "TEAM_SET_GROUP";
+const TEAM_PUBLISH = "TEAM_PUBLISH";
+const TEAM_UNPUBLISH = "TEAM_UNPUBLISH";
+const TEAM_SET_MY_TEAMS = "TEAM_SET_MY_TEAMS";
+const TEAM_SET_TEAM_BY_ID = "TEAM_SET_TEAM_BY_ID";
 
 const currentDate = new Date();
-const emptyTournament = {
+
+const emptyTeam = {
     Id : -1,
     Name: "",
     Year: 0,
-    WhenBegin: {day: currentDate.getDay(), month: currentDate.getMonth()+1, year: currentDate.getFullYear()},
-    WhenEnd: {day: currentDate.getDay(), month: currentDate.getMonth()+1, year: currentDate.getFullYear()},
+    WhenBorn: {day: currentDate.getDay(), month: currentDate.getMonth()+1, year: currentDate.getFullYear()},
     Details: "",
-    Reglament: "", 
     Logo: "",
     CityId: -1,
     TournamentGroups: [], 
     Admins: [],
+    Matches: [],
+    Players: [],
     Published: false,
     Deleted: false,
 }
 
 const initState = {
-    tournaments: [], // все турниры
-    selected: emptyTournament, // выбранный для просмотра/создания/редактирования турнир
-    myTournaments: [], // те, что я создал
-    cityTournamentAdmins: [], // админы текущего города
+    teams: [], // все турниры
+    selected: emptyTeam, // выбранный для просмотра/создания/редактирования турнир
+    myTeams: [], // те, что я создал
+    cityTeamAdmins: [], // админы текущего города
     mode: "view", // режим отображения турнира ("view" - просмотр, "add" - добавление, "edit" - редактирование)
 }
 
 
-let tournamentReducer = (state = initState, action) => {
+let teamReducer = (state = initState, action) => {
     switch (action.type) {
-        case TOURNAMENT_SET_ALL_TOURNAMENTS: {
+        case TEAM_SET_ALL_TEAMS: {
             return {
                 ...state,
-                tournaments: [...action.tournaments],
+                teams: [...action.teams],
             };
         }
-        case TOURNAMENT_SET_MY_TOURNAMENTS: {
+        case TEAM_SET_MY_TEAMS: {
             return {
                 ...state,
-                myTournaments: [...action.myTournaments],
+                myTeams: [...action.myTeams],
             };
         }
-        case TOURNAMENT_SET_MODE: {
+        case TEAM_SET_MODE: {
             return {
                 ...state,
                 mode: action.mode,
             };
         }
-        case TOURNAMENT_SET_MYTOURNAMENT: {
+        case TEAM_SET_MYTEAM: {
             
             return {
                 ...state,
-                myTournaments: [...state.myTournaments.map(tour => {
+                myTeams: [...state.myTeams.map(tour => {
                     
-                    if (tour.Id == action.mytournament.Id) {{
-                        tour = {...action.mytournament};
+                    if (tour.Id == action.myteam.Id) {{
+                        tour = {...action.myteam};
                     }}
                     return tour;
                 })],
             };
         }
-        case TOURNAMENT_DELETE_MYTOURNAMENT: {
+        case TEAM_DELETE_MYTEAM: {
             
             return {
                 ...state,
-                myTournaments: [...state.myTournaments.filter(tour => tour.Id != action.mytournament.Id )],
+                myTeams: [...state.myTeams.filter(tour => tour.Id != action.myteam.Id )],
             };
         }
-        case TOURNAMENT_SET_SELECTED_TOURNAMENT: {
+        case TEAM_SET_SELECTED_TEAM: {
             let index = -1;
             return {
                 ...state,
-                selected: {...action.tournament,
-                    WhenBegin: {day: new Date(action.tournament.WhenBegin).getDate(), 
-                        month: new Date(action.tournament.WhenBegin).getMonth()+1, 
-                        year: new Date(action.tournament.WhenBegin).getFullYear()},
-                    WhenEnd: {day: new Date(action.tournament.WhenEnd).getDate(), 
-                        month: new Date(action.tournament.WhenEnd).getMonth()+1, 
-                        year: new Date(action.tournament.WhenEnd).getFullYear()},
-                    TournamentGroups: [...action.tournament.TournamentGroups.map(item => {
+                selected: {...action.team,
+                    WhenBegin: {day: new Date(action.team.WhenBegin).getDate(), 
+                        month: new Date(action.team.WhenBegin).getMonth()+1, 
+                        year: new Date(action.team.WhenBegin).getFullYear()},
+                    WhenEnd: {day: new Date(action.team.WhenEnd).getDate(), 
+                        month: new Date(action.team.WhenEnd).getMonth()+1, 
+                        year: new Date(action.team.WhenEnd).getFullYear()},
+                    TeamGroups: [...action.team.TeamGroups.map(item => {
                         return {...item, KeyId: ++index}
                     })]
                 },
             };
         }
-        case TOURNAMENT_RESET_TOURNAMENT: {
+        case TEAM_RESET_TEAM: {
             return {
                 ...state,
-                selected: {...emptyTournament},
+                selected: {...emptyTeam},
             };
         }
-        case TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS: {
+        case TEAM_SET_ALL_CITYTEAMADMINS: {
             return {
                 ...state,
-                cityTournamentAdmins: [...action.cityTournamentAdmins],
+                cityTeamAdmins: [...action.cityTeamAdmins],
             };
         }
-        case TOURNAMENT_SET_WHEN_BEGIN: {
+        case TEAM_SET_WHEN_BEGIN: {
             return {
                 ...state,
                 selected: {...state.selected, 
@@ -129,7 +130,7 @@ let tournamentReducer = (state = initState, action) => {
                 },
             };
         }
-        case TOURNAMENT_SET_WHEN_END: {
+        case TEAM_SET_WHEN_END: {
             return {
                 ...state,
                 selected: {...state.selected, 
@@ -137,7 +138,7 @@ let tournamentReducer = (state = initState, action) => {
                 },
             };
         }
-        case TOURNAMENT_SET_NAME: {
+        case TEAM_SET_NAME: {
             return {
                 ...state,
                 selected: {...state.selected, 
@@ -145,7 +146,7 @@ let tournamentReducer = (state = initState, action) => {
                 },
             };
         }
-        case TOURNAMENT_SET_REGLAMENT: {
+        case TEAM_SET_REGLAMENT: {
             return {
                 ...state,
                 selected: {...state.selected, 
@@ -153,7 +154,7 @@ let tournamentReducer = (state = initState, action) => {
                 },
             };
         }
-        case TOURNAMENT_SET_DETAILS: {
+        case TEAM_SET_DETAILS: {
             return {
                 ...state,
                 selected: {...state.selected, 
@@ -161,7 +162,7 @@ let tournamentReducer = (state = initState, action) => {
                 },
             };
         }
-        case TOURNAMENT_PUBLISH: {
+        case TEAM_PUBLISH: {
             return {
                 ...state,
                 selected: {...state.selected, 
@@ -169,7 +170,7 @@ let tournamentReducer = (state = initState, action) => {
                 },
             };
         }
-        case TOURNAMENT_UNPUBLISH: {
+        case TEAM_UNPUBLISH: {
             return {
                 ...state,
                 selected: {...state.selected, 
@@ -177,9 +178,9 @@ let tournamentReducer = (state = initState, action) => {
                 },
             };
         }
-        case TOURNAMENT_ADD_GROUP: {
+        case TEAM_ADD_GROUP: {
             let max = -1;
-            state.selected.TournamentGroups.forEach(item => {
+            state.selected.TeamGroups.forEach(item => {
                 if (item.KeyId != undefined){
                     if (item.KeyId > max)
                         max = item.KeyId;
@@ -188,7 +189,7 @@ let tournamentReducer = (state = initState, action) => {
             return {
                 ...state,
                 selected: {...state.selected, 
-                    TournamentGroups: [...state.selected.TournamentGroups, 
+                    TeamGroups: [...state.selected.TeamGroups, 
                         {
                             KeyId: max + 1,    
                             Name: action.groupName
@@ -196,11 +197,11 @@ let tournamentReducer = (state = initState, action) => {
                 },
             };
         }
-        case TOURNAMENT_SET_GROUP: {
+        case TEAM_SET_GROUP: {
             return {
                 ...state,
                 selected: {...state.selected, 
-                    TournamentGroups: state.selected.TournamentGroups.map(item => {
+                    TeamGroups: state.selected.TeamGroups.map(item => {
                         if (item.Id == action.groupId)
                         {
                             item.Id = action.groupId;
@@ -212,11 +213,11 @@ let tournamentReducer = (state = initState, action) => {
                 },
             };
         }
-        case TOURNAMENT_DEL_GROUP: {
+        case TEAM_DEL_GROUP: {
             return {
                 ...state,
                 selected: {...state.selected, 
-                    TournamentGroups: state.selected.TournamentGroups.filter(item => item.KeyId != action.groupId),
+                    TeamGroups: state.selected.TeamGroups.filter(item => item.KeyId != action.groupId),
                 },
             };
         }
@@ -226,130 +227,130 @@ let tournamentReducer = (state = initState, action) => {
     }
 }
 
-export const setTournaments = (tournaments) => {
+export const setTeams = (teams) => {
     return {
-        type: TOURNAMENT_SET_ALL_TOURNAMENTS,
-        tournaments
+        type: TEAM_SET_ALL_TEAMS,
+        teams
     }
 }
 
-export const setMyTournament = (mytournament) => {
+export const setMyTeam = (myteam) => {
     return {
-        type: TOURNAMENT_SET_MYTOURNAMENT,
-        mytournament
+        type: TEAM_SET_MYTEAM,
+        myteam
     }
 }
 
-export const setSelectedTournament = (tournament) => {
+export const setSelectedTeam = (team) => {
     return {
-        type: TOURNAMENT_SET_SELECTED_TOURNAMENT,
-        tournament
+        type: TEAM_SET_SELECTED_TEAM,
+        team
     }
 }
 
-export const deleteMyTournament = (mytournament) => {
+export const deleteMyTeam = (myteam) => {
     return {
-        type: TOURNAMENT_DELETE_MYTOURNAMENT,
-        mytournament
+        type: TEAM_DELETE_MYTEAM,
+        myteam
     }
 }
 
-export const setMyTournaments = (myTournaments) => {
+export const setMyTeams = (myTeams) => {
     return {
-        type: TOURNAMENT_SET_MY_TOURNAMENTS,
-        myTournaments
+        type: TEAM_SET_MY_TEAMS,
+        myTeams
     }
 }
 
-export const tournamentPublish = () => {
+export const teamPublish = () => {
     return {
-        type: TOURNAMENT_PUBLISH,
+        type: TEAM_PUBLISH,
     }
 }
 
-export const tournamentUnpublish = () => {
+export const teamUnpublish = () => {
     return {
-        type: TOURNAMENT_UNPUBLISH,
+        type: TEAM_UNPUBLISH,
     }
 }
 
-export const resetTournament = () => {
+export const resetTeam = () => {
     return {
-        type: TOURNAMENT_RESET_TOURNAMENT
+        type: TEAM_RESET_TEAM
     }
 }
 
-export const setTournamentWhenBegin = (when) => {
+export const setTeamWhenBegin = (when) => {
     return {
-        type: TOURNAMENT_SET_WHEN_BEGIN,
+        type: TEAM_SET_WHEN_BEGIN,
         when
     }
 }
 
-export const setTournamentWhenEnd = (when) => {
+export const setTeamWhenEnd = (when) => {
     return {
-        type: TOURNAMENT_SET_WHEN_END,
+        type: TEAM_SET_WHEN_END,
         when
     }
 }
 
-export const setTournamentMode = (mode) => {
+export const setTeamMode = (mode) => {
     return {
-        type: TOURNAMENT_SET_MODE,
+        type: TEAM_SET_MODE,
         mode
     }
 }
 
-export const setTournamentName = (value) => {
+export const setTeamName = (value) => {
     return {
-        type: TOURNAMENT_SET_NAME,
+        type: TEAM_SET_NAME,
         value
     }
 }
 
-export const setTournamentDetails = (value) => {
+export const setTeamDetails = (value) => {
     return {
-        type: TOURNAMENT_SET_DETAILS,
+        type: TEAM_SET_DETAILS,
         value
     }
 }
 
-export const setTournamentReglament = (value) => {
+export const setTeamReglament = (value) => {
     return {
-        type: TOURNAMENT_SET_REGLAMENT,
+        type: TEAM_SET_REGLAMENT,
         value
     }
 }
 
 
 
-export const setCityTournamentAdmins = (cityTournamentAdmins) => {
+export const setCityTeamAdmins = (cityTeamAdmins) => {
     return {
-        type: TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS,
-        cityTournamentAdmins
+        type: TEAM_SET_ALL_CITYTEAMADMINS,
+        cityTeamAdmins
     }
 }
 
-export const delGroupFromTournament = (tournamentId, groupId) => {
+export const delGroupFromTeam = (teamId, groupId) => {
     return {
-        type: TOURNAMENT_DEL_GROUP,
-        tournamentId,
+        type: TEAM_DEL_GROUP,
+        teamId,
         groupId
     }
 }
 
-export const addGroupToTournament = (tournamentId, groupName) => {
+export const addGroupToTeam = (teamId, groupName) => {
     return {
-        type: TOURNAMENT_ADD_GROUP,
-        tournamentId,
+        type: TEAM_ADD_GROUP,
+        teamId,
         groupName
     }
 }
 
-export const editGroupInTournament = (tournamentId, groupId, groupName) => {
+export const editGroupInTeam = (teamId, groupId, groupName) => {
     return {
-        type: TOURNAMENT_SET_GROUP,
-        tournamentId,
+        type: TEAM_SET_GROUP,
+        teamId,
         groupId,
         groupName
     }
@@ -357,21 +358,21 @@ export const editGroupInTournament = (tournamentId, groupId, groupName) => {
 
 
 // все админы турниров города
-export const getAllCityTournamentAdmins = (startindex = 0) => {
+export const getAllCityTeamAdmins = (startindex = 0) => {
     return dispatch => {
 
         dispatch(setGlobalPopout(true))
         if (authQueryString && authQueryString.length > 0)
-            CityTournamentAdminAPI.getAll(startindex)
+        TeamAdminAPI.getAll(startindex)
                 .then(pl => {
                     if (pl && pl.data.length > 0) {
                         
-                        dispatch(setCityTournamentAdmins(pl.data));
+                        dispatch(setCityTeamAdmins(pl.data));
                         dispatch(setGlobalPopout(false))
                     }
                     else {
                         
-                        dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                        dispatch(setCityTeamAdmins(demoCityTeamAdmins))
                         dispatch(setGlobalPopout(false))
                     }
                 })
@@ -382,7 +383,7 @@ export const getAllCityTournamentAdmins = (startindex = 0) => {
                 })
         else {
             
-            dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+            dispatch(setCityTeamAdmins(demoCityTeamAdmins))
             dispatch(setGlobalPopout(false))
 
         }
@@ -390,19 +391,19 @@ export const getAllCityTournamentAdmins = (startindex = 0) => {
 }
 
 // все админы города с сервера по Id города
-export const getAllCityTournamentAdminsByCityId = (cityTournamentId, startindex = 0) => {
+export const getAllCityTeamAdminsByCityId = (cityTeamId, startindex = 0) => {
     return dispatch => {
 
         if (authQueryString && authQueryString.length > 0)
-            CityTournamentAdminAPI.getAllInCityByCityId(cityTournamentId, startindex)
+        TeamAdminAPI.getAllInCityByCityId(cityTeamId, startindex)
                 .then(pl => {
                     if (pl && pl.data.length > 0) {
                         
-                        dispatch(setCityTournamentAdmins(pl.data));
+                        dispatch(setCityTeamAdmins(pl.data));
                         dispatch(setGlobalPopout(false))
                     }
                     else {
-                        dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                        dispatch(setCityTeamAdmins(demoCityTeamAdmins))
                         dispatch(setGlobalPopout(false))
 
                     }
@@ -412,7 +413,7 @@ export const getAllCityTournamentAdminsByCityId = (cityTournamentId, startindex 
                     dispatch(setGlobalPopout(false))
                 })
         else {
-            dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+            dispatch(setCityTeamAdmins(demoCityTeamAdmins))
             dispatch(setGlobalPopout(false))
 
         }
@@ -420,15 +421,15 @@ export const getAllCityTournamentAdminsByCityId = (cityTournamentId, startindex 
 }
 
 // сохраняет (добавляет) в базу новый турнир
-export const saveSelectedTournament = (tournament = null, userprofile = null) => {
+export const saveSelectedTeam = (team = null, userprofile = null) => {
     return dispatch => {
-        if (tournament != null){
+        if (team != null){
             if (authQueryString && authQueryString.length > 0)
-                CityTournamentAdminAPI.saveTournament(tournament, userprofile)
+            TeamAdminAPI.saveTeam(team, userprofile)
                     .then(pl => {
                         if (pl && pl.data.length > 0) {
                             
-                            dispatch(resetTournament());
+                            dispatch(resetTeam());
                             dispatch(setGlobalPopout(false))
                         }
                         else {
@@ -455,17 +456,17 @@ export const saveSelectedTournament = (tournament = null, userprofile = null) =>
 }
 
 // опубликовывает турнир
-export const publishTournament = (tournament = null, userprofile = null, publish = false) => {
+export const publishTeam = (team = null, userprofile = null, publish = false) => {
     
     return dispatch => {
-        if ((tournament != null) || (userprofile == null)){
+        if ((team != null) || (userprofile == null)){
             if (authQueryString && authQueryString.length > 0)
-                CityTournamentAdminAPI.publishTournament(tournament, userprofile, publish)
+            TeamAdminAPI.publishTeam(team, userprofile, publish)
                     .then(pl => {
                         
                         if (pl) {
                             // изменить полученный турнир в списке
-                            dispatch(setMyTournament(pl.data))
+                            dispatch(setMyTeam(pl.data))
                             dispatch(setGlobalPopout(false))
                         }
                         else {
@@ -492,16 +493,16 @@ export const publishTournament = (tournament = null, userprofile = null, publish
 }
 
 // удаляет турнир
-export const deleteTournament = (tournament = null, userprofile = null) => {
+export const deleteTeam = (team = null, userprofile = null) => {
     
     return dispatch => {
-        if ((tournament != null) || (userprofile == null)){
+        if ((team != null) || (userprofile == null)){
             if (authQueryString && authQueryString.length > 0)
-                CityTournamentAdminAPI.deleteTournament(tournament, userprofile)
+            TeamAdminAPI.deleteTeam(team, userprofile)
                     .then(pl => {
                         if (pl) {
                             // изменить полученный турнир в списке
-                            dispatch(deleteMyTournament(pl.data))
+                            dispatch(deleteMyTeam(pl.data))
                             dispatch(setGlobalPopout(false))
                         }
                         else {
@@ -529,17 +530,17 @@ export const deleteTournament = (tournament = null, userprofile = null) => {
 
 
 // возвращает с сервера все турниры для админа по его UserProfileId
-export const getMyTournaments = (userProfileId = -1) => {
+export const getMyTeams = (userProfileId = -1) => {
     return dispatch => {
         if (userProfileId != null){
             if (authQueryString && authQueryString.length > 0)
             
                 
-                CityTournamentAdminAPI.getAllByAdminProfileId(userProfileId)
+            TeamAdminAPI.getAllByAdminProfileId(userProfileId)
                     .then(pl => {
                         if (pl && pl.data.length > 0) {
                             
-                            dispatch(setMyTournaments(pl.data));
+                            dispatch(setMyTeams(pl.data));
                             dispatch(setGlobalPopout(false))
                         }
                         else {
@@ -569,4 +570,4 @@ export const getMyTournaments = (userProfileId = -1) => {
 
 
 
-export default tournamentReducer;
+export default teamReducer;

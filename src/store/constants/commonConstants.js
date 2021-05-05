@@ -34,6 +34,25 @@ export const cityTournamentAdmins =
     },
 ]
 
+export const TeamAdmins = 
+[
+    {
+        Id : 0,
+        Name: "Тестовая команда",
+        Year: 2021,
+        WhenBorn: {day: 1, month: 2, year: 2021},
+        Details: "Системная",
+        Logo: "",
+        CityId: -1,
+        TournamentGroups: [], 
+        Admins: [],
+        Matches: [],
+        Players: [],
+        Published: true,
+        Deleted: false,
+    },
+]
+
 export const geo = {
     Cities: [
         {

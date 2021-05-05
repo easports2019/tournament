@@ -16,6 +16,7 @@ const initState = {
     GlobalPopout: false,
     ErrorObject: {resultcode: 0, result: "Ok", data: null, message: ""},
     ShowAdminTourneyTab: false,
+    ShowAdminTeamTab: true,
 
      // level 
 

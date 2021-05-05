@@ -342,26 +342,52 @@ export const CityTournamentAdminAPI = {
 
     saveTournament(tournament, userprofile) {
         debugger
-        let tournamentToSend = {
-            ...tournament,
-            WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
-            WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
-            Year: tournament.WhenEnd.year,
-            CityId: userprofile.CityUmbracoId,
-        }
-        return PostJsonInstance.post("SimpleTournament/Add" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
-            debugger
-            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
-        })
-            .catch(error => {
+        
+
+        if (tournament.Id < 0){
+            let tournamentToSend = {
+                ...tournament,
+                WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
+                WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
+                Year: tournament.WhenEnd.year,
+                CityId: userprofile.CityUmbracoId, // важный момент. пока не загружен с сервера существующий турнир, мы не знаем к какому городу привязка. берем CityUmbracoId из профиля (на сервере в Add это обрабатывается)
+            }
+
+            return PostJsonInstance.post("SimpleTournament/Add" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
                 debugger
-                return errorObj(error)
+                return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
             })
+                .catch(error => {
+                    debugger
+                    return errorObj(error)
+                })
+        }
+        else{
+            let tournamentToSend = {
+                ...tournament,
+                WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
+                WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
+                Year: tournament.WhenEnd.year,
+                TournamentGroups: [...tournament.TournamentGroups.map(item => {
+                    return {Name: item.Name}
+                })],
+                CityId: tournament.CityId, // важный момент. пока не загружен с сервера существующий турнир, мы не знаем к какому городу привязка. берем CityUmbracoId из профиля (на сервере в Add это обрабатывается)
+            }
+
+            return PostJsonInstance.post("SimpleTournament/Update" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+                debugger
+                return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+            })
+                .catch(error => {
+                    debugger
+                    return errorObj(error)
+                })
+        }
     },
 
     /// публикация турнира (или снятие с публикации, если publish=false)
     publishTournament(tournament, userprofile, publish) {
-        debugger
+        
         let tournamentToSend = {
             ...tournament,
             WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
@@ -371,6 +397,26 @@ export const CityTournamentAdminAPI = {
             CityId: userprofile.CityUmbracoId,
         }
         return PostJsonInstance.post("SimpleTournament/Publish" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+            
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                
+                return errorObj(error)
+            })
+    },
+
+    /// удаление турнира (пометка на удаление)
+    deleteTournament(tournament, userprofile) {
+        debugger
+        let tournamentToSend = {
+            ...tournament,
+            WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
+            WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
+            Year: tournament.WhenEnd.year,
+            CityId: userprofile.CityUmbracoId,
+        }
+        return PostJsonInstance.post("SimpleTournament/Delete" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
             debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
@@ -394,4 +440,135 @@ export const CityTournamentAdminAPI = {
     //         console.log(y)
     //     });
     // },
+}
+
+export const TeamAdminAPI = {
+    // запрос всех админов города
+    // startindex - индекс, с которого начинать ответ
+    getAll(startindex = 0) {
+        //let formData = new FormData();
+        //formData.append("startindex", startindex);
+        return PostJsonInstance.post("SimpleTeamAdmin/GetAll" + authQueryString/*, formData*/).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
+
+    getAllInCityByCityId(cityUmbracoId, startindex = 0) {
+        let formData = new FormData();
+        formData.append("startindex", startindex);
+        formData.append("cityumbracoid", cityUmbracoId);
+        return PostJsonInstance.post("SimpleTeamAdmin/GetAllInCity" + authQueryString, formData).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
+
+    getAllByAdminProfileId(userProfileId, startindex = 0) {
+        let formData = new FormData();
+        formData.append("startindex", startindex);
+        formData.append("adminprofileid", userProfileId);
+        return PostJsonInstance.post("SimpleTeam/GetAllByAdminId" + authQueryString, formData).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
+
+    saveTournament(tournament, userprofile) {
+        debugger
+        
+
+        if (tournament.Id < 0){
+            let tournamentToSend = {
+                ...tournament,
+                WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
+                WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
+                Year: tournament.WhenEnd.year,
+                CityId: userprofile.CityUmbracoId, // важный момент. пока не загружен с сервера существующий турнир, мы не знаем к какому городу привязка. берем CityUmbracoId из профиля (на сервере в Add это обрабатывается)
+            }
+
+            return PostJsonInstance.post("SimpleTeam/Add" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+                debugger
+                return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+            })
+                .catch(error => {
+                    debugger
+                    return errorObj(error)
+                })
+        }
+        else{
+            let tournamentToSend = {
+                ...tournament,
+                WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
+                WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
+                Year: tournament.WhenEnd.year,
+                TournamentGroups: [...tournament.TournamentGroups.map(item => {
+                    return {Name: item.Name}
+                })],
+                CityId: tournament.CityId, // важный момент. пока не загружен с сервера существующий турнир, мы не знаем к какому городу привязка. берем CityUmbracoId из профиля (на сервере в Add это обрабатывается)
+            }
+
+            return PostJsonInstance.post("SimpleTeam/Update" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+                debugger
+                return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+            })
+                .catch(error => {
+                    debugger
+                    return errorObj(error)
+                })
+        }
+    },
+
+    /// публикация турнира (или снятие с публикации, если publish=false)
+    publishTournament(tournament, userprofile, publish) {
+        
+        let tournamentToSend = {
+            ...tournament,
+            WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
+            WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
+            Published: publish,
+            Year: tournament.WhenEnd.year,
+            CityId: userprofile.CityUmbracoId,
+        }
+        return PostJsonInstance.post("SimpleTeam/Publish" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+            
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                
+                return errorObj(error)
+            })
+    },
+
+    /// удаление турнира (пометка на удаление)
+    deleteTournament(tournament, userprofile) {
+        debugger
+        let tournamentToSend = {
+            ...tournament,
+            WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
+            WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
+            Year: tournament.WhenEnd.year,
+            CityId: userprofile.CityUmbracoId,
+        }
+        return PostJsonInstance.post("SimpleTeam/Delete" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+            debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
 }

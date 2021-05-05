@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react'
 import { RichCell, Avatar, Button, InfoRow, Header } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
-import TournamentAdminList from './TournamentAdminList'
+import TeamAdminList from './TeamAdminList'
 import { setActiveMenuItem } from './../../../../store/mainMenuReducer';
 import {setTournamentMode, getMyTournaments, publishTournament, deleteTournament, setSelectedTournament, resetTournament,} from './../../../../store/tournamentsReducer'
 import { connect } from 'react-redux';
 import ButtonWithHistory from './../../Common/ButtonWithHistory/ButtonWithHistory'
 
 
-const TournamentAdminPanel = (props) => {
+const TeamAdminPanel = (props) => {
 
 	// let [myTournaments, setMyTournaments] = useState([]);
     const PublishTournament = (tour, publish) => {
@@ -41,14 +41,14 @@ const TournamentAdminPanel = (props) => {
             <>
                 <Header>Мои турниры</Header>
                 <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="tournamentitem" data-story="tournamentitem">Создать турнир</ButtonWithHistory>
-                <TournamentAdminList 
+                <TeamAdminList 
                     CellClick={CellClick}
                     Button1Handle = {PublishTournament}
                     Button2Handle = {DeleteTournament}
                     List={props.tournament.myTournaments}
                 >
                     
-                </TournamentAdminList>
+                </TeamAdminList>
             </>
         )
 }
@@ -63,4 +63,4 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
 	setActiveMenuItem, setTournamentMode, getMyTournaments, publishTournament, deleteTournament, setSelectedTournament, resetTournament,
-})(TournamentAdminPanel);
+})(TeamAdminPanel);

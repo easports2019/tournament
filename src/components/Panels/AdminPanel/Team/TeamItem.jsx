@@ -12,7 +12,7 @@ import ListItem from '../ListItem/ListItem';
 
 
 
-const TournamentItem = (props) => {
+const TeamItem = (props) => {
     let currentDate = new Date();
     let [tempGroupName, setTempGroupName] = useState("");
 
@@ -200,4 +200,4 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails,
     delGroupFromTournament, editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament, 
-})(TournamentItem)
+})(TeamItem)

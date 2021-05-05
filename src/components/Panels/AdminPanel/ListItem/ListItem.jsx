@@ -6,9 +6,9 @@ import { Cell } from '@vkontakte/vkui'
 
 const ListItem = (props) => {
     return (
-            <Cell key={props.Id != -1 ? props.Id : null} 
+            <Cell key={props.KeyId != -1 ? props.KeyId : null} 
             removable 
-            onRemove={() => props.Delete(props.Id)}
+            onRemove={() => props.Delete(props.KeyId)}
             >
                 {props.Name}
             </Cell>
