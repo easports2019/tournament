@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea, File, CellButton, Button, Header, List, Cell } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
-    setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournament,
-    editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament
+    setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
+    editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament
 } from '../../../../store/tournamentsReducer'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
@@ -16,9 +16,23 @@ const TournamentItem = (props) => {
     let currentDate = new Date();
     let [tempGroupName, setTempGroupName] = useState("");
 
-    const addToTournament = (id, name) => {
-        props.addGroupToTournament(id, name);
-        setTempGroupName("");
+    const addToTournament = () => {
+        debugger
+        if (tempGroupName.trim() != "")
+        {
+            //addGroupToTournament
+            props.addTournamentGroup(props.tournaments.selected, props.myProfile, {Id: -1, Name: tempGroupName});
+            setTempGroupName("");
+        }
+    }
+
+    const DelGroupFromTournament = (keyId, groupId) => {
+        //props.tournaments.selected.Id, item.KeyId, item.Id
+        debugger
+        if (groupId < 0)
+            props.delGroupFromTournamentByKeyId(props.tournaments.selected.Id, keyId); // (эту можно удалить пока локально без сервера)
+        else
+            props.deleteTournamentGroup(props.tournaments.selected, props.myProfile, groupId); // это летит на сервер, т.к. оно уже записано в БД (существующий турнир)
     }
 
     switch (props.mode) {
@@ -100,7 +114,7 @@ const TournamentItem = (props) => {
                         <Group header={<Header mode="secondary">Группы</Header>}>
                             {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
                                 <List>
-                                    {props.tournaments.selected.TournamentGroups.map((item) => <ListItem KeyId={-1} Delete={() => props.delGroupFromTournament(props.tournaments.selected.Id, item.KeyId)} Name={item.Name}></ListItem>)}
+                                    {props.tournaments.selected.TournamentGroups.map((item) => <ListItem KeyId={-1} Delete={() => DelGroupFromTournament(item.KeyId, item.Id)} Name={item.Name}></ListItem>)}
                                 </List>
                                 :
                                 <FormItem>
@@ -110,7 +124,7 @@ const TournamentItem = (props) => {
                         </Group>
                         <FormItem top="Новая группа/лига">
                             <Input type="text" defaultValue={tempGroupName} value={tempGroupName} onChange={e => setTempGroupName(e.currentTarget.value)} placeholder="Название, например, Лига 1" />
-                            <CellButton onClick={() => addToTournament(props.tournaments.selected.Id, tempGroupName)} before={<Icon28AddOutline />}>Добавить группу/лигу</CellButton>
+                            <CellButton onClick={addToTournament} before={<Icon28AddOutline />}>Добавить группу/лигу</CellButton>
                         </FormItem>
                         <FormItem top="Подверждение">
                             <Button onClick={() => props.saveSelectedTournament(props.tournaments.selected, props.myProfile)}>Сохранить</Button>
@@ -163,7 +177,7 @@ const TournamentItem = (props) => {
                         <Group header={<Header mode="secondary">Группы</Header>}>
                             {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
                                 <List>
-                                    {props.tournaments.selected.TournamentGroups.map((item) => <ListItem KeyId={item.KeyId} Delete={() => props.delGroupFromTournament(props.tournaments.selected.Id, item.KeyId)} Name={item.Name}></ListItem>)}
+                                    {props.tournaments.selected.TournamentGroups.map((item) => <ListItem KeyId={item.KeyId} Delete={() => DelGroupFromTournament(item.KeyId, item.Id)} Name={item.Name}></ListItem>)}
                                 </List>
                                 :
                                 <FormItem>
@@ -173,7 +187,7 @@ const TournamentItem = (props) => {
                         </Group>
                         <FormItem top="Новая группа/лига">
                             <Input type="text" defaultValue={tempGroupName} value={tempGroupName} onChange={e => setTempGroupName(e.currentTarget.value)} placeholder="Например, Лига 1" />
-                            <CellButton onClick={() => addToTournament(props.tournaments.selected.Id, tempGroupName)} before={<Icon28AddOutline />}>Добавить группу</CellButton>
+                            <CellButton onClick={addToTournament} before={<Icon28AddOutline />}>Добавить группу</CellButton>
                         </FormItem>
                         <FormItem top="Подверждение">
                             <Button onClick={() => props.saveSelectedTournament(props.tournaments.selected, props.myProfile)}>Внести изменения</Button>
@@ -199,5 +213,5 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails,
-    delGroupFromTournament, editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament, 
+    delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, 
 })(TournamentItem)

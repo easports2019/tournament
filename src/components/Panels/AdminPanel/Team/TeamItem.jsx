@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea, File, CellButton, Button, Header, List, Cell } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
-    setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournament,
+    setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId,
     editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament
 } from '../../../../store/tournamentsReducer'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
@@ -199,5 +199,5 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails,
-    delGroupFromTournament, editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament, 
+    delGroupFromTournamentByKeyId, editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament, 
 })(TeamItem)

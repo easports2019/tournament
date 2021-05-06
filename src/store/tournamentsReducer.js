@@ -17,7 +17,8 @@ const TOURNAMENT_SET_WHEN_END = "TOURNAMENT_SET_WHEN_END";
 const TOURNAMENT_SET_NAME = "TOURNAMENT_SET_NAME";
 const TOURNAMENT_SET_DETAILS = "TOURNAMENT_SET_DETAILS";
 const TOURNAMENT_SET_REGLAMENT = "TOURNAMENT_SET_REGLAMENT";
-const TOURNAMENT_DEL_GROUP = "TOURNAMENT_DEL_GROUP";
+const TOURNAMENT_DEL_GROUP_BY_KEY_ID = "TOURNAMENT_DEL_GROUP_BY_KEY_ID";
+const TOURNAMENT_DEL_GROUP_BY_ID = "TOURNAMENT_DEL_GROUP_BY_ID";
 const TOURNAMENT_ADD_GROUP = "TOURNAMENT_ADD_GROUP";
 const TOURNAMENT_SET_GROUP = "TOURNAMENT_RESET_TOURNAMENT";
 const TOURNAMENT_RESET_TOURNAMENT = "TOURNAMENT_SET_GROUP";
@@ -179,22 +180,41 @@ let tournamentReducer = (state = initState, action) => {
         }
         case TOURNAMENT_ADD_GROUP: {
             let max = -1;
+            debugger
+            
+
             state.selected.TournamentGroups.forEach(item => {
                 if (item.KeyId != undefined){
                     if (item.KeyId > max)
                         max = item.KeyId;
                 }
             });
-            return {
-                ...state,
-                selected: {...state.selected, 
-                    TournamentGroups: [...state.selected.TournamentGroups, 
-                        {
-                            KeyId: max + 1,    
-                            Name: action.groupName
-                        }],
-                },
-            };
+
+            // if (action.group.Id < 0)
+            //     return {
+            //         ...state,
+            //         selected: {...state.selected, 
+            //             TournamentGroups: [...state.selected.TournamentGroups, 
+            //                 {
+            //                     KeyId: max + 1,    
+            //                     Name: action.group.Name
+            //                 }],
+            //         },
+            //     };
+            // else
+                return {
+                    ...state,
+                    selected: {...state.selected, 
+                        TournamentGroups: [...state.selected.TournamentGroups, 
+                            {
+                                ...action.group,
+                                KeyId: max + 1,    
+                                Id: action.group.Id,
+                                Name: action.group.Name
+                            }],
+                    },
+                };
+
         }
         case TOURNAMENT_SET_GROUP: {
             return {
@@ -212,11 +232,20 @@ let tournamentReducer = (state = initState, action) => {
                 },
             };
         }
-        case TOURNAMENT_DEL_GROUP: {
+        case TOURNAMENT_DEL_GROUP_BY_KEY_ID: {
             return {
                 ...state,
                 selected: {...state.selected, 
                     TournamentGroups: state.selected.TournamentGroups.filter(item => item.KeyId != action.groupId),
+                },
+            };
+        }
+        case TOURNAMENT_DEL_GROUP_BY_ID: {
+            debugger
+            return {
+                ...state,
+                selected: {...state.selected, 
+                    TournamentGroups: state.selected.TournamentGroups.filter(item => item.Id != action.groupId),
                 },
             };
         }
@@ -330,19 +359,27 @@ export const setCityTournamentAdmins = (cityTournamentAdmins) => {
     }
 }
 
-export const delGroupFromTournament = (tournamentId, groupId) => {
+export const delGroupFromTournamentByKeyId = (tournamentId, groupId) => {
     return {
-        type: TOURNAMENT_DEL_GROUP,
+        type: TOURNAMENT_DEL_GROUP_BY_KEY_ID,
         tournamentId,
         groupId
     }
 }
 
-export const addGroupToTournament = (tournamentId, groupName) => {
+export const delGroupFromTournamentById = (tournamentId, groupId) => {
+    debugger
+    return {
+        type: TOURNAMENT_DEL_GROUP_BY_ID,
+        tournamentId,
+        groupId
+    }
+}
+
+export const addGroupToTournament = (group) => {
     return {
         type: TOURNAMENT_ADD_GROUP,
-        tournamentId,
-        groupName
+        group
     }
 }
 
@@ -521,6 +558,98 @@ export const deleteTournament = (tournament = null, userprofile = null) => {
         }
         else {
             dispatch(setErrorMessage("Не удалось удалить турнир, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// удаляет группу турнира
+export const deleteTournamentGroup = (tournament = null, userprofile = null, tournamentGroupId = -1) => {
+    debugger
+    return dispatch => {
+        if ((tournament != null) || (userprofile == null)){
+            if (authQueryString && authQueryString.length > 0){
+                if (tournamentGroupId < 0)
+                {
+                    debugger
+                    dispatch(delGroupFromTournamentById(tournament.Id, tournamentGroupId));
+                    dispatch(setGlobalPopout(false))
+                }
+                else
+                {
+                    CityTournamentAdminAPI.deleteTournamentGroup(tournament, userprofile, tournamentGroupId)
+                    .then(pl => {
+                        if (pl) {
+                            debugger
+                            dispatch(delGroupFromTournamentById(tournament.Id, pl.data.Id))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось удалить группу турнира"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось удалить группу турнира: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+                }
+            }
+            else {
+                dispatch(setErrorMessage("Не удалось удалить группу турнира"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось удалить группу турнира, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// добавляет группу турнира
+export const addTournamentGroup = (tournament = null, userprofile = null, tournamentGroup = null) => {
+    debugger
+    return dispatch => {
+        if ((tournament != null) || (userprofile == null)){
+            if (authQueryString && authQueryString.length > 0){
+                if (tournament.Id < 0)
+                {
+                    debugger
+                    dispatch(addGroupToTournament(tournamentGroup));
+                    dispatch(setGlobalPopout(false))
+                }
+                else
+                {
+                    CityTournamentAdminAPI.addTournamentGroup(tournament, userprofile, tournamentGroup)
+                    .then(pl => {
+                        if (pl) {
+                            debugger
+                            dispatch(addGroupToTournament(pl.data))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось удалить группу турнира"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось удалить группу турнира: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+                }
+            }
+            else {
+                dispatch(setErrorMessage("Не удалось удалить группу турнира"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось удалить группу турнира, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }

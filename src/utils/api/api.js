@@ -369,7 +369,10 @@ export const CityTournamentAdminAPI = {
                 WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
                 Year: tournament.WhenEnd.year,
                 TournamentGroups: [...tournament.TournamentGroups.map(item => {
-                    return {Name: item.Name}
+                    return {
+                        Name: item.Name,
+                        Id: item.Id != undefined ? item.Id : -1,
+                    }
                 })],
                 CityId: tournament.CityId, // важный момент. пока не загружен с сервера существующий турнир, мы не знаем к какому городу привязка. берем CityUmbracoId из профиля (на сервере в Add это обрабатывается)
             }
@@ -425,6 +428,56 @@ export const CityTournamentAdminAPI = {
                 return errorObj(error)
             })
     },
+
+    /// удаление группы турнира
+    deleteTournamentGroup(tournament, userprofile, tournamentGroupId) {
+        debugger
+        let tournamentToSend = {
+            ...tournament,
+            WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
+            WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
+            Year: tournament.WhenEnd.year,
+            CityId: userprofile.CityUmbracoId,
+        }
+
+        let tournamentGroup = {
+            Id: tournamentGroupId,
+        }
+        return PostJsonInstance.post("SimpleTournamentGroup/Delete" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile }, tournamentGroup: {...tournamentGroup} })).then(data => {
+            debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
+   
+    /// добавление группы турнира
+    addTournamentGroup(tournament, userprofile, tGroup) {
+        debugger
+        let tournamentToSend = {
+            ...tournament,
+            WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
+            WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
+            Year: tournament.WhenEnd.year,
+            CityId: userprofile.CityUmbracoId,
+        }
+
+        let tournamentGroup = {
+            Id: tGroup.Id,
+            Name: tGroup.Name,
+        }
+        return PostJsonInstance.post("SimpleTournamentGroup/Add" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile }, tournamentGroup: {...tournamentGroup} })).then(data => {
+            debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
+    
 
 
 
