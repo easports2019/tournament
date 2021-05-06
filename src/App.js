@@ -250,7 +250,7 @@ const App = (props) => {
 								<TabbarItemWithHistory toMenuName="allTournaments" selected={"allTournaments" === props.mainMenu.activeItem.name} data-story="allTournaments" text="Турниры"></TabbarItemWithHistory>
 								<TabbarItemWithHistory toMenuName="profile" selected={"profile" === props.mainMenu.activeItem.name} data-story="profile" text="Профиль"></TabbarItemWithHistory>
 								{props.ShowAdminTourneyTab && <TabbarItemWithHistory toMenuName="tournamentadmin" selected={"tournamentadmin" === props.mainMenu.activeItem.name} data-story="tournamentadmin" text="Управление турнирами"></TabbarItemWithHistory>}
-								{props.ShowAdminTeamTab && <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Управление командами"></TabbarItemWithHistory>}
+								{props.ShowAdminTeamTab && <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Моя команда"></TabbarItemWithHistory>}
 							</Tabbar>}>
 
 						<View id="hot" activePanel="main" modal={modalWindow} popout={popout}>
@@ -330,7 +330,7 @@ const App = (props) => {
 									left={<BackButton isBack={true} />}
 								//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
 								>
-									Управление командами
+									Моя команда
 						</PanelHeader>
 								<Group>
 									<TeamAdminPanel></TeamAdminPanel>

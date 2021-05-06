@@ -28,22 +28,19 @@ const TeamItem = (props) => {
                     <FormItem top="Ваш город">
                         <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
                     </FormItem>
-                    <FormItem top="Название турнира" bottom="Имя турнира должно быть уникальным">
-                        <InfoRow>{props.tournaments.selected.Name}</InfoRow>
+                    <FormItem top="Название команды" bottom="Имя турнира должно быть уникальным">
+                        <InfoRow>{props.teams.selected.Name}</InfoRow>
                     </FormItem>
-                    <FormItem top="Дата начала">
-                        <InfoRow>{props.tournaments.selected.WhenBegin}</InfoRow>
-                    </FormItem>
-                    <FormItem top="Дата окончания">
-                        <InfoRow>{props.tournaments.selected.WhenEnd}</InfoRow>
+                    <FormItem top="Дата основания">
+                        <InfoRow>{props.teams.selected.WhenBorn}</InfoRow>
                     </FormItem>
                     <FormItem top="Описание турнира">
-                        <InfoRow>{props.tournaments.selected.Details}</InfoRow>
+                        <InfoRow>{props.teams.selected.Details}</InfoRow>
                     </FormItem>
-                    <FormItem top="Регламент турнира">
-                        <InfoRow>{props.tournaments.selected.Reglament}</InfoRow>
+                    <FormItem top="Логотип">
+                        <InfoRow>{props.teams.selected.Logo}</InfoRow>
                     </FormItem>
-                    <Group header={<Header mode="secondary">Группы</Header>}>
+                    {/* <Group header={<Header mode="secondary">Группы</Header>}>
                         {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
                             <List>
                                 {props.tournaments.selected.TournamentGroups.map((item) => <InfoRow>{item.Name}</InfoRow>)}
@@ -53,7 +50,7 @@ const TeamItem = (props) => {
                                 <InfoRow>Нет групп</InfoRow>
                             </FormItem>
                         }
-                    </Group>
+                    </Group> */}
                 </>
             )
         }; break;
@@ -191,7 +188,8 @@ const TeamItem = (props) => {
 const mapStateToProps = (state) => {
     return {
         tournaments: state.tournamentsEntity,
-        SelectedName: state.tournamentsEntity.selected.Name,
+        teams: state.teamsEntity,
+        SelectedName: state.teamsEntity.selected.Name,
         cities: state.cityEntity.cities,
         myProfile: state.profileEntity.myProfile,
     }

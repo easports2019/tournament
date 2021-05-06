@@ -6,30 +6,31 @@ import { setActiveMenuItem } from './../../../../store/mainMenuReducer';
 import {setTournamentMode, getMyTournaments, publishTournament, deleteTournament, setSelectedTournament, resetTournament,} from './../../../../store/tournamentsReducer'
 import { connect } from 'react-redux';
 import ButtonWithHistory from './../../Common/ButtonWithHistory/ButtonWithHistory'
+import TeamItem from './TeamItem';
 
 
 const TeamAdminPanel = (props) => {
 
 	// let [myTournaments, setMyTournaments] = useState([]);
-    const PublishTournament = (tour, publish) => {
+    const PublishTeam = (team, publish) => {
         
-        props.publishTournament(tour, props.myProfile, publish);
+        props.publishTeam(team, props.myProfile, publish);
     }
    
-    const DeleteTournament = (tour) => {
-        props.deleteTournament(tour, props.myProfile);
-    }
+    // const DeleteTournament = (tour) => {
+    //     props.deleteTournament(tour, props.myProfile);
+    // }
     
-    const CellClick = (item) => {
+    // const CellClick = (item) => {
         
-        props.setSelectedTournament(item);
-        props.setTournamentMode("edit");
-    }
+    //     props.setSelectedTournament(item);
+    //     props.setTournamentMode("edit");
+    // }
     
     
     const ButtonNewClick = () => {
-        props.resetTournament();
-        props.setTournamentMode("add");
+        props.resetTeam();
+        props.setTeamMode("add");
     }
 
     useEffect(() =>{
@@ -39,16 +40,17 @@ const TeamAdminPanel = (props) => {
 
         return (
             <>
-                <Header>Мои турниры</Header>
-                <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="tournamentitem" data-story="tournamentitem">Создать турнир</ButtonWithHistory>
-                <TeamAdminList 
+                <Header>Моя команда</Header>
+                <TeamItem></TeamItem>
+                {/* <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="teamitem" data-story="teamitem">Создать команду</ButtonWithHistory> */}
+                {/* <TeamAdminList 
                     CellClick={CellClick}
                     Button1Handle = {PublishTournament}
                     Button2Handle = {DeleteTournament}
                     List={props.tournament.myTournaments}
                 >
                     
-                </TeamAdminList>
+                </TeamAdminList> */}
             </>
         )
 }
