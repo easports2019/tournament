@@ -4,9 +4,9 @@ import {defaultPhotoPath} from '../../../../store/dataTypes/common'
 import TeamAdminList from './TeamAdminList'
 import { setActiveMenuItem } from './../../../../store/mainMenuReducer';
 import {setTournamentMode, getMyTournaments, publishTournament, deleteTournament, setSelectedTournament, resetTournament,} from './../../../../store/tournamentsReducer'
+import {resetTeam, getMyTeams, setTeamMode} from './../../../../store/teamsReducer'
 import { connect } from 'react-redux';
-import ButtonWithHistory from './../../Common/ButtonWithHistory/ButtonWithHistory'
-import TeamItem from './TeamItem';
+import ButtonWithHistory from '../../Common/WithHistory/ButtonWithHistory'
 
 
 const TeamAdminPanel = (props) => {
@@ -17,15 +17,15 @@ const TeamAdminPanel = (props) => {
         props.publishTeam(team, props.myProfile, publish);
     }
    
-    // const DeleteTournament = (tour) => {
-    //     props.deleteTournament(tour, props.myProfile);
-    // }
+    const DeleteTeam = (team) => {
+        props.deleteTeam(team, props.myProfile);
+    }
     
-    // const CellClick = (item) => {
+    const CellClick = (item) => {
         
-    //     props.setSelectedTournament(item);
-    //     props.setTournamentMode("edit");
-    // }
+        props.setSelectedTeam(item);
+        props.setTeamMode("edit");
+    }
     
     
     const ButtonNewClick = () => {
@@ -35,22 +35,21 @@ const TeamAdminPanel = (props) => {
 
     useEffect(() =>{
         
-        props.getMyTournaments(props.myProfile.UserProfileId);
+        props.getMyTeams(props.myProfile.UserProfileId);
     }, props.myProfile)
 
         return (
             <>
-                <Header>Моя команда</Header>
-                <TeamItem></TeamItem>
-                {/* <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="teamitem" data-story="teamitem">Создать команду</ButtonWithHistory> */}
-                {/* <TeamAdminList 
+                <Header>Мои команды</Header>
+                <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="teamitem" data-story="teamitem">Создать команду</ButtonWithHistory>
+                <TeamAdminList 
                     CellClick={CellClick}
-                    Button1Handle = {PublishTournament}
-                    Button2Handle = {DeleteTournament}
-                    List={props.tournament.myTournaments}
+                    Button1Handle = {PublishTeam}
+                    Button2Handle = {DeleteTeam}
+                    List={props.tournament.myTeams}
                 >
                     
-                </TeamAdminList> */}
+                </TeamAdminList>
             </>
         )
 }
@@ -60,9 +59,11 @@ const mapStateToProps = (state) => {
 		mainMenu: state.mainMenu,
 		myProfile: state.profileEntity.myProfile,
         tournament: state.tournamentsEntity,
+        team: state.teamsEntity,
 	}
 }
 
 export default connect(mapStateToProps, {
+    resetTeam, getMyTeams, setTeamMode,
 	setActiveMenuItem, setTournamentMode, getMyTournaments, publishTournament, deleteTournament, setSelectedTournament, resetTournament,
 })(TeamAdminPanel);

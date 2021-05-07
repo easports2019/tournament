@@ -5,7 +5,7 @@ import TournamentAdminList from './TournamentAdminList'
 import { setActiveMenuItem } from './../../../../store/mainMenuReducer';
 import {setTournamentMode, getMyTournaments, publishTournament, deleteTournament, setSelectedTournament, resetTournament,} from './../../../../store/tournamentsReducer'
 import { connect } from 'react-redux';
-import ButtonWithHistory from './../../Common/ButtonWithHistory/ButtonWithHistory'
+import ButtonWithHistory from '../../Common/WithHistory/ButtonWithHistory'
 
 
 const TournamentAdminPanel = (props) => {

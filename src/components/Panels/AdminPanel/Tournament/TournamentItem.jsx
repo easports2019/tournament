@@ -79,7 +79,7 @@ const TournamentItem = (props) => {
                         <FormItem top="Ваш город">
                             <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
                         </FormItem>
-                        <FormItem top="Название турнира" bottom="Имя турнира должно быть уникальным">
+                        <FormItem top="Название турнира">
                             <Input type="text" defaultValue={props.tournaments.selected.Name} value={props.tournaments.selected.Name} onChange={e => props.setTournamentName(e.currentTarget.value)} placeholder="Например, II чемпионат города Истра 2023 года на призы..." />
                         </FormItem>
                         <FormItem top="Дата начала">
@@ -142,7 +142,7 @@ const TournamentItem = (props) => {
                         <FormItem top="Ваш город">
                             <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
                         </FormItem>
-                        <FormItem top="Название турнира" bottom="Имя турнира должно быть уникальным">
+                        <FormItem top="Название турнира">
                             <Input type="text" defaultValue={props.tournaments.selected.Name} onChange={e => props.setTournamentName(e.currentTarget.value)} placeholder="Например, II чемпионат города Истра 2023 года на призы..." />
                         </FormItem>
                         <FormItem top="Дата начала">

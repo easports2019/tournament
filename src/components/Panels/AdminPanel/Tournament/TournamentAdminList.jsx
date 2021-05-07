@@ -2,8 +2,10 @@ import React, { useEffect } from 'react'
 import { RichCell, Avatar, InfoRow, Group, List, Cell, Button } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import TournamentListItem from './TournamentListItem'
-import RichCellWithHistory from './../../Common/RichCellWithHistory/RichCellWithHistory'
+import RichCellWithHistory from '../../Common/WithHistory/RichCellWithHistory'
+import Icon24ChevronRightWithHistory from '../../Common/WithHistory/Icon24ChevronRightWithHistory'
 import { dateToString } from '../../../../utils/convertors/dateUtils'
+
 
 
 
@@ -23,10 +25,7 @@ const TournamentAdminList = (props) => {
                     props.List.map(item => {
                         let date = new Date(item.WhenBegin);
                         return (
-                            <RichCellWithHistory
-                                handleClick={() => props.CellClick(item)} 
-                                toMenuName="tournamentitem" 
-                                data-story="tournamentitem"
+                            <RichCell
                                 multiline
                                 actions={
                                     <>
@@ -38,10 +37,15 @@ const TournamentAdminList = (props) => {
                                     </>
                                     }
                                 caption={date && `Начало: ${dateToString(date)}`}
+                                after={<Icon24ChevronRightWithHistory
+                                handleClick={() => props.CellClick(item)} 
+                                    toMenuName="tournamentitem" 
+                                    data-story="tournamentitem"></Icon24ChevronRightWithHistory>
+                                }
                                 text={item.Published ? "Опубликован" : "Не опубликован"}
                             >
                                 {item.Name}
-                            </RichCellWithHistory>
+                            </RichCell>
                         )
                     })
                     : <InfoRow>Нет турниров</InfoRow>

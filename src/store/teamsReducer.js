@@ -12,8 +12,7 @@ const TEAM_SET_MYTEAM = "TEAM_SET_MYTEAM";
 const TEAM_DELETE_MYTEAM = "TEAM_DELETE_MYTEAM";
 const TEAM_SET_MODE = "TEAM_SET_MODE";
 const TEAM_SET_ALL_CITYTEAMADMINS = "TEAM_SET_ALL_CITYTEAMADMINS";
-const TEAM_SET_WHEN_BEGIN = "TEAM_SET_WHEN_BEGIN";
-const TEAM_SET_WHEN_END = "TEAM_SET_WHEN_END";
+const TEAM_SET_WHEN_BORN = "TEAM_SET_WHEN_BORN";
 const TEAM_SET_NAME = "TEAM_SET_NAME";
 const TEAM_SET_DETAILS = "TEAM_SET_DETAILS";
 const TEAM_SET_REGLAMENT = "TEAM_SET_REGLAMENT";
@@ -122,19 +121,11 @@ let teamReducer = (state = initState, action) => {
                 cityTeamAdmins: [...action.cityTeamAdmins],
             };
         }
-        case TEAM_SET_WHEN_BEGIN: {
+        case TEAM_SET_WHEN_BORN: {
             return {
                 ...state,
                 selected: {...state.selected, 
-                    WhenBegin: action.when,
-                },
-            };
-        }
-        case TEAM_SET_WHEN_END: {
-            return {
-                ...state,
-                selected: {...state.selected, 
-                    WhenEnd: action.when,
+                    WhenBorn: action.when,
                 },
             };
         }
@@ -280,19 +271,13 @@ export const resetTeam = () => {
     }
 }
 
-export const setTeamWhenBegin = (when) => {
+export const setTeamWhenBorn = (when) => {
     return {
-        type: TEAM_SET_WHEN_BEGIN,
+        type: TEAM_SET_WHEN_BORN,
         when
     }
 }
 
-export const setTeamWhenEnd = (when) => {
-    return {
-        type: TEAM_SET_WHEN_END,
-        when
-    }
-}
 
 export const setTeamMode = (mode) => {
     return {
@@ -544,23 +529,23 @@ export const getMyTeams = (userProfileId = -1) => {
                             dispatch(setGlobalPopout(false))
                         }
                         else {
-                            dispatch(setErrorMessage("Не удалось загрузить турниры"))
+                            dispatch(setErrorMessage("Не удалось загрузить команды"))
                             dispatch(setGlobalPopout(false))
                         }
                     })
                     .catch(error => {
-                        dispatch(setErrorMessage("Не удалось загрузить турниры: " + error))
+                        dispatch(setErrorMessage("Не удалось загрузить команды: " + error))
                         dispatch(setGlobalPopout(false))
                     })
             
             else {
-                dispatch(setErrorMessage("Не удалось загрузить турниры"))
+                dispatch(setErrorMessage("Не удалось загрузить команды"))
                 dispatch(setGlobalPopout(false))
 
             }
         }
         else {
-            dispatch(setErrorMessage("Не удалось загрузить турниры, в функцию передан null"))
+            dispatch(setErrorMessage("Не удалось загрузить команды, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }
