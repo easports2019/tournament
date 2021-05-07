@@ -46,7 +46,7 @@ const TeamAdminPanel = (props) => {
                     CellClick={CellClick}
                     Button1Handle = {PublishTeam}
                     Button2Handle = {DeleteTeam}
-                    List={props.tournament.myTeams}
+                    List={props.team.myTeams}
                 >
                     
                 </TeamAdminList>

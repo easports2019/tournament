@@ -539,20 +539,19 @@ export const TeamAdminAPI = {
             })
     },
 
-    saveTournament(tournament, userprofile) {
+    saveTeam(team, userprofile) {
         debugger
         
 
-        if (tournament.Id < 0){
-            let tournamentToSend = {
-                ...tournament,
-                WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
-                WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
-                Year: tournament.WhenEnd.year,
+        if (team.Id < 0){
+            let teamToSend = {
+                ...team,
+                WhenBorn: new Date(team.WhenBorn.year, team.WhenBorn.month - 1, team.WhenBorn.day + 1),
+                Year: team.WhenBorn.year,
                 CityId: userprofile.CityUmbracoId, // важный момент. пока не загружен с сервера существующий турнир, мы не знаем к какому городу привязка. берем CityUmbracoId из профиля (на сервере в Add это обрабатывается)
             }
 
-            return PostJsonInstance.post("SimpleTeam/Add" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+            return PostJsonInstance.post("SimpleTeam/Add" + authQueryString, JSON.stringify({ team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
                 debugger
                 return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
             })
@@ -562,18 +561,14 @@ export const TeamAdminAPI = {
                 })
         }
         else{
-            let tournamentToSend = {
-                ...tournament,
-                WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
-                WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
-                Year: tournament.WhenEnd.year,
-                TournamentGroups: [...tournament.TournamentGroups.map(item => {
-                    return {Name: item.Name}
-                })],
+            let teamToSend = {
+                ...team,
+                WhenBorn: new Date(team.WhenBorn.year, team.WhenBorn.month - 1, team.WhenBorn.day + 1),
+                Year: team.WhenBorn.year,
                 CityId: tournament.CityId, // важный момент. пока не загружен с сервера существующий турнир, мы не знаем к какому городу привязка. берем CityUmbracoId из профиля (на сервере в Add это обрабатывается)
             }
 
-            return PostJsonInstance.post("SimpleTeam/Update" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+            return PostJsonInstance.post("SimpleTeam/Update" + authQueryString, JSON.stringify({ team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
                 debugger
                 return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
             })

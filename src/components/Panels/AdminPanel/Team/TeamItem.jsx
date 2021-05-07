@@ -6,7 +6,7 @@ import {
     editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament
 } from '../../../../store/tournamentsReducer'
 import {
-    setTeamWhenBorn, setTeamDetails, setTeamName, 
+    setTeamWhenBorn, setTeamDetails, setTeamName, saveSelectedTeam, 
 } from '../../../../store/teamsReducer'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
@@ -193,7 +193,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    setTeamWhenBorn, setTeamDetails, setTeamName, 
+    setTeamWhenBorn, setTeamDetails, setTeamName, saveSelectedTeam, 
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails,
     delGroupFromTournamentByKeyId, editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament, 
 })(TeamItem)

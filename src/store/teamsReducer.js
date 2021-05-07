@@ -9,6 +9,7 @@ let demoCityTeamAdmins = TeamAdmins;
 const TEAM_SET_ALL_TEAMS = "TEAM_SET_ALL_TEAMS";
 const TEAM_SET_SELECTED_TEAM = "TEAM_SET_SELECTED_TEAM";
 const TEAM_SET_MYTEAM = "TEAM_SET_MYTEAM";
+const TEAM_ADD_MYTEAM = "TEAM_ADD_MYTEAM";
 const TEAM_DELETE_MYTEAM = "TEAM_DELETE_MYTEAM";
 const TEAM_SET_MODE = "TEAM_SET_MODE";
 const TEAM_SET_ALL_CITYTEAMADMINS = "TEAM_SET_ALL_CITYTEAMADMINS";
@@ -61,6 +62,7 @@ let teamReducer = (state = initState, action) => {
             };
         }
         case TEAM_SET_MY_TEAMS: {
+            debugger
             return {
                 ...state,
                 myTeams: [...action.myTeams],
@@ -70,6 +72,13 @@ let teamReducer = (state = initState, action) => {
             return {
                 ...state,
                 mode: action.mode,
+            };
+        }
+        case TEAM_ADD_MYTEAM: {
+            
+            return {
+                ...state,
+                myTeams: [...state.myTeams, {...action.myteam}]
             };
         }
         case TEAM_SET_MYTEAM: {
@@ -228,6 +237,13 @@ export const setTeams = (teams) => {
 export const setMyTeam = (myteam) => {
     return {
         type: TEAM_SET_MYTEAM,
+        myteam
+    }
+}
+
+export const addMyTeam = (myteam) => {
+    return {
+        type: TEAM_ADD_MYTEAM,
         myteam
     }
 }
@@ -405,7 +421,7 @@ export const getAllCityTeamAdminsByCityId = (cityTeamId, startindex = 0) => {
     }
 }
 
-// сохраняет (добавляет) в базу новый турнир
+// сохраняет (добавляет) в базу новую команду
 export const saveSelectedTeam = (team = null, userprofile = null) => {
     return dispatch => {
         if (team != null){
@@ -413,27 +429,27 @@ export const saveSelectedTeam = (team = null, userprofile = null) => {
             TeamAdminAPI.saveTeam(team, userprofile)
                     .then(pl => {
                         if (pl && pl.data.length > 0) {
-                            
+                            dispatch(addMyTeam(pl.data));
                             dispatch(resetTeam());
                             dispatch(setGlobalPopout(false))
                         }
                         else {
-                            dispatch(setErrorMessage("Не удалось сохранить турнир"))
+                            dispatch(setErrorMessage("Не удалось сохранить команду"))
                             dispatch(setGlobalPopout(false))
                         }
                     })
                     .catch(error => {
-                        dispatch(setErrorMessage("Не удалось сохранить турнир: " + error))
+                        dispatch(setErrorMessage("Не удалось сохранить команду: " + error))
                         dispatch(setGlobalPopout(false))
                     })
             else {
-                dispatch(setErrorMessage("Не удалось сохранить турнир"))
+                dispatch(setErrorMessage("Не удалось сохранить команду"))
                 dispatch(setGlobalPopout(false))
 
             }
         }
         else {
-            dispatch(setErrorMessage("Не удалось сохранить турнир, в функцию передан null"))
+            dispatch(setErrorMessage("Не удалось сохранить команду, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }
