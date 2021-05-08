@@ -7,9 +7,11 @@ import {setTournamentMode, getMyTournaments, publishTournament, deleteTournament
 import {resetTeam, getMyTeams, setTeamMode, setSelectedTeam, deleteTeam} from './../../../../store/teamsReducer'
 import { connect } from 'react-redux';
 import ButtonWithHistory from '../../Common/WithHistory/ButtonWithHistory'
+import BidTeamAdminList from '../BidTeamAdminList';
 
 
-const TeamAdminPanel = (props) => {
+
+const BidTeamAdminPanel = (props) => {
 
 	// let [myTournaments, setMyTournaments] = useState([]);
     const PublishTeam = (team, publish) => {
@@ -40,17 +42,16 @@ const TeamAdminPanel = (props) => {
 
         return (
             <>
-                <Header>Мои команды</Header>
                 <InfoRow>При заявке указывается желаемая группа. Организатор в праве взять в другую группу</InfoRow>
-                <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="teamitem" data-story="teamitem">Создать команду</ButtonWithHistory>
-                <TeamAdminList 
+                <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="teamitem" data-story="teamitem">Создать заявку</ButtonWithHistory>
+                <BidTeamAdminList 
                     CellClick={CellClick}
                     Button1Handle = {PublishTeam}
                     Button2Handle = {DeleteTeam}
                     List={props.team.myTeams}
                 >
                     
-                </TeamAdminList>
+                </BidTeamAdminList>
             </>
         )
 }
@@ -67,4 +68,4 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
     resetTeam, getMyTeams, setTeamMode, setSelectedTeam, deleteTeam,
 	setActiveMenuItem, setTournamentMode, getMyTournaments, publishTournament, deleteTournament, setSelectedTournament, resetTournament,
-})(TeamAdminPanel);
+})(BidTeamAdminPanel);

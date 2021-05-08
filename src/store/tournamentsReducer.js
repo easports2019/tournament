@@ -95,6 +95,18 @@ let tournamentReducer = (state = initState, action) => {
         }
         case TOURNAMENT_SET_SELECTED_TOURNAMENT: {
             let index = -1;
+            let max = -1;
+            
+            
+
+            state.selected.TournamentGroups.forEach(item => {
+                if (item.KeyId != undefined){
+                    if (item.KeyId > max)
+                        max = item.KeyId;
+                }
+            });
+
+
             return {
                 ...state,
                 selected: {...action.tournament,
@@ -105,7 +117,7 @@ let tournamentReducer = (state = initState, action) => {
                         month: new Date(action.tournament.WhenEnd).getMonth()+1, 
                         year: new Date(action.tournament.WhenEnd).getFullYear()},
                     TournamentGroups: [...action.tournament.TournamentGroups.map(item => {
-                        return {...item, KeyId: ++index}
+                        return {...item, KeyId: ++max}
                     })]
                 },
             };

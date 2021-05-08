@@ -29,14 +29,14 @@ const TEAM_SET_TEAM_BY_ID = "TEAM_SET_TEAM_BY_ID";
 const currentDate = new Date();
 
 const emptyTeam = {
-    Id : -1,
+    Id: -1,
     Name: "",
     Year: 0,
-    WhenBorn: {day: currentDate.getDay(), month: currentDate.getMonth()+1, year: currentDate.getFullYear()},
+    WhenBorn: { day: currentDate.getDay(), month: currentDate.getMonth() + 1, year: currentDate.getFullYear() },
     Details: "",
     Logo: "",
     CityId: -1,
-    TournamentGroups: [], 
+    TournamentGroups: [],
     Admins: [],
     Matches: [],
     Players: [],
@@ -75,53 +75,93 @@ let teamReducer = (state = initState, action) => {
             };
         }
         case TEAM_ADD_MYTEAM: {
-            
+
             return {
                 ...state,
-                myTeams: [...state.myTeams, {...action.myteam}]
+                myTeams: [...state.myTeams, { ...action.myteam }]
             };
         }
         case TEAM_SET_MYTEAM: {
-            
+
             return {
                 ...state,
                 myTeams: [...state.myTeams.map(tour => {
-                    
-                    if (tour.Id == action.myteam.Id) {{
-                        tour = {...action.myteam};
-                    }}
+
+                    if (tour.Id == action.myteam.Id) {
+                        {
+                            tour = { ...action.myteam, };
+                        }
+                    }
                     return tour;
                 })],
             };
         }
         case TEAM_DELETE_MYTEAM: {
-            
+
             return {
                 ...state,
-                myTeams: [...state.myTeams.filter(tour => tour.Id != action.myteam.Id )],
+                myTeams: [...state.myTeams.filter(tour => tour.Id != action.myteam.Id)],
             };
         }
         case TEAM_SET_SELECTED_TEAM: {
-            let index = -1;
+            let maxT = -1, maxA = -1, maxM = -1, maxP = -1;
+            debugger
+
+
+            state.selected.TournamentGroups.forEach(item => {
+                if (item.KeyId != undefined) {
+                    if (item.KeyId > maxT)
+                        maxT = item.KeyId;
+                }
+            });
+            state.selected.Admins.forEach(item => {
+                if (item.KeyId != undefined) {
+                    if (item.KeyId > maxA)
+                        maxA = item.KeyId;
+                }
+            });
+            state.selected.Matches.forEach(item => {
+                if (item.KeyId != undefined) {
+                    if (item.KeyId > maxM)
+                        maxM = item.KeyId;
+                }
+            });
+            state.selected.Players.forEach(item => {
+                if (item.KeyId != undefined) {
+                    if (item.KeyId > maxP)
+                        maxP = item.KeyId;
+                }
+            });
+
+
             return {
                 ...state,
-                selected: {...action.team,
-                    WhenBegin: {day: new Date(action.team.WhenBegin).getDate(), 
-                        month: new Date(action.team.WhenBegin).getMonth()+1, 
-                        year: new Date(action.team.WhenBegin).getFullYear()},
-                    WhenEnd: {day: new Date(action.team.WhenEnd).getDate(), 
-                        month: new Date(action.team.WhenEnd).getMonth()+1, 
-                        year: new Date(action.team.WhenEnd).getFullYear()},
-                    TeamGroups: [...action.team.TeamGroups.map(item => {
-                        return {...item, KeyId: ++index}
-                    })]
+                selected: {
+                    ...action.team,
+                    WhenBorn: {
+                        day: new Date(action.team.WhenBorn).getDate(),
+                        month: new Date(action.team.WhenBorn).getMonth() + 1,
+                        year: new Date(action.team.WhenBorn).getFullYear()
+                    },
+                    TournamentGroups: [...action.team.TournamentGroups.map(item => {
+                        return { ...item, KeyId: ++maxT }
+                    })],
+                    Admins: [...action.team.Admins.map(item => {
+                        return { ...item, KeyId: ++maxA }
+                    })],
+                    Matches: [...action.team.Matches.map(item => {
+                        return { ...item, KeyId: ++maxM }
+                    })],
+                    Players: [...action.team.Players.map(item => {
+                        return { ...item, KeyId: ++maxP }
+                    })],
                 },
             };
         }
         case TEAM_RESET_TEAM: {
             return {
                 ...state,
-                selected: {...emptyTeam},
+                selected: { ...emptyTeam },
             };
         }
         case TEAM_SET_ALL_CITYTEAMADMINS: {
@@ -133,7 +173,8 @@ let teamReducer = (state = initState, action) => {
         case TEAM_SET_WHEN_BORN: {
             return {
                 ...state,
-                selected: {...state.selected, 
+                selected: {
+                    ...state.selected,
                     WhenBorn: action.when,
                 },
             };
@@ -141,7 +182,8 @@ let teamReducer = (state = initState, action) => {
         case TEAM_SET_NAME: {
             return {
                 ...state,
-                selected: {...state.selected, 
+                selected: {
+                    ...state.selected,
                     Name: action.value,
                 },
             };
@@ -149,7 +191,8 @@ let teamReducer = (state = initState, action) => {
         case TEAM_SET_REGLAMENT: {
             return {
                 ...state,
-                selected: {...state.selected, 
+                selected: {
+                    ...state.selected,
                     Reglament: action.value,
                 },
             };
@@ -157,7 +200,8 @@ let teamReducer = (state = initState, action) => {
         case TEAM_SET_DETAILS: {
             return {
                 ...state,
-                selected: {...state.selected, 
+                selected: {
+                    ...state.selected,
                     Details: action.value,
                 },
             };
@@ -165,7 +209,8 @@ let teamReducer = (state = initState, action) => {
         case TEAM_PUBLISH: {
             return {
                 ...state,
-                selected: {...state.selected, 
+                selected: {
+                    ...state.selected,
                     Published: true,
                 },
             };
@@ -173,7 +218,8 @@ let teamReducer = (state = initState, action) => {
         case TEAM_UNPUBLISH: {
             return {
                 ...state,
-                selected: {...state.selected, 
+                selected: {
+                    ...state.selected,
                     Published: false,
                 },
             };
@@ -181,29 +227,30 @@ let teamReducer = (state = initState, action) => {
         case TEAM_ADD_GROUP: {
             let max = -1;
             state.selected.TeamGroups.forEach(item => {
-                if (item.KeyId != undefined){
+                if (item.KeyId != undefined) {
                     if (item.KeyId > max)
                         max = item.KeyId;
                 }
             });
             return {
                 ...state,
-                selected: {...state.selected, 
-                    TeamGroups: [...state.selected.TeamGroups, 
-                        {
-                            KeyId: max + 1,    
-                            Name: action.groupName
-                        }],
+                selected: {
+                    ...state.selected,
+                    TeamGroups: [...state.selected.TeamGroups,
+                    {
+                        KeyId: max + 1,
+                        Name: action.groupName
+                    }],
                 },
             };
         }
         case TEAM_SET_GROUP: {
             return {
                 ...state,
-                selected: {...state.selected, 
+                selected: {
+                    ...state.selected,
                     TeamGroups: state.selected.TeamGroups.map(item => {
-                        if (item.Id == action.groupId)
-                        {
+                        if (item.Id == action.groupId) {
                             item.Id = action.groupId;
                             item.KeyId = action.groupId;
                             item.Name = action.groupName;
@@ -216,7 +263,8 @@ let teamReducer = (state = initState, action) => {
         case TEAM_DEL_GROUP: {
             return {
                 ...state,
-                selected: {...state.selected, 
+                selected: {
+                    ...state.selected,
                     TeamGroups: state.selected.TeamGroups.filter(item => item.KeyId != action.groupId),
                 },
             };
@@ -364,26 +412,26 @@ export const getAllCityTeamAdmins = (startindex = 0) => {
 
         dispatch(setGlobalPopout(true))
         if (authQueryString && authQueryString.length > 0)
-        TeamAdminAPI.getAll(startindex)
+            TeamAdminAPI.getAll(startindex)
                 .then(pl => {
                     if (pl && pl.data.length > 0) {
-                        
+
                         dispatch(setCityTeamAdmins(pl.data));
                         dispatch(setGlobalPopout(false))
                     }
                     else {
-                        
+
                         dispatch(setCityTeamAdmins(demoCityTeamAdmins))
                         dispatch(setGlobalPopout(false))
                     }
                 })
                 .catch(error => {
-                    
+
                     dispatch(setErrorMessage(error))
                     dispatch(setGlobalPopout(false))
                 })
         else {
-            
+
             dispatch(setCityTeamAdmins(demoCityTeamAdmins))
             dispatch(setGlobalPopout(false))
 
@@ -396,10 +444,10 @@ export const getAllCityTeamAdminsByCityId = (cityTeamId, startindex = 0) => {
     return dispatch => {
 
         if (authQueryString && authQueryString.length > 0)
-        TeamAdminAPI.getAllInCityByCityId(cityTeamId, startindex)
+            TeamAdminAPI.getAllInCityByCityId(cityTeamId, startindex)
                 .then(pl => {
                     if (pl && pl.data.length > 0) {
-                        
+
                         dispatch(setCityTeamAdmins(pl.data));
                         dispatch(setGlobalPopout(false))
                     }
@@ -424,26 +472,49 @@ export const getAllCityTeamAdminsByCityId = (cityTeamId, startindex = 0) => {
 // сохраняет (добавляет) в базу новую команду
 export const saveSelectedTeam = (team = null, userprofile = null) => {
     return dispatch => {
-        if (team != null){
+        if (team != null) {
             if (authQueryString && authQueryString.length > 0)
-            TeamAdminAPI.saveTeam(team, userprofile)
-                    .then(pl => {
-                        if (pl && pl.data.length > 0) {
-                            dispatch(addMyTeam(pl.data));
-                            dispatch(resetTeam());
+            {
+                if (team.Id < 0) // добавление
+                {
+                    TeamAdminAPI.saveTeam(team, userprofile)
+                        .then(pl => {
+                            if (pl && pl.data.length > 0) {
+                                dispatch(addMyTeam(pl.data));
+                                dispatch(resetTeam());
+                                dispatch(setGlobalPopout(false))
+                            }
+                            else {
+                                dispatch(setErrorMessage("Не удалось сохранить команду"))
+                                dispatch(setGlobalPopout(false))
+                            }
+                        })
+                        .catch(error => {
+                            dispatch(setErrorMessage("Не удалось сохранить команду: " + error))
                             dispatch(setGlobalPopout(false))
-                        }
-                        else {
-                            dispatch(setErrorMessage("Не удалось сохранить команду"))
+                        })
+                }
+                else{ // изменение
+                    TeamAdminAPI.saveTeam(team, userprofile)
+                        .then(pl => {
+                            if (pl && pl.data.length > 0) {
+                                dispatch(setMyTeam(pl.data));
+                                dispatch(resetTeam());
+                                dispatch(setGlobalPopout(false))
+                            }
+                            else {
+                                dispatch(setErrorMessage("Не удалось сохранить команду"))
+                                dispatch(setGlobalPopout(false))
+                            }
+                        })
+                        .catch(error => {
+                            dispatch(setErrorMessage("Не удалось сохранить команду: " + error))
                             dispatch(setGlobalPopout(false))
-                        }
-                    })
-                    .catch(error => {
-                        dispatch(setErrorMessage("Не удалось сохранить команду: " + error))
-                        dispatch(setGlobalPopout(false))
-                    })
+                        })
+                }
+            }
             else {
-                dispatch(setErrorMessage("Не удалось сохранить команду"))
+                dispatch(setErrorMessage("Не удалось сохранить команду: не удалось авторизоваться"))
                 dispatch(setGlobalPopout(false))
 
             }
@@ -458,13 +529,13 @@ export const saveSelectedTeam = (team = null, userprofile = null) => {
 
 // опубликовывает турнир
 export const publishTeam = (team = null, userprofile = null, publish = false) => {
-    
+
     return dispatch => {
-        if ((team != null) || (userprofile == null)){
+        if ((team != null) || (userprofile == null)) {
             if (authQueryString && authQueryString.length > 0)
-            TeamAdminAPI.publishTeam(team, userprofile, publish)
+                TeamAdminAPI.publishTeam(team, userprofile, publish)
                     .then(pl => {
-                        
+
                         if (pl) {
                             // изменить полученный турнир в списке
                             dispatch(setMyTeam(pl.data))
@@ -493,13 +564,13 @@ export const publishTeam = (team = null, userprofile = null, publish = false) =>
     }
 }
 
-// удаляет турнир
+// удаляет команду
 export const deleteTeam = (team = null, userprofile = null) => {
-    
+
     return dispatch => {
-        if ((team != null) || (userprofile == null)){
+        if ((team != null) || (userprofile == null)) {
             if (authQueryString && authQueryString.length > 0)
-            TeamAdminAPI.deleteTeam(team, userprofile)
+                TeamAdminAPI.deleteTeam(team, userprofile)
                     .then(pl => {
                         if (pl) {
                             // изменить полученный турнир в списке
@@ -507,22 +578,22 @@ export const deleteTeam = (team = null, userprofile = null) => {
                             dispatch(setGlobalPopout(false))
                         }
                         else {
-                            dispatch(setErrorMessage("Не удалось удалить турнир"))
+                            dispatch(setErrorMessage("Не удалось удалить команду"))
                             dispatch(setGlobalPopout(false))
                         }
                     })
                     .catch(error => {
-                        dispatch(setErrorMessage("Не удалось удалить турнир: " + error))
+                        dispatch(setErrorMessage("Не удалось удалить команду: " + error))
                         dispatch(setGlobalPopout(false))
                     })
             else {
-                dispatch(setErrorMessage("Не удалось удалить турнир"))
+                dispatch(setErrorMessage("Не удалось удалить команду"))
                 dispatch(setGlobalPopout(false))
 
             }
         }
         else {
-            dispatch(setErrorMessage("Не удалось удалить турнир, в функцию передан null"))
+            dispatch(setErrorMessage("Не удалось удалить команду, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }
@@ -533,14 +604,14 @@ export const deleteTeam = (team = null, userprofile = null) => {
 // возвращает с сервера все турниры для админа по его UserProfileId
 export const getMyTeams = (userProfileId = -1) => {
     return dispatch => {
-        if (userProfileId != null){
+        if (userProfileId != null) {
             if (authQueryString && authQueryString.length > 0)
-            
-                
-            TeamAdminAPI.getAllByAdminProfileId(userProfileId)
+
+
+                TeamAdminAPI.getAllByAdminProfileId(userProfileId)
                     .then(pl => {
                         if (pl && pl.data.length > 0) {
-                            
+
                             dispatch(setMyTeams(pl.data));
                             dispatch(setGlobalPopout(false))
                         }
@@ -553,7 +624,7 @@ export const getMyTeams = (userProfileId = -1) => {
                         dispatch(setErrorMessage("Не удалось загрузить команды: " + error))
                         dispatch(setGlobalPopout(false))
                     })
-            
+
             else {
                 dispatch(setErrorMessage("Не удалось загрузить команды"))
                 dispatch(setGlobalPopout(false))

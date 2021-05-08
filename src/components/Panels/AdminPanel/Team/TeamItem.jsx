@@ -11,6 +11,7 @@ import {
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
 import ListItem from '../ListItem/ListItem';
+import BidTeamAdminList from '../BidTeam/BidTeamAdminList';
 import { dateToString } from '../../../../utils/convertors/dateUtils';
 
 
@@ -114,6 +115,64 @@ const TeamItem = (props) => {
                 </Group>
             )
         }; break;
+        case "edit": {
+            return (
+                <Group>
+                    <Header>Управление командой</Header>
+                    <FormLayout>
+                        <FormItem top="Ваш город">
+                            <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
+                        </FormItem>
+                        <FormItem top="Название команды">
+                            <Input type="text" defaultValue={props.teams.selected.Name} value={props.teams.selected.Name} onChange={e => props.setTeamName(e.currentTarget.value)} placeholder="Например, Ривер Плейт" />
+                        </FormItem>
+                        <FormItem top="Дата основания">
+                            <DatePicker
+                                min={{ day: 1, month: 1, year: currentDate.getFullYear() - 50 }}
+                                max={{ day: 1, month: 1, year: currentDate.getFullYear() }}
+                                defaultValue={props.teams.selected.WhenBorn}
+                                value={props.teams.selected.WhenBorn}
+                                onDateChange={value => props.setTeamWhenBorn(value)}
+                            />
+                        </FormItem>
+                        <FormItem top="Описание команды">
+                            <Textarea defaultValue={props.teams.selected.Details} value={props.teams.selected.Details} onChange={e => props.setTeamDetails(e.currentTarget.value)} placeholder="Описание команды" />
+                        </FormItem>
+                        {/* <FormItem top="Загрузите ваше фото">
+                            <File before={<Icon24Camera />} controlSize="m">
+                                Выбрать фото
+                            </File>
+                        </FormItem> */}
+                        {/* <Group header={<Header mode="secondary">Группы</Header>}>
+                            {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
+                                <List>
+                                    {props.tournaments.selected.TournamentGroups.map((item) => <ListItem KeyId={-1} Delete={() => props.delGroupFromTournament(props.tournaments.selected.Id, item.KeyId)} Name={item.Name}></ListItem>)}
+                                </List>
+                                :
+                                <FormItem>
+                                    <InfoRow>Нет групп</InfoRow>
+                                </FormItem>
+                            }
+                        </Group> */}
+                        {/* <FormItem top="Новая группа/лига">
+                            <Input type="text" defaultValue={tempGroupName} value={tempGroupName} onChange={e => setTempGroupName(e.currentTarget.value)} placeholder="Название, например, Лига 1" />
+                            <CellButton onClick={() => addToTournament(props.tournaments.selected.Id, tempGroupName)} before={<Icon28AddOutline />}>Добавить группу/лигу</CellButton>
+                        </FormItem> */}
+                        <FormItem top="Заявки на турнир">
+                            <BidTeamAdminList></BidTeamAdminList>
+                        </FormItem>
+                        <FormItem top="Подверждение">
+                            <Button onClick={() => props.saveSelectedTeam(props.teams.selected, props.myProfile)}>Внести изменения</Button>
+                        </FormItem>
+                    </FormLayout>
+                </Group>
+            )
+        };break;
+        default:{
+            <Group>
+                Не выбран режим отображения компонента (view, add, edit)
+            </Group>
+        };break;
         // case "edit": {
         //     return (
         //         <Group>
