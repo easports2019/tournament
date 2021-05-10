@@ -1,6 +1,7 @@
 import { setGlobalPopout, setErrorMessage } from "./systemReducer";
 import { CityTournamentAdminAPI } from './../utils/api/api.js'
 import { cityTournamentAdmins } from './constants/commonConstants'
+import { EmptyTournament } from './constants/commonConstants'
 
 import { authQueryString } from './../utils/api/server';
 
@@ -28,21 +29,7 @@ const TOURNAMENT_SET_MY_TOURNAMENTS = "TOURNAMENT_SET_MY_TOURNAMENTS";
 const TOURNAMENT_SET_TOURNAMENT_BY_ID = "TOURNAMENT_SET_TOURNAMENT_BY_ID";
 
 const currentDate = new Date();
-const emptyTournament = {
-    Id : -1,
-    Name: "",
-    Year: 0,
-    WhenBegin: {day: currentDate.getDay(), month: currentDate.getMonth()+1, year: currentDate.getFullYear()},
-    WhenEnd: {day: currentDate.getDay(), month: currentDate.getMonth()+1, year: currentDate.getFullYear()},
-    Details: "",
-    Reglament: "", 
-    Logo: "",
-    CityId: -1,
-    TournamentGroups: [], 
-    Admins: [],
-    Published: false,
-    Deleted: false,
-}
+const emptyTournament = EmptyTournament
 
 const initState = {
     tournaments: [], // все турниры

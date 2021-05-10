@@ -7,7 +7,7 @@ import {setTournamentMode, getMyTournaments, publishTournament, deleteTournament
 import {resetTeam, getMyTeams, setTeamMode, setSelectedTeam, deleteTeam} from './../../../../store/teamsReducer'
 import { connect } from 'react-redux';
 import ButtonWithHistory from '../../Common/WithHistory/ButtonWithHistory'
-import BidTeamAdminList from '../BidTeamAdminList';
+import BidTeamList from '../BidTeamList';
 
 
 
@@ -44,14 +44,15 @@ const BidTeamAdminPanel = (props) => {
             <>
                 <InfoRow>При заявке указывается желаемая группа. Организатор в праве взять в другую группу</InfoRow>
                 <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="teamitem" data-story="teamitem">Создать заявку</ButtonWithHistory>
-                <BidTeamAdminList 
+                <BidTeamList 
                     CellClick={CellClick}
                     Button1Handle = {PublishTeam}
                     Button2Handle = {DeleteTeam}
                     List={props.team.myTeams}
                 >
                     
-                </BidTeamAdminList>
+                </BidTeamList>
+                
             </>
         )
 }

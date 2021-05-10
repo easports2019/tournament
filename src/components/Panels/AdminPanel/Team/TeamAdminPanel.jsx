@@ -36,6 +36,7 @@ const TeamAdminPanel = (props) => {
     useEffect(() =>{
         
         props.getMyTeams(props.myProfile.UserProfileId);
+        
     }, props.myProfile)
 
         return (

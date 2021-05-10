@@ -326,6 +326,21 @@ export const CityTournamentAdminAPI = {
             })
     },
 
+    /// запрос групп турнира
+    getTournamentGroups(tournament, startindex) {
+        let formData = new FormData();
+        formData.append("startindex", startindex);
+        formData.append("tournamentId", tournament.Id);
+        return PostJsonInstance.post("SimpeBidTeamToTournament/GetTournamentGroups" + authQueryString, formData).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
+
     getAllByAdminProfileId(userProfileId, startindex = 0) {
         let formData = new FormData();
         formData.append("startindex", startindex);
@@ -615,4 +630,26 @@ export const TeamAdminAPI = {
                 return errorObj(error)
             })
     },
+}
+
+export const BidTeamAPI = {
+    
+    getActualTournaments(userprofile, team, startindex = 0) {
+        debugger 
+        let teamToSend = {
+            ...team,
+            WhenBorn: new Date(team.WhenBorn.year, team.WhenBorn.month - 1, team.WhenBorn.day + 1),
+            Year: team.WhenBorn.year,
+        }
+
+        return PostJsonInstance.post("SimpeBidTeamToTournament/GetActualTournaments" + authQueryString, JSON.stringify({ team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
+            debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
+
 }

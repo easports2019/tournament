@@ -1,3 +1,5 @@
+const currentDate = new Date();
+
 
 // таймслотов в одном часе
 export const timeSlotsInOneHour = () => {
@@ -52,6 +54,40 @@ export const TeamAdmins =
         Deleted: false,
     },
 ]
+
+export const BidTeam = {
+    Id: -1,
+    AdminTournamentComment: "",
+    TeamName: "",
+    When: { day: currentDate.getDay(), month: currentDate.getMonth() + 1, year: currentDate.getFullYear() },
+    TeamId: -1, 
+    Team: [],
+    TournamentGroupId: -1,
+    TournamentGroup: [],
+    UserProfileId: -1,
+    UserProfile: {},
+    Approved: false,
+    Deleted: false,
+    Published: false,
+
+}
+
+export const EmptyTournament = {
+    Id : -1,
+    Name: "",
+    Year: 0,
+    WhenBegin: {day: currentDate.getDay(), month: currentDate.getMonth()+1, year: currentDate.getFullYear()},
+    WhenEnd: {day: currentDate.getDay(), month: currentDate.getMonth()+1, year: currentDate.getFullYear()},
+    Details: "",
+    Reglament: "", 
+    Logo: "",
+    CityId: -1,
+    TournamentGroups: [], 
+    Admins: [],
+    Published: false,
+    Deleted: false,
+}
+
 
 export const geo = {
     Cities: [
