@@ -5,7 +5,8 @@ import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId,
     editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament
 } from '../../../../store/tournamentsReducer'
-import {getActualTournamentsInCity, getTournamentGroups, setBidTeamSelectedMode,} from '../../../../store/bidTeamsReducer'
+import {getActualTournamentsInCity, getTournamentGroups, setBidTeamSelectedMode, getTeamBidsByTeam, 
+    addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup,  } from '../../../../store/bidTeamsReducer'
 import {
     setTeamWhenBorn, setTeamDetails, setTeamName, saveSelectedTeam, 
 } from '../../../../store/teamsReducer'
@@ -37,8 +38,8 @@ const TeamItem = (props) => {
         }, props.teams.selected)
         
     
-    const MakeBid = (team, profile, tournamentgroup) => {
-        //props.addGroupToTournament(id, name);
+    const MakeBid = (tournamentgroup) => {
+        props.addBidTeamToTournamentGroup(tournamentgroup, props.myProfile);
         //setTempGroupName("");
     }
     
@@ -46,6 +47,7 @@ const TeamItem = (props) => {
         debugger
         // запросить группы турнира
         props.getTournamentGroups(tournament)
+        props.getTeamBidsByTeam(props.teams.selected)
         // закинуть в bid selected инфо о выбранном турнире
         //props.setBidTeamSelectedTournament(item)
         // сменить режим отображения компонента BidTeamTournamentList с List на View, нарисовать кнопку отправить заявку (если заявка существует, то "отменить заявку") и назад
@@ -63,8 +65,8 @@ const TeamItem = (props) => {
         //setTempGroupName("");
     }
     
-    const CancelBid = (bid, profile) => {
-        //props.addGroupToTournament(id, name);
+    const CancelBid = (tournamentgroup) => {
+        props.cancelBidTeamToTournamentGroup(tournamentgroup, props.myProfile)
         //setTempGroupName("");
     }
 
@@ -216,6 +218,7 @@ const TeamItem = (props) => {
                                 Button1Handle = {MakeBid}
                                 Button2Handle = {CancelBid}
                                 List={props.tournamentsForBids.selectedTournament.TournamentGroups}
+                                Bids={props.tournamentsForBids.myBids}
                                 ></BidTeamTournamentGroupsList>
                         }
                         </FormItem>
@@ -251,7 +254,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    getActualTournamentsInCity, getTournamentGroups, setBidTeamSelectedMode, 
+    getActualTournamentsInCity, getTournamentGroups, setBidTeamSelectedMode, getTeamBidsByTeam, addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, 
     setTeamWhenBorn, setTeamDetails, setTeamName, saveSelectedTeam, 
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails,
     delGroupFromTournamentByKeyId, editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament, 

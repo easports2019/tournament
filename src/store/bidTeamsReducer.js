@@ -9,6 +9,7 @@ import { authQueryString } from './../utils/api/server';
 let demoBidTeam = BidTeam;
 
 const BID_TEAM_SET_TOURNAMENTS = "BID_TEAM_SET_TOURNAMENTS";
+const BID_TEAM_SET_MY_BIDS = "BID_TEAM_SET_MY_BIDS";
 const BID_TEAM_SET_SELECTED_TOURNAMENT_GROUPS = "BID_TEAM_SET_SELECTED_TOURNAMENT_GROUPS";
 const BID_TEAM_SET_SELECTED_MODE = "BID_TEAM_SET_SELECTED_MODE";
 
@@ -23,7 +24,7 @@ export const BID_TEAM_MODE_VIEW = "view"
 
 const initState = {
     tournaments: [], // все турниры
-    selected: {...emptyBidTeam}, // выбранный для просмотра/создания/редактирования турнир
+    selected: {...emptyBidTeam}, // выбранная для просмотра/создания/редактирования заявка
     selectedTournament: {...EmptyTournament},
     myBids: [], // те, что я создал
     mode: BID_TEAM_MODE_VIEW, // режим отображения турнира ("view" - просмотр, "add" - добавление, "edit" - редактирование)
@@ -54,6 +55,13 @@ let bidBidTeamReducer = (state = initState, action) => {
                 selectMode: action.mode,
             };
         }
+        case BID_TEAM_SET_MY_BIDS: {
+            debugger
+            return {
+                ...state,
+                myBids: [...action.bids],
+            };
+        }
         
         default: {
             return state;
@@ -65,6 +73,13 @@ export const setTournaments = (tournaments) => {
     return {
         type: BID_TEAM_SET_TOURNAMENTS,
         tournaments
+    }
+}
+
+export const setMyBids = (bids) => {
+    return {
+        type: BID_TEAM_SET_MY_BIDS,
+        bids
     }
 }
 
@@ -122,7 +137,7 @@ export const getActualTournamentsInCity = (userprofile = null, team = null) => {
 export const getTournamentGroups = (tournament = null) => {
     
     return dispatch => {
-        if ((tournament != null) || (userprofile == null)){
+        if ((tournament != null) && (userprofile != null)){
             if (authQueryString && authQueryString.length > 0)
             CityTournamentAdminAPI.getTournamentGroups(tournament)
                     .then(pl => {
@@ -132,22 +147,130 @@ export const getTournamentGroups = (tournament = null) => {
                             dispatch(setGlobalPopout(false))
                         }
                         else {
-                            dispatch(setErrorMessage("Не удалось опубликовать турнир"))
+                            dispatch(setErrorMessage("Не удалось получить список групп турнира"))
                             dispatch(setGlobalPopout(false))
                         }
                     })
                     .catch(error => {
-                        dispatch(setErrorMessage("Не удалось опубликовать турнир: " + error))
+                        dispatch(setErrorMessage("Не удалось получить список групп турнира: " + error))
                         dispatch(setGlobalPopout(false))
                     })
             else {
-                dispatch(setErrorMessage("Не удалось опубликовать турнир"))
+                dispatch(setErrorMessage("Не удалось получить список групп турнира"))
                 dispatch(setGlobalPopout(false))
 
             }
         }
         else {
-            dispatch(setErrorMessage("Не удалось опубликовать турнир, в функцию передан null"))
+            dispatch(setErrorMessage("Не удалось получить список групп турнира, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// запрос заявок команды
+export const getTeamBidsByTeam = (userprofile = null, team = null) => {
+    
+    return dispatch => {
+        if ((team != null) && (userprofile != null)){
+            if (authQueryString && authQueryString.length > 0)
+            BidTeamAPI.getTeamBidsByTeam(userprofile, team)
+                    .then(pl => {
+                        
+                        if (pl) {
+                            dispatch(setMyBids(pl.data))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось получить список заявок команды"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось получить список заявок команды: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            else {
+                dispatch(setErrorMessage("Не удалось получить список заявок команды"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось получить список заявок команды, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// добавление заявки от команды
+export const addBidTeamToTournamentGroup = (tournamentgroup = null, userprofile = null) => {
+    
+    return dispatch => {
+        if ((tournamentgroup != null) && (userprofile != null)){
+            if (authQueryString && authQueryString.length > 0)
+            BidTeamAPI.addBidTeamToTournament(tournamentgroup, userprofile)
+                    .then(pl => {
+                        
+                        if (pl) {
+                            dispatch(addMyBid(pl.data))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось добавить заявку команды"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось добавить заявку команды: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            else {
+                dispatch(setErrorMessage("Не удалось добавить заявку команды"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось добавить заявку команды, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// удаление заявки от команды
+export const cancelBidTeamToTournamentGroup = (tournamentgroup = null, userprofile = null) => {
+    
+    return dispatch => {
+        if ((tournamentgroup != null) && (userprofile != null)){
+            if (authQueryString && authQueryString.length > 0)
+            BidTeamAPI.delBidTeamToTournament(tournamentgroup, userprofile)
+                    .then(pl => {
+                        
+                        if (pl) {
+                            dispatch(delMyBid(pl.data))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось удалить заявку команды"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось удалить заявку команды: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            else {
+                dispatch(setErrorMessage("Не удалось удалить заявку команды"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось удалить заявку команды, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }
