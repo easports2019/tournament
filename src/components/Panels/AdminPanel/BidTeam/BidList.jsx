@@ -3,7 +3,7 @@ import { RichCell, Avatar, InfoRow, Group, List, Cell, Button } from '@vkontakte
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 
 
-const BidTeamList = (props) => {
+const BidList = (props) => {
 
     //const [tournamentList, setTournamentList] = useState(props.tournaments)
     // const list = props.tournaments.map(x => {
@@ -31,4 +31,4 @@ const BidTeamList = (props) => {
     )
 }
 
-export default BidTeamList
+export default BidList

@@ -8,6 +8,7 @@ import { getAllPlaces, getAllPlacesInCityByCityId } from './store/placeReducer';
 import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
 import { setGlobalPopout } from './store/systemReducer';
 import { getAllCityTournamentAdminsByCityId } from './store/tournamentsReducer';
+import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity  } from './store/bidTeamsReducer';
 import { getAllCitiesFromServer } from './store/cityReducer';
 import { setShowAdminTourneyTab } from './store/systemReducer';
 
@@ -24,6 +25,7 @@ import TournamentAdminPanel from './components/Panels/AdminPanel/Tournament/Tour
 import TeamAdminPanel from './components/Panels/AdminPanel/Team/TeamAdminPanel';
 import TournamentItem from './components/Panels/AdminPanel/Tournament/TournamentItem';
 import TeamItem from './components/Panels/AdminPanel/Team/TeamItem';
+import BidTeamTournamentGroupsList from './components/Panels/AdminPanel/BidTeam/BidTeamTournamentGroupsList';
 
 
 const App = (props) => {
@@ -31,6 +33,17 @@ const App = (props) => {
 	const [popout, setPopout] = useState(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 	const [modalWindow, setModalWindow] = useState(null);
 	const [viewCollectTab, setCollectViewTab] = useState("main");
+
+	 
+    const MakeBid = (tournamentgroup) => {
+        props.addBidTeamToTournamentGroup(tournamentgroup, props.myProfile);
+        //setTempGroupName("");
+    }
+
+	const CancelBid = (tournamentgroup) => {
+        props.cancelBidTeamToTournamentGroup(tournamentgroup, props.myProfile)
+        //setTempGroupName("");
+    }
 
 	useEffect(() => {
 		bridge.subscribe(({ detail: { type, data } }) => {
@@ -226,6 +239,18 @@ const App = (props) => {
 		}
 	}, [props.tournamentAdmins])
 
+	useEffect(() =>{
+		debugger
+		if (props.vkProfile && props.vkProfile.city) {
+			if (props.myProfile) // зарегистрирован и получил данные
+			{
+				if (props.team.selected != null){
+					props.getActualTournamentsInCity(props.myProfile, props.team.selected);
+				}
+			}
+		}
+	}, [props.team.selected])
+
 	// const changeView = (e) => {
 	// 	props.setActiveMenuItem(e.currentTarget.dataset.story)
 	// }
@@ -237,6 +262,9 @@ const App = (props) => {
 			return null
 	}
 	).filter(i => i);
+
+	if ((Array.isArray(props.tournamentsForBids.selectedTournament)) && (props.tournamentsForBids.selectedTournament.length > 0))
+		debugger
 
 	return (
 		<ConfigProvider>
@@ -363,6 +391,34 @@ const App = (props) => {
 								</Group>
 							</Panel>
 						</View>
+						<View id="bidlist" activePanel="main" modal={modalWindow} popout={popout}>
+							<Panel id="main">
+								<PanelHeader
+									left={<BackButton isBack={true} />}
+								//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+								>
+									Доступно для заявки
+								</PanelHeader>
+								<Group>
+									<BidTeamTournamentGroupsList
+										Button1Handle = {MakeBid}
+										Button2Handle = {CancelBid}
+										List={(props.tournamentsForBids.selectedTournament  
+											&& Array.isArray(props.tournamentsForBids.selectedTournament) 
+											&& props.tournamentsForBids.selectedTournament.TournamentGroups.length > 0) 
+											? props.tournamentsForBids.selectedTournament.TournamentGroups
+											: null
+										}
+										Bids={(props.tournamentsForBids.myBids 
+											&& Array.isArray(props.tournamentsForBids.myBids)
+											&& props.tournamentsForBids.myBids.length > 0) 
+											? props.tournamentsForBids.myBids
+										: null
+										}
+									></BidTeamTournamentGroupsList>
+								</Group>
+							</Panel>
+						</View>
 						<View id="viewuser" activePanel="main" modal={modalWindow} popout={popout}>
 							<Panel id="main">
 								<PanelHeader
@@ -397,10 +453,13 @@ const mapStateToProps = (state) => {
 		tournamentAdmins: state.tournamentsEntity.cityTournamentAdmins,
 		tournament: state.tournamentsEntity,
 		team: state.teamsEntity,
+		bidTeams: state.bidTeamsEntity,
+        tournamentsForBids: state.bidTeamsEntity,
 	}
 }
 
 export default connect(mapStateToProps, {
+	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity,
 	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile,
 	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab,
 })(App);

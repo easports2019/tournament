@@ -81,6 +81,14 @@ const initState = {
         enabled: true,
         show: false,
     },
+    {
+        id: 8,
+        name: "bidlist",
+        title: "Доступно для заявки",
+        position: 11,
+        enabled: true,
+        show: false,
+    },
 ],
     activeItem: {id: 0, name: "hot", title: "Горячее", position: 0, enabled: true, show: true,},
 }

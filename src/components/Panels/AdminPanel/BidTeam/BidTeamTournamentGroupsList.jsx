@@ -8,15 +8,17 @@ const BidTeamTournamentGroupsList = (props) => {
     // const list = props.tournaments.map(x => {
     //     return <TournamentListItem>{x.Name}</TournamentListItem>
     // })
-    
+    debugger
 
     return (
-        <Group header="Выберите группу">
-            <List>
-            <Button onClick={props.CellClick}>Назад к турнирам</Button>
+        <Group header="Выберите группу/лигу">
+            <Group mode="plain">
+                <Button onClick={props.CellClick}>Назад к выбору турнира</Button>
+                <List>
                 {(props.List && props.List.length > 0) ?
                     props.List.map(item => {
-                        if (props.Bids.filter(x => x.TournamentGroupId == item.Id).length > 0)
+                        debugger
+                        if (props.Bids && props.Bids.filter(x => x.TournamentGroupId == item.Id).length > 0)
                         {
                             return (
                                 <RichCell
@@ -32,7 +34,7 @@ const BidTeamTournamentGroupsList = (props) => {
                             return (
                                 <RichCell
                                 after={
-                                    <Button onClick={() => props.Button1Handle(item)}>Отправить заявку</Button>
+                                    <Button onClick={() => props.Button1Handle(item)}>Заявиться сюда</Button>
                                 }
                                 >
                                     {item.Name}
@@ -45,6 +47,7 @@ const BidTeamTournamentGroupsList = (props) => {
                 }
 
             </List>
+            </Group>
         </Group>
     )
 }

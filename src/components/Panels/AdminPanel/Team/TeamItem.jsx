@@ -13,10 +13,11 @@ import {
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
 import ListItem from '../ListItem/ListItem';
-import BidTeamList from '../BidTeam/BidTeamList';
+import BidTeamList from '../BidTeam/BidList';
 import { dateToString } from '../../../../utils/convertors/dateUtils';
 import BidTeamTournamentList from '../BidTeam/BidTeamTournamentList';
 import BidTeamTournamentGroupsList from '../BidTeam/BidTeamTournamentGroupsList';
+import BidTeamAdminPanel from '../BidTeam/BidTeamAdminPanel'
 
 
 
@@ -37,37 +38,16 @@ const TeamItem = (props) => {
             }
         }, props.teams.selected)
         
-    
-    const MakeBid = (tournamentgroup) => {
-        props.addBidTeamToTournamentGroup(tournamentgroup, props.myProfile);
-        //setTempGroupName("");
-    }
+   
     
     const SelectTournament = (tournament) => {
-        debugger
-        // запросить группы турнира
         props.getTournamentGroups(tournament)
         props.getTeamBidsByTeam(props.teams.selected)
-        // закинуть в bid selected инфо о выбранном турнире
-        //props.setBidTeamSelectedTournament(item)
-        // сменить режим отображения компонента BidTeamTournamentList с List на View, нарисовать кнопку отправить заявку (если заявка существует, то "отменить заявку") и назад
-        debugger
         props.setBidTeamSelectedMode("groups")
-
-        //props.addGroupToTournament(id, name);
-        //setTempGroupName("");
     }
     
     const BackToTournaments = () => {
         props.setBidTeamSelectedMode("tournaments")
-
-        //props.addGroupToTournament(id, name);
-        //setTempGroupName("");
-    }
-    
-    const CancelBid = (tournamentgroup) => {
-        props.cancelBidTeamToTournamentGroup(tournamentgroup, props.myProfile)
-        //setTempGroupName("");
     }
 
     switch (props.mode) {
@@ -198,27 +178,22 @@ const TeamItem = (props) => {
                             <CellButton onClick={() => addToTournament(props.tournaments.selected.Id, tempGroupName)} before={<Icon28AddOutline />}>Добавить группу/лигу</CellButton>
                         </FormItem> */}
                         <FormItem top="Заявки на турнир">
-                            <BidTeamList
-                                
-                            ></BidTeamList>
+                            <BidTeamAdminPanel></BidTeamAdminPanel>
                         </FormItem>
-                        <FormItem top="Доступные турниры">
-                        {
-                            props.bidSelectMode == "tournaments" 
-                            ? 
+                        <FormItem top="Куда можно заявиться">
+                            {props.tournamentsForBids.selectMode == "tournaments" ?
                                 <BidTeamTournamentList
-                                CellClick={SelectTournament}
-                                // Button1Handle = {MakeBid}
-                                // Button2Handle = {CancelBid}
-                                List={props.tournamentsForBids.tournaments}
+                                    CellClick={SelectTournament}
+                                    // Button1Handle = {MakeBid}
+                                    // Button2Handle = {CancelBid}
+                                    List={props.tournamentsForBids.tournaments}
                                 ></BidTeamTournamentList>
-                            : 
+                        :
                                 <BidTeamTournamentGroupsList
-                                CellClick={BackToTournaments}
-                                Button1Handle = {MakeBid}
-                                Button2Handle = {CancelBid}
-                                List={props.tournamentsForBids.selectedTournament.TournamentGroups}
-                                Bids={props.tournamentsForBids.myBids}
+                                    CellClick={BackToTournaments}
+                                    // Button1Handle = {MakeBid}
+                                    // Button2Handle = {CancelBid}
+                                    List={props.tournamentsForBids.selectedTournament.TournamentGroups}
                                 ></BidTeamTournamentGroupsList>
                         }
                         </FormItem>
@@ -254,7 +229,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    getActualTournamentsInCity, getTournamentGroups, setBidTeamSelectedMode, getTeamBidsByTeam, addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, 
+    getActualTournamentsInCity, getTournamentGroups, setBidTeamSelectedMode, getTeamBidsByTeam, 
     setTeamWhenBorn, setTeamDetails, setTeamName, saveSelectedTeam, 
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails,
     delGroupFromTournamentByKeyId, editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament, 

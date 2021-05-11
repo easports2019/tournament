@@ -41,6 +41,7 @@ let bidBidTeamReducer = (state = initState, action) => {
             };
         }
         case BID_TEAM_SET_SELECTED_TOURNAMENT_GROUPS: {
+            debugger
             return {
                 ...state,
                 selectedTournament: {...state.selectedTournament, 
@@ -137,12 +138,13 @@ export const getActualTournamentsInCity = (userprofile = null, team = null) => {
 export const getTournamentGroups = (tournament = null) => {
     
     return dispatch => {
-        if ((tournament != null) && (userprofile != null)){
+        if (tournament != null){
             if (authQueryString && authQueryString.length > 0)
             CityTournamentAdminAPI.getTournamentGroups(tournament)
                     .then(pl => {
                         
                         if (pl) {
+                            debugger
                             dispatch(setBidTeamSelectedTournamentGroups(pl.data))
                             dispatch(setGlobalPopout(false))
                         }

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { RichCell, Avatar, InfoRow, Group, List, Cell, Button } from '@vkontakte/vkui'
+import RichCellWithHistory from '../../Common/WithHistory/RichCellWithHistory'
 
 
 const BidTeamTournamentList = (props) => {
@@ -9,13 +10,14 @@ const BidTeamTournamentList = (props) => {
     //     return <TournamentListItem>{x.Name}</TournamentListItem>
     // })
     return (
-        <Group header="Выберите турнир">
+        <Group>
             <List>
                 {(props.List && props.List.length > 0) ?
                     props.List.map(item => {
                         return (
                             <RichCell
-                            onClick={() => props.CellClick(item)}
+                                caption={`Организатор: ${item.Founder.Surname} ${item.Founder.Name[0]}.`}
+                                onClick={() => props.CellClick(item)}
                             >
                                 {item.Name}
                             </RichCell>
