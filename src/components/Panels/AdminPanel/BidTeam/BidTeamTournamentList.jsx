@@ -18,6 +18,9 @@ const BidTeamTournamentList = (props) => {
                             <RichCell
                                 caption={`Организатор: ${item.Founder.Surname} ${item.Founder.Name[0]}.`}
                                 onClick={() => props.CellClick(item)}
+                                Button1Handle={props.Button1Handle}
+                                Button2Handle={props.Button2Handle}
+                                
                             >
                                 {item.Name}
                             </RichCell>

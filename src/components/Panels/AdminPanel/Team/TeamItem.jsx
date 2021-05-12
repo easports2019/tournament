@@ -25,7 +25,8 @@ import BidTeamAdminPanel from '../BidTeam/BidTeamAdminPanel'
 
 const TeamItem = (props) => {
     let currentDate = new Date();
-    let [tempGroupName, setTempGroupName] = useState("");
+    let [teamNameOnTournament, SetTeamNameOnTournament] = useState(props.teams.selected.Name);
+
     const teamDate = new Date(
         props.teams.selected.WhenBorn.year,
         props.teams.selected.WhenBorn.month-1,
@@ -35,14 +36,26 @@ const TeamItem = (props) => {
         useEffect(() =>{
             if (props.teams.selected != null){
                 props.getActualTournamentsInCity(props.myProfile, props.teams.selected);
+                props.getTeamBidsByTeam(props.myProfile, props.teams.selected);
             }
         }, props.teams.selected)
         
-   
+    
+    const MakeBid = (tournamentgroup) => {
+        props.addBidTeamToTournamentGroup(tournamentgroup, props.myProfile, props.teams.selected, teamNameOnTournament);
+        props.setBidTeamSelectedMode("tournaments")
+        //setTempGroupName("");
+    }
+
+    const CancelBid = (tournamentgroup) => {
+        props.cancelBidTeamToTournamentGroup(tournamentgroup, props.myProfile, props.teams.selected)
+        props.setBidTeamSelectedMode("tournaments")
+        //setTempGroupName("");
+    }
     
     const SelectTournament = (tournament) => {
         props.getTournamentGroups(tournament)
-        props.getTeamBidsByTeam(props.teams.selected)
+        props.getTeamBidsByTeam(props.myProfile, props.teams.selected)
         props.setBidTeamSelectedMode("groups")
     }
     
@@ -191,9 +204,11 @@ const TeamItem = (props) => {
                         :
                                 <BidTeamTournamentGroupsList
                                     CellClick={BackToTournaments}
-                                    // Button1Handle = {MakeBid}
-                                    // Button2Handle = {CancelBid}
+                                    Button1Handle = {MakeBid}
+                                    Button2Handle = {CancelBid}
                                     List={props.tournamentsForBids.selectedTournament.TournamentGroups}
+                                    TeamName={teamNameOnTournament}
+                                    SetTeamName={SetTeamNameOnTournament}
                                 ></BidTeamTournamentGroupsList>
                         }
                         </FormItem>
@@ -229,7 +244,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    getActualTournamentsInCity, getTournamentGroups, setBidTeamSelectedMode, getTeamBidsByTeam, 
+    getActualTournamentsInCity, getTournamentGroups, setBidTeamSelectedMode, getTeamBidsByTeam, addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup,
     setTeamWhenBorn, setTeamDetails, setTeamName, saveSelectedTeam, 
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails,
     delGroupFromTournamentByKeyId, editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament, 

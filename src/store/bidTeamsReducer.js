@@ -208,12 +208,12 @@ export const getTeamBidsByTeam = (userprofile = null, team = null) => {
 }
 
 // добавление заявки от команды
-export const addBidTeamToTournamentGroup = (tournamentgroup = null, userprofile = null) => {
+export const addBidTeamToTournamentGroup = (tournamentgroup = null, userprofile = null, team = null , teamName = "",) => {
     
     return dispatch => {
-        if ((tournamentgroup != null) && (userprofile != null)){
+        if ((tournamentgroup != null) && (userprofile != null) && (team != null)){
             if (authQueryString && authQueryString.length > 0)
-            BidTeamAPI.addBidTeamToTournament(tournamentgroup, userprofile)
+            BidTeamAPI.addBidTeamToTournament(tournamentgroup, userprofile, team, teamName)
                     .then(pl => {
                         
                         if (pl) {

@@ -19,7 +19,8 @@ const BidList = (props) => {
                             <RichCell
                                 onClick={() => props.CellClick(item)}
                             >
-                                {item.Name}
+                                {`${item.TeamName} - ${item.TournamentGroup.Name} `}
+                                {/*${item.Tournament.Name} (${item.Founder.Surname} ${item.Founder.Name[0]}.) */}
                             </RichCell>
                         )
                     })

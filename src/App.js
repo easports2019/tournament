@@ -34,16 +34,7 @@ const App = (props) => {
 	const [modalWindow, setModalWindow] = useState(null);
 	const [viewCollectTab, setCollectViewTab] = useState("main");
 
-	 
-    const MakeBid = (tournamentgroup) => {
-        props.addBidTeamToTournamentGroup(tournamentgroup, props.myProfile);
-        //setTempGroupName("");
-    }
-
-	const CancelBid = (tournamentgroup) => {
-        props.cancelBidTeamToTournamentGroup(tournamentgroup, props.myProfile)
-        //setTempGroupName("");
-    }
+	
 
 	useEffect(() => {
 		bridge.subscribe(({ detail: { type, data } }) => {
@@ -239,17 +230,17 @@ const App = (props) => {
 		}
 	}, [props.tournamentAdmins])
 
-	useEffect(() =>{
-		debugger
-		if (props.vkProfile && props.vkProfile.city) {
-			if (props.myProfile) // зарегистрирован и получил данные
-			{
-				if (props.team.selected != null){
-					props.getActualTournamentsInCity(props.myProfile, props.team.selected);
-				}
-			}
-		}
-	}, [props.team.selected])
+	// useEffect(() =>{
+	// 	debugger
+	// 	if (props.vkProfile && props.vkProfile.city) {
+	// 		if (props.myProfile) // зарегистрирован и получил данные
+	// 		{
+	// 			if (props.team.selected != null){
+	// 				props.getActualTournamentsInCity(props.myProfile, props.team.selected);
+	// 			}
+	// 		}
+	// 	}
+	// }, [props.team.selected])
 
 	// const changeView = (e) => {
 	// 	props.setActiveMenuItem(e.currentTarget.dataset.story)
@@ -400,7 +391,7 @@ const App = (props) => {
 									Доступно для заявки
 								</PanelHeader>
 								<Group>
-									<BidTeamTournamentGroupsList
+									{/* <BidTeamTournamentGroupsList
 										Button1Handle = {MakeBid}
 										Button2Handle = {CancelBid}
 										List={(props.tournamentsForBids.selectedTournament  
@@ -415,7 +406,7 @@ const App = (props) => {
 											? props.tournamentsForBids.myBids
 										: null
 										}
-									></BidTeamTournamentGroupsList>
+									></BidTeamTournamentGroupsList> */}
 								</Group>
 							</Panel>
 						</View>
