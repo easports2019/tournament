@@ -3,8 +3,10 @@ import { RichCell, Avatar, Button, InfoRow, Header } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
 import TeamAdminList from '../Team/TeamAdminList'
 import { setActiveMenuItem } from './../../../../store/mainMenuReducer';
+import { cancelBidTeamToTournamentGroup,  } from './../../../../store/bidTeamsReducer'
 import {setTournamentMode, getMyTournaments, publishTournament, deleteTournament, setSelectedTournament, resetTournament,} from './../../../../store/tournamentsReducer'
 import {resetTeam, getMyTeams, setTeamMode, setSelectedTeam, deleteTeam} from './../../../../store/teamsReducer'
+
 import { connect } from 'react-redux';
 import ButtonWithHistory from '../../Common/WithHistory/ButtonWithHistory'
 import BidList from './BidList';
@@ -28,6 +30,12 @@ const BidTeamAdminPanel = (props) => {
         // props.setSelectedTeam(item);
         // props.setTeamMode("edit");
     }
+
+    const CancelBid = (item) => {
+        
+        props.cancelBidTeamToTournamentGroup(item, props.myProfile, props.team.selected);
+        // props.setTeamMode("edit");
+    }
     
     
     const ButtonNewClick = () => {
@@ -46,8 +54,8 @@ const BidTeamAdminPanel = (props) => {
                 {/* <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="teamitem" data-story="teamitem">Создать заявку</ButtonWithHistory> */}
                 <BidList
                     CellClick={CellClick}
-                    // Button1Handle = {PublishTeam}
-                    // Button2Handle = {DeleteTeam}
+                    Button1Handle = {CancelBid}
+                    //Button2Handle = {DeleteTeam}
                     List={props.tournamentsForBids.myBids}
                 >
                     
@@ -68,6 +76,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
+    cancelBidTeamToTournamentGroup, 
     resetTeam, getMyTeams, setTeamMode, setSelectedTeam, deleteTeam,
 	setActiveMenuItem, setTournamentMode, getMyTournaments, publishTournament, deleteTournament, setSelectedTournament, resetTournament,
 })(BidTeamAdminPanel);

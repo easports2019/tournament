@@ -12,6 +12,8 @@ const BID_TEAM_SET_TOURNAMENTS = "BID_TEAM_SET_TOURNAMENTS";
 const BID_TEAM_SET_MY_BIDS = "BID_TEAM_SET_MY_BIDS";
 const BID_TEAM_SET_SELECTED_TOURNAMENT_GROUPS = "BID_TEAM_SET_SELECTED_TOURNAMENT_GROUPS";
 const BID_TEAM_SET_SELECTED_MODE = "BID_TEAM_SET_SELECTED_MODE";
+const BID_TEAM_ADD_MY_BID = "BID_TEAM_ADD_MY_BID";
+const BID_TEAM_DEL_MY_BID = "BID_TEAM_DEL_MY_BID";
 
 
 const currentDate = new Date();
@@ -41,7 +43,6 @@ let bidBidTeamReducer = (state = initState, action) => {
             };
         }
         case BID_TEAM_SET_SELECTED_TOURNAMENT_GROUPS: {
-            debugger
             return {
                 ...state,
                 selectedTournament: {...state.selectedTournament, 
@@ -50,17 +51,29 @@ let bidBidTeamReducer = (state = initState, action) => {
             };
         }
         case BID_TEAM_SET_SELECTED_MODE: {
-            debugger
             return {
                 ...state,
                 selectMode: action.mode,
             };
         }
         case BID_TEAM_SET_MY_BIDS: {
-            debugger
             return {
                 ...state,
                 myBids: [...action.bids],
+            };
+        }
+        case BID_TEAM_ADD_MY_BID: {
+            debugger
+            return {
+                ...state,
+                myBids: [...state.myBids, action.bid],
+            };
+        }
+        case BID_TEAM_DEL_MY_BID: {
+            debugger
+            return {
+                ...state,
+                myBids: [...state.myBids.filter(x => x.Id != action.bid.Id)],
             };
         }
         
@@ -81,6 +94,20 @@ export const setMyBids = (bids) => {
     return {
         type: BID_TEAM_SET_MY_BIDS,
         bids
+    }
+}
+
+export const addMyBid = (bid) => {
+    return {
+        type: BID_TEAM_ADD_MY_BID,
+        bid
+    }
+}
+
+export const delMyBid = (bid) => {
+    return {
+        type: BID_TEAM_DEL_MY_BID,
+        bid
     }
 }
 
@@ -244,15 +271,15 @@ export const addBidTeamToTournamentGroup = (tournamentgroup = null, userprofile 
 }
 
 // удаление заявки от команды
-export const cancelBidTeamToTournamentGroup = (tournamentgroup = null, userprofile = null) => {
+export const cancelBidTeamToTournamentGroup = (bid = null, userprofile = null, team = null) => {
     
     return dispatch => {
-        if ((tournamentgroup != null) && (userprofile != null)){
+        if ((team != null) && (userprofile != null) && (bid != null)){
             if (authQueryString && authQueryString.length > 0)
-            BidTeamAPI.delBidTeamToTournament(tournamentgroup, userprofile)
+            BidTeamAPI.delBidTeamToTournament(bid, userprofile, team)
                     .then(pl => {
                         
-                        if (pl) {
+                        if ((pl) && (pl.data) && (pl.data.Deleted)) {
                             dispatch(delMyBid(pl.data))
                             dispatch(setGlobalPopout(false))
                         }

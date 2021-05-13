@@ -18,9 +18,11 @@ const BidList = (props) => {
                         return (
                             <RichCell
                                 onClick={() => props.CellClick(item)}
+                                caption={item.AdminTournamentComment.trim() && `Комментарий организатора: ${item.AdminTournamentComment.trim()}`}
+                                actions={<Button mode="destructive" onClick={() => props.Button1Handle(item)}>Отменить заявку</Button>}
                             >
-                                {`${item.TeamName} - ${item.TournamentGroup.Name} `}
-                                {/*${item.Tournament.Name} (${item.Founder.Surname} ${item.Founder.Name[0]}.) */}
+                                { `${item.TeamName} - ${item.TournamentGroup.Name} - ${item.TournamentGroup.Tournament.Name} (${item.TournamentGroup.Tournament.Founder.Surname} ${item.TournamentGroup.Tournament.Founder.Name[0]}.)`}
+                                
                             </RichCell>
                         )
                     })

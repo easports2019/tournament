@@ -199,6 +199,7 @@ const TeamItem = (props) => {
                                     CellClick={SelectTournament}
                                     // Button1Handle = {MakeBid}
                                     // Button2Handle = {CancelBid}
+                                    Bids = {props.tournamentsForBids.myBids}
                                     List={props.tournamentsForBids.tournaments}
                                 ></BidTeamTournamentList>
                         :
@@ -207,6 +208,7 @@ const TeamItem = (props) => {
                                     Button1Handle = {MakeBid}
                                     Button2Handle = {CancelBid}
                                     List={props.tournamentsForBids.selectedTournament.TournamentGroups}
+                                    Bids = {props.tournamentsForBids.myBids}
                                     TeamName={teamNameOnTournament}
                                     SetTeamName={SetTeamNameOnTournament}
                                 ></BidTeamTournamentGroupsList>

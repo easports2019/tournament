@@ -28,7 +28,7 @@ const BidTeamTournamentGroupsList = (props) => {
                             return (
                                 <RichCell
                                 after={
-                                    <Button onClick={() => props.Button2Handle(item)} mode="secondary" >Отменить заявку</Button>
+                                    <Button onClick={() => props.Button2Handle(item)} mode="destructive" >Отменить заявку</Button>
                                 }
                                 >
                                     {item.Name}

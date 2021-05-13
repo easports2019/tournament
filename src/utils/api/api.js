@@ -703,22 +703,36 @@ export const BidTeamAPI = {
             })
     },
     
-    delBidTeamToTournament(tournamentgroup, userprofile, startindex = 0) {
-        // debugger 
-        // let teamToSend = {
-        //     ...team,
-        //     WhenBorn: new Date(team.WhenBorn.year, team.WhenBorn.month - 1, team.WhenBorn.day + 1),
-        //     Year: team.WhenBorn.year,
-        // }
+    delBidTeamToTournament(bid, userprofile, team) {
+        debugger 
+        let teamToSend = {
+            ...team,
+            WhenBorn: new Date(team.WhenBorn.year, team.WhenBorn.month - 1, team.WhenBorn.day + 1),
+            Year: team.WhenBorn.year,
+        }
 
-        // return PostJsonInstance.post("SimpeBidTeamToTournament/delBidTeamToTournament" + authQueryString, JSON.stringify({ team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
-        //     debugger
-        //     return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
-        // })
-        //     .catch(error => {
-        //         debugger
-        //         return errorObj(error)
-        //     })
+        // let bid = {
+        //             TeamName: (teamName != "") ? teamName : team.Name, 
+        //             When: new Date(),
+        //             TournamentGroupId: tournamentgroup.Id,
+        //             UserProfileId: userprofile.UserProfileId,
+        //             TeamId: team.Id,
+        //             Team: null,
+        //             Approved: false,
+        //             UserProfile: null,
+        //             ErrorMessage: "",
+        //             AdminTournamentComment : "",
+        //             TournamentGroup: null,
+        //         }
+
+        return PostJsonInstance.post("SimpeBidTeamToTournament/Delete" + authQueryString, JSON.stringify({ bidTeamToTournament: { ...bid }, team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
+            debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
     },
 
 }
