@@ -14,7 +14,7 @@ const BidTeamTournamentList = (props) => {
             <List>
                 {(props.List && props.List.length > 0) ?
                     props.List.map(item => {
-                        if (props.Bids && props.Bids.filter(x => x.TournamentGroup.TournamentId == item.Id).length > 0){
+                        if (props.Bids && props.Bids.length > 0 && props.Bids.filter(x => x.TournamentGroup.TournamentId == item.Id).length > 0){
                             return (
                                 <RichCell
                                     caption={`Заявка сделана`}
