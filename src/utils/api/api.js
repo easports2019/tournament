@@ -492,7 +492,6 @@ export const CityTournamentAdminAPI = {
                 return errorObj(error)
             })
     },
-    
 
 
 
@@ -711,21 +710,25 @@ export const BidTeamAPI = {
             Year: team.WhenBorn.year,
         }
 
-        // let bid = {
-        //             TeamName: (teamName != "") ? teamName : team.Name, 
-        //             When: new Date(),
-        //             TournamentGroupId: tournamentgroup.Id,
-        //             UserProfileId: userprofile.UserProfileId,
-        //             TeamId: team.Id,
-        //             Team: null,
-        //             Approved: false,
-        //             UserProfile: null,
-        //             ErrorMessage: "",
-        //             AdminTournamentComment : "",
-        //             TournamentGroup: null,
-        //         }
-
         return PostJsonInstance.post("SimpeBidTeamToTournament/Delete" + authQueryString, JSON.stringify({ bidTeamToTournament: { ...bid }, team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
+            //debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                //debugger
+                return errorObj(error)
+            })
+    },
+    
+    /// допуск комады к турниру
+    approveBidTeamToTournament(bid, userprofile, tournament, approve, admincomment) {
+        //debugger 
+        let bidToSend = {...bid,
+            AdminTournamentComment: admincomment,
+            Approve: approve,
+        }
+
+        return PostJsonInstance.post("SimpeBidTeamToTournament/Approve" + authQueryString, JSON.stringify({ bid: { ...bidToSend }, tournament: { ...tournament }, userProfile: { ...userprofile } })).then(data => {
             //debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })

@@ -14,6 +14,7 @@ const BID_TEAM_SET_SELECTED_TOURNAMENT_GROUPS = "BID_TEAM_SET_SELECTED_TOURNAMEN
 const BID_TEAM_SET_SELECTED_MODE = "BID_TEAM_SET_SELECTED_MODE";
 const BID_TEAM_ADD_MY_BID = "BID_TEAM_ADD_MY_BID";
 const BID_TEAM_DEL_MY_BID = "BID_TEAM_DEL_MY_BID";
+const BID_TEAM_APPROVE_BID = "BID_TEAM_APPROVE_BID";
 
 
 const currentDate = new Date();
@@ -76,6 +77,13 @@ let bidBidTeamReducer = (state = initState, action) => {
                 myBids: [...state.myBids.filter(x => x.Id != action.bid.Id)],
             };
         }
+        case BID_TEAM_APPROVE_BID: {
+            debugger
+            return {
+                ...state,
+                
+            };
+        }
         
         default: {
             return state;
@@ -94,6 +102,13 @@ export const setMyBids = (bids) => {
     return {
         type: BID_TEAM_SET_MY_BIDS,
         bids
+    }
+}
+
+export const approveBid = (bid) => {
+    return {
+        type: BID_TEAM_APPROVE_BID,
+        bid
     }
 }
 
@@ -277,9 +292,9 @@ export const cancelBidTeamToTournamentGroup = (bid = null, userprofile = null, t
         if ((team != null) && (userprofile != null) && (bid != null)){
             if (authQueryString && authQueryString.length > 0)
             BidTeamAPI.delBidTeamToTournament(bid, userprofile, team)
-                    .then(pl => {
+            .then(pl => {
                         
-                        if ((pl) && (pl.data) && (pl.data.Deleted)) {
+                if ((pl) && (pl.data) && (pl.data.Deleted)) {
                             dispatch(delMyBid(pl.data))
                             dispatch(setGlobalPopout(false))
                         }
@@ -292,20 +307,56 @@ export const cancelBidTeamToTournamentGroup = (bid = null, userprofile = null, t
                         dispatch(setErrorMessage("Не удалось удалить заявку команды: " + error))
                         dispatch(setGlobalPopout(false))
                     })
+                    else {
+                        dispatch(setErrorMessage("Не удалось удалить заявку команды"))
+                        dispatch(setGlobalPopout(false))
+                        
+                    }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось удалить заявку команды, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+            
+        }
+    }
+}
+
+
+// согласование/отмена заявки от команды
+export const approveBidTeamToTournament = (bid = null, userprofile = null, tournament = null, approve = false , comment = "",) => {
+    
+    return dispatch => {
+        if ((tournamentgroup != null) && (userprofile != null) && (team != null)){
+            if (authQueryString && authQueryString.length > 0)
+            BidTeamAPI.approveBidTeamToTournament(bid, userprofile, tournament, approve, comment)
+                    .then(pl => {
+                        
+                        if (pl) {
+                            dispatch(approveBid(pl.data))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось согласовать заявку команды"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось согласовать заявку команды: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
             else {
-                dispatch(setErrorMessage("Не удалось удалить заявку команды"))
+                dispatch(setErrorMessage("Не удалось согласовать заявку команды"))
                 dispatch(setGlobalPopout(false))
 
             }
         }
         else {
-            dispatch(setErrorMessage("Не удалось удалить заявку команды, в функцию передан null"))
+            dispatch(setErrorMessage("Не удалось согласовать заявку команды, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }
     }
 }
-
 
 
 
