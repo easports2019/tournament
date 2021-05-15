@@ -8,7 +8,7 @@ const BidTeamTournamentGroupsList = (props) => {
     // const list = props.tournaments.map(x => {
     //     return <TournamentListItem>{x.Name}</TournamentListItem>
     // })
-    debugger
+    //debugger
 
     return (
         <Group header="Выберите группу/лигу">
@@ -22,7 +22,7 @@ const BidTeamTournamentGroupsList = (props) => {
                 <List>
                 {(props.List && props.List.length > 0) ?
                     props.List.map(item => {
-                        debugger
+                        //debugger
                         if (props.Bids && props.Bids.filter(x => x.TournamentGroupId == item.Id).length > 0)
                         {
                             return (

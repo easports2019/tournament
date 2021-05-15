@@ -15,6 +15,7 @@ const BidList = (props) => {
             <List>
                 {(props.List && props.List.length > 0) ?
                     props.List.map(item => {
+                        debugger
                         return (
                             <RichCell
                                 onClick={() => props.CellClick(item)}

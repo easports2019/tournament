@@ -62,7 +62,7 @@ let teamReducer = (state = initState, action) => {
             };
         }
         case TEAM_SET_MY_TEAMS: {
-            debugger
+           // debugger
             return {
                 ...state,
                 myTeams: [...action.myTeams],
@@ -105,7 +105,7 @@ let teamReducer = (state = initState, action) => {
         }
         case TEAM_SET_SELECTED_TEAM: {
             let maxT = -1, maxA = -1, maxM = -1, maxP = -1;
-            debugger
+        //    debugger
 
 
             state.selected.TournamentGroups.forEach(item => {

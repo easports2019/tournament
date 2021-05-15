@@ -63,14 +63,14 @@ let bidBidTeamReducer = (state = initState, action) => {
             };
         }
         case BID_TEAM_ADD_MY_BID: {
-            debugger
+            //debugger
             return {
                 ...state,
                 myBids: [...state.myBids, action.bid],
             };
         }
         case BID_TEAM_DEL_MY_BID: {
-            debugger
+            //debugger
             return {
                 ...state,
                 myBids: [...state.myBids.filter(x => x.Id != action.bid.Id)],
@@ -133,7 +133,7 @@ export const getActualTournamentsInCity = (userprofile = null, team = null) => {
         if (authQueryString && authQueryString.length > 0)
             BidTeamAPI.getActualTournaments(userprofile, team)
                 .then(pl => {
-                    debugger
+                    //debugger
                     if (pl && pl.data.length > 0) {
 
                         dispatch(setTournaments(pl.data));
@@ -171,7 +171,7 @@ export const getTournamentGroups = (tournament = null) => {
                     .then(pl => {
                         
                         if (pl) {
-                            debugger
+                           // debugger
                             dispatch(setBidTeamSelectedTournamentGroups(pl.data))
                             dispatch(setGlobalPopout(false))
                         }
