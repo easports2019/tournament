@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea, File, CellButton, Button, Header, List, Cell } from '@vkontakte/vkui'
+import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea, File, CellButton, Button, Header, List, Cell, TabsItem, Tabs, View, Panel } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
@@ -15,13 +15,13 @@ import ListItem from '../ListItem/ListItem';
 const TournamentItem = (props) => {
     let currentDate = new Date();
     let [tempGroupName, setTempGroupName] = useState("");
+    let [currentTab, setCurrentTab] = useState("info");
 
     const addToTournament = () => {
         debugger
-        if (tempGroupName.trim() != "")
-        {
+        if (tempGroupName.trim() != "") {
             //addGroupToTournament
-            props.addTournamentGroup(props.tournaments.selected, props.myProfile, {Id: -1, Name: tempGroupName});
+            props.addTournamentGroup(props.tournaments.selected, props.myProfile, { Id: -1, Name: tempGroupName });
             setTempGroupName("");
         }
     }
@@ -136,65 +136,91 @@ const TournamentItem = (props) => {
         }; break;
         case "edit": {
             return (
-                <Group>
-                    <Header>Управление турниром</Header>
-                    <FormLayout>
-                        <FormItem top="Ваш город">
-                            <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
-                        </FormItem>
-                        <FormItem top="Название турнира">
-                            <Input type="text" defaultValue={props.tournaments.selected.Name} onChange={e => props.setTournamentName(e.currentTarget.value)} placeholder="Например, II чемпионат города Истра 2023 года на призы..." />
-                        </FormItem>
-                        <FormItem top="Дата начала">
-                            <DatePicker
-                                min={{ day: 1, month: 1, year: currentDate.getFullYear() - 1 }}
-                                max={{ day: 1, month: 1, year: currentDate.getFullYear() + 1 }}
-                                defaultValue={props.tournaments.selected.WhenBegin}
-                                value={props.tournaments.selected.WhenBegin}
-                                onDateChange={value => props.setTournamentWhenBegin(value)}
-                            />
-                        </FormItem>
-                        <FormItem top="Дата окончания">
-                            <DatePicker
-                                min={{ day: 1, month: 1, year: currentDate.getFullYear() - 1 }}
-                                max={{ day: 1, month: 1, year: currentDate.getFullYear() + 1 }}
-                                defaultValue={props.tournaments.selected.WhenEnd}
-                                value={props.tournaments.selected.WhenBegin}
-                                onDateChange={value => props.setTournamentWhenEnd(value)}
-                            />
-                        </FormItem>
-                        <FormItem top="Описание турнира">
-                            <Textarea defaultValue={props.tournaments.selected.Details} onChange={e => props.setTournamentDetails(e.currentTarget.value)} placeholder="Описание турнира" />
-                        </FormItem>
-                        <FormItem top="Регламент турнира">
-                            <Textarea defaultValue={props.tournaments.selected.Reglament} placeholder="Регламент турнира" onChange={e => props.setTournamentReglament(e.currentTarget.value)} />
-                        </FormItem>
-                        {/* <FormItem top="Загрузите ваше фото">
+                <View activePanel={currentTab}>
+                    <Panel id="info">
+                        <Group>
+                            <Header>Управление турниром</Header>
+                            <Tabs mode="buttons">
+                                <TabsItem onClick={() => setCurrentTab("info")}>Основное</TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("bids")}>Заявки</TabsItem>
+                            </Tabs>
+                            <FormLayout>
+                                <FormItem top="Ваш город">
+                                    <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
+                                </FormItem>
+                                <FormItem top="Название турнира">
+                                    <Input type="text" defaultValue={props.tournaments.selected.Name} onChange={e => props.setTournamentName(e.currentTarget.value)} placeholder="Например, II чемпионат города Истра 2023 года на призы..." />
+                                </FormItem>
+                                <FormItem top="Дата начала">
+                                    <DatePicker
+                                        min={{ day: 1, month: 1, year: currentDate.getFullYear() - 1 }}
+                                        max={{ day: 1, month: 1, year: currentDate.getFullYear() + 1 }}
+                                        defaultValue={props.tournaments.selected.WhenBegin}
+                                        value={props.tournaments.selected.WhenBegin}
+                                        onDateChange={value => props.setTournamentWhenBegin(value)}
+                                    />
+                                </FormItem>
+                                <FormItem top="Дата окончания">
+                                    <DatePicker
+                                        min={{ day: 1, month: 1, year: currentDate.getFullYear() - 1 }}
+                                        max={{ day: 1, month: 1, year: currentDate.getFullYear() + 1 }}
+                                        defaultValue={props.tournaments.selected.WhenEnd}
+                                        value={props.tournaments.selected.WhenBegin}
+                                        onDateChange={value => props.setTournamentWhenEnd(value)}
+                                    />
+                                </FormItem>
+                                <FormItem top="Описание турнира">
+                                    <Textarea defaultValue={props.tournaments.selected.Details} onChange={e => props.setTournamentDetails(e.currentTarget.value)} placeholder="Описание турнира" />
+                                </FormItem>
+                                <FormItem top="Регламент турнира">
+                                    <Textarea defaultValue={props.tournaments.selected.Reglament} placeholder="Регламент турнира" onChange={e => props.setTournamentReglament(e.currentTarget.value)} />
+                                </FormItem>
+                                {/* <FormItem top="Загрузите ваше фото">
                             <File before={<Icon24Camera />} controlSize="m">
                                 Выбрать фото
                             </File>
                         </FormItem> */}
-                        <Group header={<Header mode="secondary">Группы</Header>}>
-                            {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
-                                <List>
-                                    {props.tournaments.selected.TournamentGroups.map((item) => <ListItem KeyId={item.KeyId} Delete={() => DelGroupFromTournament(item.KeyId, item.Id)} Name={item.Name}></ListItem>)}
-                                </List>
-                                :
-                                <FormItem>
-                                    <InfoRow>Нет групп</InfoRow>
+                                <Group header={<Header mode="secondary">Группы</Header>}>
+                                    {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
+                                        <List>
+                                            {props.tournaments.selected.TournamentGroups.map((item) => <ListItem KeyId={item.KeyId} Delete={() => DelGroupFromTournament(item.KeyId, item.Id)} Name={item.Name}></ListItem>)}
+                                        </List>
+                                        :
+                                        <FormItem>
+                                            <InfoRow>Нет групп</InfoRow>
+                                        </FormItem>
+                                    }
+                                </Group>
+                                <FormItem top="Новая группа/лига">
+                                    <Input type="text" defaultValue={tempGroupName} value={tempGroupName} onChange={e => setTempGroupName(e.currentTarget.value)} placeholder="Например, Лига 1" />
+                                    <CellButton onClick={addToTournament} before={<Icon28AddOutline />}>Добавить группу</CellButton>
                                 </FormItem>
-                            }
+                                <FormItem top="Подверждение">
+                                    <Button onClick={() => props.saveSelectedTournament(props.tournaments.selected, props.myProfile)}>Внести изменения</Button>
+                                    {/* <Button onClick={props.resetTournament} mode="secondary">Отмена</Button> */}
+                                </FormItem>
+                            </FormLayout>
                         </Group>
-                        <FormItem top="Новая группа/лига">
-                            <Input type="text" defaultValue={tempGroupName} value={tempGroupName} onChange={e => setTempGroupName(e.currentTarget.value)} placeholder="Например, Лига 1" />
-                            <CellButton onClick={addToTournament} before={<Icon28AddOutline />}>Добавить группу</CellButton>
-                        </FormItem>
-                        <FormItem top="Подверждение">
-                            <Button onClick={() => props.saveSelectedTournament(props.tournaments.selected, props.myProfile)}>Внести изменения</Button>
-                            {/* <Button onClick={props.resetTournament} mode="secondary">Отмена</Button> */}
-                        </FormItem>
-                    </FormLayout>
-                </Group>
+                    </Panel>
+                    <Panel id="bids">
+                        <Header>Заявки от команд</Header>
+                        <Tabs mode="buttons">
+                            <TabsItem onClick={() => setCurrentTab("info")}>Основное</TabsItem>
+                            <TabsItem onClick={() => setCurrentTab("bids")}>Заявки</TabsItem>
+                        </Tabs>
+                        <FormLayout>
+                            <FormItem top="Ваш город">
+                                <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
+                            </FormItem>
+                        </FormLayout>
+                    </Panel>
+                </View>
+                // <Tabs>
+                //     <TabsItem>
+
+                //     </TabsItem>
+                // </Tabs>
+
             )
         }; break;
     }
@@ -213,5 +239,5 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails,
-    delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, 
+    delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament,
 })(TournamentItem)
