@@ -33,6 +33,7 @@ const emptyTournament = EmptyTournament
 
 const initState = {
     tournaments: [], // все турниры
+    bidsNew: [], // новые заявки на турниры
     selected: emptyTournament, // выбранный для просмотра/создания/редактирования турнир
     myTournaments: [], // те, что я создал
     cityTournamentAdmins: [], // админы текущего города

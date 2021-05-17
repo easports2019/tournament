@@ -8,6 +8,7 @@ import {
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
 import ListItem from '../ListItem/ListItem';
+import BidListItem from '../ListItem/BidListItem';
 
 
 
@@ -33,6 +34,16 @@ const TournamentItem = (props) => {
             props.delGroupFromTournamentByKeyId(props.tournaments.selected.Id, keyId); // (эту можно удалить пока локально без сервера)
         else
             props.deleteTournamentGroup(props.tournaments.selected, props.myProfile, groupId); // это летит на сервер, т.к. оно уже записано в БД (существующий турнир)
+    }
+    
+    const AcceptBid = (item) => {
+        //props.tournaments.selected.Id, item.KeyId, item.Id
+        
+    }
+
+    const DeclineBid = (item, text) => {
+        //props.tournaments.selected.Id, item.KeyId, item.Id
+        
     }
 
     switch (props.mode) {
@@ -212,6 +223,26 @@ const TournamentItem = (props) => {
                             <FormItem top="Ваш город">
                                 <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
                             </FormItem>
+                            <Group header={<Header mode="secondary">Заявки</Header>}>
+                                {(props.tournaments.bidsNew && props.tournaments.bidsNew.length > 0) ?
+                                    <List>
+                                        {props.tournaments.bidsNew.map((item) => 
+                                        <BidListItem
+                                            KeyId={item.KeyId} 
+                                            Accept={AcceptBid}
+                                            Decline={DeclineBid}
+                                            TeamName={item.TeamName}
+                                            
+                                            >
+
+                                        </BidListItem>)}
+                                    </List>
+                                    :
+                                    <FormItem>
+                                        <InfoRow>Нет новых заявок</InfoRow>
+                                    </FormItem>
+                                }
+                            </Group>
                         </FormLayout>
                     </Panel>
                 </View>
