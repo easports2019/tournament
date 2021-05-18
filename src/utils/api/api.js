@@ -670,6 +670,28 @@ export const BidTeamAPI = {
     },
 
 
+    // возвращает заявки по турниру (для админа турнира)
+    getTeamBidsByTournament(userprofile, tournament, startindex = 0) {
+        //debugger 
+        let tournamentToSend = {
+            ...tournament,
+            // WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
+            // WhenEnd: new Date(tournament.WhenEnd.year, tournament.WhenEnd.month - 1, tournament.WhenEnd.day + 1),
+            // Year: tournament.WhenEnd.year,
+            // CityId: userprofile.CityUmbracoId, // важный момент. пока не загружен с сервера существующий турнир, мы не знаем к какому городу привязка. берем CityUmbracoId из профиля (на сервере в Add это обрабатывается)
+        }
+
+        return PostJsonInstance.post("SimpeBidTeamToTournament/GetTeamBidsByTournament" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+            //debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                //debugger
+                return errorObj(error)
+            })
+    },
+
+
     addBidTeamToTournament(tournamentgroup, userprofile, team, teamName, startindex = 0) {
         //debugger 
         let teamToSend = {
