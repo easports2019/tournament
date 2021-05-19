@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea, File, CellButton, Button, Header, List, Cell, TabsItem, Tabs, View, Panel } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
-    editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament
+    editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids,
 } from '../../../../store/tournamentsReducer'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
@@ -17,6 +17,10 @@ const TournamentItem = (props) => {
     let currentDate = new Date();
     let [tempGroupName, setTempGroupName] = useState("");
     let [currentTab, setCurrentTab] = useState("info");
+
+    useEffect(() => {
+        props.getTournamentNewBids(props.tournaments.selected, props.myProfile)
+    }, props.tournaments.bidsNew)
 
     const addToTournament = () => {
         debugger
@@ -270,5 +274,5 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails,
-    delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament,
+    delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, 
 })(TournamentItem)
