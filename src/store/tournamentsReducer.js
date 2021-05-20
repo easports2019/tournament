@@ -28,6 +28,7 @@ const TOURNAMENT_UNPUBLISH = "TOURNAMENT_UNPUBLISH";
 const TOURNAMENT_SET_MY_TOURNAMENTS = "TOURNAMENT_SET_MY_TOURNAMENTS";
 const TOURNAMENT_SET_TOURNAMENT_BY_ID = "TOURNAMENT_SET_TOURNAMENT_BY_ID";
 const TOURNAMENT_SET_NEW_BIDS = "TOURNAMENT_SET_NEW_BIDS";
+const TOURNAMENT_DEL_BID = "TOURNAMENT_DEL_BID";
 
 const currentDate = new Date();
 const emptyTournament = EmptyTournament
@@ -127,6 +128,12 @@ let tournamentReducer = (state = initState, action) => {
             return {
                 ...state,
                 bidsNew: [...action.bids],
+            };
+        }
+        case TOURNAMENT_DEL_BID: {
+            return {
+                ...state,
+                bidsNew: [...state.bidsNew.filter(x => x.Id != action.bid.Id)],
             };
         }
         case TOURNAMENT_SET_WHEN_BEGIN: {
@@ -404,6 +411,13 @@ export const editGroupInTournament = (tournamentId, groupId, groupName) => {
     }
 }
 
+export const deleteTournamentBid = (bid) => {
+    return {
+        type: TOURNAMENT_DEL_BID,
+        bid
+    }
+}
+
 
 // все админы турниров города
 export const getAllCityTournamentAdmins = (startindex = 0) => {
@@ -581,9 +595,9 @@ export const deleteTournament = (tournament = null, userprofile = null) => {
 export const getTournamentNewBids = (tournament = null, userprofile = null) => {
     
     return dispatch => {
-        if ((tournament != null) || (userprofile == null)){
+        if ((tournament != null) && (userprofile != null)){
             if (authQueryString && authQueryString.length > 0)
-            BidTeamAPI.getTeamBidsByTournament(tournament, userprofile)
+            BidTeamAPI.getTeamBidsByTournament(userprofile, tournament)
                     .then(pl => {
                         if (pl) {
                             // изменить полученный турнир в списке
@@ -607,6 +621,43 @@ export const getTournamentNewBids = (tournament = null, userprofile = null) => {
         }
         else {
             dispatch(setErrorMessage("Не удалось загрузить заявки турнира, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// Подтверждает заявку в турнир
+export const acceptTeamToTournamentBid = (bid = null, tournament = null, userprofile = null, admintext = "") => {
+    
+    return dispatch => {
+        if ((tournament != null) && (userprofile != null)  && (bid != null)){
+            if (authQueryString && authQueryString.length > 0)
+            BidTeamAPI.acceptTeamToTournamentBid(bid, userprofile, tournament, admintext)
+                    .then(pl => {
+                        if (pl) {
+                            // изменить полученный турнир в списке
+                            debugger
+                            dispatch(deleteTournamentBid(pl.data))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            else {
+                dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }

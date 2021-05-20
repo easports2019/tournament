@@ -3,7 +3,7 @@ import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePick
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
-    editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids,
+    editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, acceptTeamToTournamentBid,
 } from '../../../../store/tournamentsReducer'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
@@ -41,7 +41,7 @@ const TournamentItem = (props) => {
     }
     
     const AcceptBid = (item) => {
-        //props.tournaments.selected.Id, item.KeyId, item.Id
+        props.acceptTeamToTournamentBid(item, props.tournaments.selected, props.myProfile)
         
     }
 
@@ -235,8 +235,7 @@ const TournamentItem = (props) => {
                                             KeyId={item.KeyId} 
                                             Accept={AcceptBid}
                                             Decline={DeclineBid}
-                                            TeamName={item.TeamName}
-                                            
+                                            Item={item}
                                             >
 
                                         </BidListItem>)}
@@ -273,6 +272,6 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails,
+    setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, acceptTeamToTournamentBid, 
     delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, 
 })(TournamentItem)

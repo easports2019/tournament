@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, CellButton, RichCell } from '@vkontakte/vkui'
+import { Button, CellButton, Input, RichCell } from '@vkontakte/vkui'
 
 
 
@@ -9,13 +9,14 @@ const BidListItem = (props) => {
             <RichCell key={props.KeyId != -1 ? props.KeyId : null} 
             actions={
                 <>
-                    <Button mode="primary">Принять</Button>
-                    <Button mode="destructive">Отклонить</Button>
+                    <Input></Input>
+                    <Button mode="primary" onClick={() => props.Accept(props.Item)}>Принять</Button>
+                    <Button mode="destructive" onClick={() => props.Decline(props.Item)}>Отклонить</Button>
                 </>
             }
             
             >
-                {props.TeamName}
+                {props.Item.TeamName}
             </RichCell>
     )
 
