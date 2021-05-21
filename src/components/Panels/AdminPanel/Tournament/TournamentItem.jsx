@@ -20,7 +20,7 @@ const TournamentItem = (props) => {
 
     useEffect(() => {
         props.getTournamentNewBids(props.tournaments.selected, props.myProfile)
-    }, props.tournaments.bidsNew)
+    }, props.tournaments.selected)
 
     const addToTournament = () => {
         debugger

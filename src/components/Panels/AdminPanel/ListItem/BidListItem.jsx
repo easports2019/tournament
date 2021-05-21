@@ -14,9 +14,10 @@ const BidListItem = (props) => {
                     <Button mode="destructive" onClick={() => props.Decline(props.Item)}>Отклонить</Button>
                 </>
             }
-            
+            text={`Хотят выступать под именем ${props.Item.TeamName} в ${props.Item.TournamentGroup.Name} группе/лиге`}
+            caption={`Заявку отправил ${props.Item.UserProfile.Surname} ${props.Item.UserProfile.Name}`}
             >
-                {props.Item.TeamName}
+                Команда {props.Item.Team.Name}
             </RichCell>
     )
 
