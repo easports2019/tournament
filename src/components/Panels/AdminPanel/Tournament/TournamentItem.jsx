@@ -3,7 +3,7 @@ import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePick
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
-    editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, acceptTeamToTournamentBid,
+    editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, acceptTeamToTournamentBid, declineTeamToTournamentBid,
 } from '../../../../store/tournamentsReducer'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
@@ -46,7 +46,7 @@ const TournamentItem = (props) => {
     }
 
     const DeclineBid = (item, text) => {
-        //props.tournaments.selected.Id, item.KeyId, item.Id
+        props.declineTeamToTournamentBid(item, props.tournaments.selected, props.myProfile, text);
         
     }
 
@@ -272,6 +272,6 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, acceptTeamToTournamentBid, 
+    setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, acceptTeamToTournamentBid, declineTeamToTournamentBid, 
     delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, 
 })(TournamentItem)

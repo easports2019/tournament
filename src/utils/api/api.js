@@ -705,6 +705,26 @@ debugger
                 return errorObj(error)
             })
     },
+    
+    
+    // отклоняет заявку (для админа турнира)
+    declineTeamToTournamentBid(bid, userprofile, tournament, admintext) {
+        //debugger 
+        let tournamentToSend = {
+            Id: tournament.Id
+        }
+   debugger     
+        bid.AdminTournamentComment = admintext;
+
+        return PostJsonInstance.post("SimpeBidTeamToTournament/DeclineBid" + authQueryString, JSON.stringify({ bid: {...bid}, tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+            debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
 
 
     addBidTeamToTournament(tournamentgroup, userprofile, team, teamName, startindex = 0) {

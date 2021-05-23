@@ -664,6 +664,44 @@ export const acceptTeamToTournamentBid = (bid = null, tournament = null, userpro
     }
 }
 
+
+// Отклоняет заявку в турнир
+export const declineTeamToTournamentBid = (bid = null, tournament = null, userprofile = null, admintext = "") => {
+    
+    return dispatch => {
+        if ((tournament != null) && (userprofile != null)  && (bid != null)){
+            if (authQueryString && authQueryString.length > 0)
+            BidTeamAPI.declineTeamToTournamentBid(bid, userprofile, tournament, admintext)
+                    .then(pl => {
+                        if (pl) {
+                            // изменить полученный турнир в списке
+                            debugger
+                            dispatch(deleteTournamentBid(pl.data))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            else {
+                dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
 // удаляет группу турнира
 export const deleteTournamentGroup = (tournament = null, userprofile = null, tournamentGroupId = -1) => {
     debugger

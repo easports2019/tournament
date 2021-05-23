@@ -1,17 +1,21 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Button, CellButton, Input, RichCell } from '@vkontakte/vkui'
 
 
 
 
 const BidListItem = (props) => {
+
+    let [adminText, setAdminText] = useState("");
+
+
     return (
             <RichCell key={props.KeyId != -1 ? props.KeyId : null} 
             actions={
                 <>
-                    <Input></Input>
                     <Button mode="primary" onClick={() => props.Accept(props.Item)}>Принять</Button>
-                    <Button mode="destructive" onClick={() => props.Decline(props.Item)}>Отклонить</Button>
+                    <Input value={adminText} onChange={(e) => setAdminText(e.currentTarget.value)} placeholder="Причина отклонения заявки"></Input>
+                    <Button mode="destructive" onClick={() => props.Decline(props.Item, adminText)}>Отклонить</Button>
                 </>
             }
             text={`Хотят выступать под именем ${props.Item.TeamName} в ${props.Item.TournamentGroup.Name} группе/лиге`}

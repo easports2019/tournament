@@ -16,26 +16,33 @@ const BidTeamTournamentList = (props) => {
                     props.List.map(item => {
                         
                         if (props.Bids && props.Bids.length > 0 && props.Bids.filter(x => x.TournamentGroup.TournamentId == item.Id).length > 0){
-                            return (
-                                <RichCell
-                                    caption={`Заявка сделана`}
-                                    // onClick={() => props.CellClick(item)}
-                                    // Button1Handle={props.Button1Handle}
-                                    // Button2Handle={props.Button2Handle}
-                                    
-                                >
-                                    {item.Name}
-                                </RichCell>
-                            )
+                            //debugger
+                            return <>{props.Bids.map(bid => {
+                                debugger
+                                // просмотреть и вывести заявки
+                                if (!bid.Approved && !bid.Published && bid.TournamentGroup.TournamentId == item.Id){
+                                    debugger
+                                    return (
+                                        <RichCell
+                                            text="Предыдущая заявка была отклонена, можно повторить"
+                                            caption={`Организатор: ${item.Founder.Surname} ${item.Founder.Name[0]}.`}
+                                            onClick={() => props.CellClick(item)}
+                                            
+                                        >
+                                            {item.Name}
+                                        </RichCell>
+                                    )}
+                                }
+                            )}</>
+                            
+
+
                         }
                         else{
                             return (
                                 <RichCell
                                     caption={`Организатор: ${item.Founder.Surname} ${item.Founder.Name[0]}.`}
                                     onClick={() => props.CellClick(item)}
-                                    Button1Handle={props.Button1Handle}
-                                    Button2Handle={props.Button2Handle}
-                                    
                                 >
                                     {item.Name}
                                 </RichCell>

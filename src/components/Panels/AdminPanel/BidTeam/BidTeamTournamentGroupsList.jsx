@@ -23,8 +23,11 @@ const BidTeamTournamentGroupsList = (props) => {
                 {(props.List && props.List.length > 0) ?
                     props.List.map(item => {
                         //debugger
-                        if (props.Bids && props.Bids.filter(x => x.TournamentGroupId == item.Id).length > 0)
+                        if (props.Bids && props.Bids.filter(x => (x.TournamentGroupId == item.Id && (!item.Approved && item.Published)) ).length > 0)
                         {
+                            // // предположим существует несколкьо заявок на 1 группу, тогда нужно найти отклоненные и их не предлагать
+                            // props.Bids.map
+
                             return (
                                 <RichCell
                                 after={
