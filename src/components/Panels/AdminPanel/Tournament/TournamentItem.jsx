@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea, File, CellButton, Button, Header, List, Cell, TabsItem, Tabs, View, Panel } from '@vkontakte/vkui'
+import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea, File, CellButton, Button, Header, List, Cell, TabsItem, Tabs, View, Panel, HorizontalScroll, HorizontalCell, Gallery } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
@@ -17,6 +17,11 @@ const TournamentItem = (props) => {
     let currentDate = new Date();
     let [tempGroupName, setTempGroupName] = useState("");
     let [currentTab, setCurrentTab] = useState("info");
+    // let [slideIndex, setSlideIndex] = useState(0);
+    // let [isDraggable, setIsDraggable] = useState(true);
+    // let [showArrows, setShowArrows] = useState(true);
+
+    
 
     useEffect(() => {
         props.getTournamentNewBids(props.tournaments.selected, props.myProfile)
@@ -158,6 +163,7 @@ const TournamentItem = (props) => {
                             <Tabs mode="buttons">
                                 <TabsItem onClick={() => setCurrentTab("info")}>Основное</TabsItem>
                                 <TabsItem onClick={() => setCurrentTab("bids")}>Заявки</TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("teams")}>Команды</TabsItem>
                             </Tabs>
                             <FormLayout>
                                 <FormItem top="Ваш город">
@@ -222,6 +228,7 @@ const TournamentItem = (props) => {
                         <Tabs mode="buttons">
                             <TabsItem onClick={() => setCurrentTab("info")}>Основное</TabsItem>
                             <TabsItem onClick={() => setCurrentTab("bids")}>Заявки</TabsItem>
+                            <TabsItem onClick={() => setCurrentTab("teams")}>Команды</TabsItem>
                         </Tabs>
                         <FormLayout>
                             <FormItem top="Ваш город">
@@ -245,6 +252,70 @@ const TournamentItem = (props) => {
                                         <InfoRow>Нет новых заявок</InfoRow>
                                     </FormItem>
                                 }
+                            </Group>
+                        </FormLayout>
+                    </Panel>
+                    <Panel id="teams">
+                        <Header>Команды по группам</Header>
+                        <Tabs mode="buttons">
+                            <TabsItem onClick={() => setCurrentTab("info")}>Основное</TabsItem>
+                            <TabsItem onClick={() => setCurrentTab("bids")}>Заявки</TabsItem>
+                            <TabsItem onClick={() => setCurrentTab("teams")}>Команды</TabsItem>
+                        </Tabs>
+                        <FormLayout>
+                            <FormItem top="Ваш город">
+                                <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
+                            </FormItem>
+                            <Group header={<Header mode="secondary">Группы</Header>}>
+                               <Group header={<Header>Группа 1</Header>}>
+                                    <List>
+                                        <RichCell
+                                            text="Текст"
+                                            caption="Надпись"
+                                        >Команда 1</RichCell>
+                                        <RichCell
+                                            text="Текст"
+                                            caption="Надпись"
+                                        >Команда 2</RichCell>
+                                        <RichCell
+                                            text="Текст"
+                                            caption="Надпись"
+                                        >Команда 3</RichCell>
+                                    </List>
+                               </Group>
+                               <Group header={<Header>Группа 2</Header>}>
+                                    <List>
+                                        <RichCell
+                                            text="Текст"
+                                            caption="Надпись"
+                                        >Команда 4</RichCell>
+                                        <RichCell
+                                            text="Текст"
+                                            caption="Надпись"
+                                        >Команда 5</RichCell>
+                                        <RichCell
+                                            text="Текст"
+                                            caption="Надпись"
+                                        >Команда 6</RichCell>
+                                    </List>
+                               </Group>
+                                {/* {(props.tournaments.bidsNew && props.tournaments.bidsNew.length > 0) ?
+                                    <List>
+                                        {props.tournaments.bidsNew.map((item) => 
+                                        <BidListItem
+                                            KeyId={item.KeyId} 
+                                            Accept={AcceptBid}
+                                            Decline={DeclineBid}
+                                            Item={item}
+                                            >
+
+                                        </BidListItem>)}
+                                    </List>
+                                    :
+                                    <FormItem>
+                                        <InfoRow>Нет новых заявок</InfoRow>
+                                    </FormItem>
+                                } */}
                             </Group>
                         </FormLayout>
                     </Panel>
