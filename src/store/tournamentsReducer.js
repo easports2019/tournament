@@ -9,6 +9,8 @@ let demoCityTournamentAdmins = cityTournamentAdmins;
 
 const TOURNAMENT_SET_ALL_TOURNAMENTS = "TOURNAMENT_SET_ALL_TOURNAMENTS";
 const TOURNAMENT_SET_SELECTED_TOURNAMENT = "TOURNAMENT_SET_SELECTED_TOURNAMENT";
+const TOURNAMENT_SET_TOURNAMENTGROUPS = "TOURNAMENT_SET_TOURNAMENTGROUPS";
+const TOURNAMENT_SET_TOURNAMENTTEAMS = "TOURNAMENT_SET_TOURNAMENTTEAMS";
 const TOURNAMENT_SET_MYTOURNAMENT = "TOURNAMENT_SET_MYTOURNAMENT";
 const TOURNAMENT_DELETE_MYTOURNAMENT = "TOURNAMENT_DELETE_MYTOURNAMENT";
 const TOURNAMENT_SET_MODE = "TOURNAMENT_SET_MODE";
@@ -246,6 +248,45 @@ let tournamentReducer = (state = initState, action) => {
                 },
             };
         }
+        case TOURNAMENT_SET_TOURNAMENTGROUPS: {
+            return {
+                ...state,
+                selected: {...state.selected, 
+                    TournamentGroups: [...action.groups],
+                },
+            };
+        }
+        case TOURNAMENT_SET_TOURNAMENTTEAMS: {
+
+            let newTGroups = [];
+            
+
+            // clear tournament groups
+            state.selected.TournamentGroups.forEach(tg => {
+                tg.Teams = [];
+            })
+
+            // заполнение групп
+            action.bidsWithTeamsAndGroups.forEach(bid => {
+                
+                newTGroups = state.selected.TournamentGroups.map(tg => {
+                    
+                    if (tg.Id == bid.TournamentGroupId)
+                    {
+                        bid.Team.Name = bid.TeamName;
+                        tg.Teams = [...tg.Teams, bid.Team];
+                    }
+                    return tg;
+                })
+            });
+            
+            return {
+                ...state,
+                selected: {...state.selected, 
+                    TournamentGroups: [...newTGroups],
+                },
+            };
+        }
         case TOURNAMENT_DEL_GROUP_BY_KEY_ID: {
             return {
                 ...state,
@@ -375,6 +416,20 @@ export const setCityTournamentAdmins = (cityTournamentAdmins) => {
     return {
         type: TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS,
         cityTournamentAdmins
+    }
+}
+
+export const setSelectedTournamentGroups = (groups) => {
+    return {
+        type: TOURNAMENT_SET_TOURNAMENTGROUPS,
+        groups
+    }
+}
+
+export const setTournamentTeams = (bidsWithTeamsAndGroups) => {
+    return {
+        type: TOURNAMENT_SET_TOURNAMENTTEAMS,
+        bidsWithTeamsAndGroups
     }
 }
 
@@ -621,6 +676,80 @@ export const getTournamentNewBids = (tournament = null, userprofile = null) => {
         }
         else {
             dispatch(setErrorMessage("Не удалось загрузить заявки турнира, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// запрашивает группы и заявленные команды турнира
+export const getTournamentTeams = (tournament = null, userprofile = null) => {
+    
+    return dispatch => {
+        if ((tournament != null) && (userprofile != null)){
+            if (authQueryString && authQueryString.length > 0)
+            CityTournamentAdminAPI.getTournamentTeamsByTournament(userprofile, tournament)
+                    .then(pl => {
+                        if (pl) {
+                            debugger
+                            dispatch(setTournamentTeams(pl.data))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось загрузить группы и команды турнира"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось загрузить группы и команды турнира: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            else {
+                dispatch(setErrorMessage("Не удалось загрузить группы и команды турнира"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось загрузить группы и команды турнира, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+
+// запрос групп турнира
+export const getTournamentGroups = (tournament = null) => {
+    
+    return dispatch => {
+        if (tournament != null){
+            if (authQueryString && authQueryString.length > 0)
+            CityTournamentAdminAPI.getTournamentGroups(tournament)
+                    .then(pl => {
+                        
+                        if (pl) {
+                           // debugger
+                            dispatch(setSelectedTournamentGroups(pl.data))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось получить список групп турнира"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось получить список групп турнира: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            else {
+                dispatch(setErrorMessage("Не удалось получить список групп турнира"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось получить список групп турнира, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }

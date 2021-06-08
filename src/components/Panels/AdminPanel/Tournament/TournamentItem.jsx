@@ -4,6 +4,7 @@ import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
     editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, acceptTeamToTournamentBid, declineTeamToTournamentBid,
+    getTournamentTeams, getTournamentGroups,
 } from '../../../../store/tournamentsReducer'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
@@ -25,7 +26,13 @@ const TournamentItem = (props) => {
 
     useEffect(() => {
         props.getTournamentNewBids(props.tournaments.selected, props.myProfile)
+        props.getTournamentGroups(props.tournaments.selected)
+        
     }, props.tournaments.selected)
+
+    useEffect(() => {
+        props.getTournamentTeams(props.tournaments.selected, props.myProfile)
+    }, props.tournaments.selected.TournamentGroups)
 
     const addToTournament = () => {
         debugger
@@ -267,38 +274,26 @@ const TournamentItem = (props) => {
                                 <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
                             </FormItem>
                             <Group header={<Header mode="secondary">Группы</Header>}>
-                               <Group header={<Header>Группа 1</Header>}>
-                                    <List>
-                                        <RichCell
-                                            text="Текст"
-                                            caption="Надпись"
-                                        >Команда 1</RichCell>
-                                        <RichCell
-                                            text="Текст"
-                                            caption="Надпись"
-                                        >Команда 2</RichCell>
-                                        <RichCell
-                                            text="Текст"
-                                            caption="Надпись"
-                                        >Команда 3</RichCell>
-                                    </List>
-                               </Group>
-                               <Group header={<Header>Группа 2</Header>}>
-                                    <List>
-                                        <RichCell
-                                            text="Текст"
-                                            caption="Надпись"
-                                        >Команда 4</RichCell>
-                                        <RichCell
-                                            text="Текст"
-                                            caption="Надпись"
-                                        >Команда 5</RichCell>
-                                        <RichCell
-                                            text="Текст"
-                                            caption="Надпись"
-                                        >Команда 6</RichCell>
-                                    </List>
-                               </Group>
+                                {props.tournaments.selected.TournamentGroups.map(tg => {
+                                    
+                                    return (
+                                        <Group header={<Header>{tg.Name}</Header>}>
+                                        <List>
+                                            {
+                                                tg.Teams.map(team => {
+                                                    
+                                                    return (
+                                                        <RichCell
+                                                            caption={team.Details}
+                                                        >{team.Name}</RichCell>
+                                                    )
+                                                })
+                                            }
+                                        </List>
+                                   </Group>)
+
+                                })}
+
                                 {/* {(props.tournaments.bidsNew && props.tournaments.bidsNew.length > 0) ?
                                     <List>
                                         {props.tournaments.bidsNew.map((item) => 
@@ -343,6 +338,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
+    getTournamentTeams, getTournamentGroups,
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, acceptTeamToTournamentBid, declineTeamToTournamentBid, 
     delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, 
 })(TournamentItem)

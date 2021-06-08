@@ -341,6 +341,24 @@ export const CityTournamentAdminAPI = {
             })
     },
 
+    
+    // возвращает заявки по турниру (для админа турнира)
+    getTournamentTeamsByTournament(userprofile, tournament, startindex = 0) {
+        //debugger 
+        let tournamentToSend = {
+            Id: tournament.Id
+        }
+debugger
+        return PostJsonInstance.post("SimpleTournament/GetTeamsByTournament" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+            debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
+
     getAllByAdminProfileId(userProfileId, startindex = 0) {
         let formData = new FormData();
         formData.append("startindex", startindex);
@@ -676,13 +694,13 @@ export const BidTeamAPI = {
         let tournamentToSend = {
             Id: tournament.Id
         }
-debugger
+
         return PostJsonInstance.post("SimpeBidTeamToTournament/GetTeamBidsByTournament" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
-            debugger
+            
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                debugger
+                
                 return errorObj(error)
             })
     },
