@@ -1,5 +1,5 @@
 import { setGlobalPopout, setErrorMessage } from "./systemReducer";
-import { TeamAdminAPI } from './../utils/api/api.js'
+import { TeamAdminAPI, TeamAPI } from './../utils/api/api.js'
 import { TeamAdmins } from './constants/commonConstants'
 
 import { authQueryString } from './../utils/api/server';
@@ -49,7 +49,7 @@ const initState = {
     selected: emptyTeam, // выбранный для просмотра/создания/редактирования турнир
     myTeams: [], // те, что я создал
     cityTeamAdmins: [], // админы текущего города
-    mode: "view", // режим отображения турнира ("view" - просмотр, "add" - добавление, "edit" - редактирование)
+    mode: "view", // режим отображения команды ("view" - просмотр, "add" - добавление, "edit" - редактирование)
 }
 
 
@@ -105,7 +105,7 @@ let teamReducer = (state = initState, action) => {
         }
         case TEAM_SET_SELECTED_TEAM: {
             let maxT = -1, maxA = -1, maxM = -1, maxP = -1;
-        //    debugger
+            debugger
 
 
             state.selected.TournamentGroups.forEach(item => {
@@ -297,6 +297,7 @@ export const addMyTeam = (myteam) => {
 }
 
 export const setSelectedTeam = (team) => {
+    debugger
     return {
         type: TEAM_SET_SELECTED_TEAM,
         team
@@ -633,6 +634,45 @@ export const getMyTeams = (userProfileId = -1) => {
         }
         else {
             dispatch(setErrorMessage("Не удалось загрузить команды, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// возвращает с сервера все турниры для админа по его UserProfileId
+export const getTeamInfo = (team = null) => {
+    return dispatch => {
+        if (team != null) {
+            if (authQueryString && authQueryString.length > 0)
+
+
+            TeamAPI.getTeamInfoByTeamId(team.Id)
+                    .then(pl => {
+                        debugger
+                        if (pl && pl.data) {
+                            debugger
+                            dispatch(setSelectedTeam(pl.data));
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось загрузить команду"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось загрузить команду: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+
+            else {
+                dispatch(setErrorMessage("Не удалось загрузить команду"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось загрузить команду, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }

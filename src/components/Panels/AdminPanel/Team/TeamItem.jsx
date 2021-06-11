@@ -70,13 +70,13 @@ const TeamItem = (props) => {
                     <FormItem top="Ваш город">
                         <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
                     </FormItem>
-                    <FormItem top="Название команды" bottom="Имя турнира должно быть уникальным">
+                    <FormItem top="Название команды">
                         <InfoRow>{props.teams.selected.Name}</InfoRow>
                     </FormItem>
                     <FormItem top="Дата основания">
                         <InfoRow>{dateToString(teamDate)}</InfoRow>
                     </FormItem>
-                    <FormItem top="Описание турнира">
+                    <FormItem top="Описание команды">
                         <InfoRow>{props.teams.selected.Details}</InfoRow>
                     </FormItem>
                     <FormItem top="Логотип">

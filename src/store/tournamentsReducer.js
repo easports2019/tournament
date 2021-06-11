@@ -473,6 +473,15 @@ export const deleteTournamentBid = (bid) => {
     }
 }
 
+// перемещение заявки от команды в другую группу по команде
+export const replaceTeam = (team, tOldGoup, tNewGroup) => {
+    
+} 
+
+// отмена заявки от команды (удаление из турнира) по команде
+export const deleteTeam = (team, tGoup) => {
+
+}
 
 // все админы турниров города
 export const getAllCityTournamentAdmins = (startindex = 0) => {
@@ -645,7 +654,6 @@ export const deleteTournament = (tournament = null, userprofile = null) => {
     }
 }
 
-
 // запрашивает новые заявки в турнир
 export const getTournamentNewBids = (tournament = null, userprofile = null) => {
     
@@ -717,7 +725,6 @@ export const getTournamentTeams = (tournament = null, userprofile = null) => {
         }
     }
 }
-
 
 // запрос групп турнира
 export const getTournamentGroups = (tournament = null) => {
@@ -792,7 +799,6 @@ export const acceptTeamToTournamentBid = (bid = null, tournament = null, userpro
         }
     }
 }
-
 
 // Отклоняет заявку в турнир
 export const declineTeamToTournamentBid = (bid = null, tournament = null, userprofile = null, admintext = "") => {

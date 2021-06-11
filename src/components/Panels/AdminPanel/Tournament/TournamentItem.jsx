@@ -4,12 +4,16 @@ import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
     editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, acceptTeamToTournamentBid, declineTeamToTournamentBid,
-    getTournamentTeams, getTournamentGroups,
+    getTournamentTeams, getTournamentGroups,  replaceTeam, deleteTeam, 
 } from '../../../../store/tournamentsReducer'
+import {
+    getTeamInfo, setTeamMode, 
+} from '../../../../store/teamsReducer'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
 import ListItem from '../ListItem/ListItem';
 import BidListItem from '../ListItem/BidListItem';
+import Icon24ChevronRightWithHistory from '../../Common/WithHistory/Icon24ChevronRightWithHistory';
 
 
 
@@ -59,6 +63,18 @@ const TournamentItem = (props) => {
 
     const DeclineBid = (item, text) => {
         props.declineTeamToTournamentBid(item, props.tournaments.selected, props.myProfile, text);
+        
+    }
+
+    const CellClick = (item) => {
+        
+        props.getTeamInfo(item);
+        props.setTeamMode("view");
+    }
+
+    const ReplaceTeam = (Team, tOldGroup) => {
+        
+        //props.replaceTeam(team, tOldGroup, tNewGroup);
         
     }
 
@@ -285,6 +301,18 @@ const TournamentItem = (props) => {
                                                     return (
                                                         <RichCell
                                                             caption={team.Details}
+                                                            after={<Icon24ChevronRightWithHistory
+                                                                handleClick={() => CellClick(team)} 
+                                                                toMenuName="teamitem" 
+                                                                data-story="teamitem"
+                                                            ></Icon24ChevronRightWithHistory>
+                                                                }
+                                                            actions={
+                                                                <>
+                                                                    <Button onClick={() => ReplaceTeam(team, tg)} mode="primary">Переместить</Button>
+                                                                    <Button onClick={() => props.deleteTeam(team, tg)} mode="destructive">Удалить</Button>
+                                                                </>
+                                                            }
                                                         >{team.Name}</RichCell>
                                                     )
                                                 })
@@ -338,7 +366,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    getTournamentTeams, getTournamentGroups,
+    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, 
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, acceptTeamToTournamentBid, declineTeamToTournamentBid, 
     delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, 
 })(TournamentItem)

@@ -227,6 +227,35 @@ export const CollectAPI = {
     }
 }
 
+export const TeamAPI = {
+
+    // getAll() {
+    //     return PostJsonInstance.post("Collects/GetAll").then(data => {
+    //         return okObj(data.data);
+    //     })
+    //         .catch(error => {
+    //             return errorObj(error)
+    //         })
+    // },
+
+    // запрос всех сборов в месте по его Id
+    // placeId - Id места
+    // startindex - индекс, с которого начинать ответ
+    getTeamInfoByTeamId(teamId) {
+        let formData = new FormData();
+        formData.append("teamid", teamId);
+debugger
+        return PostJsonInstance.post("SimpleTeam/GetById" + authQueryString, formData).then(data => {
+            debugger
+            return okObj(data.data);
+        })
+            .catch(error => {
+                return errorObj(error)
+            })
+    },
+
+}
+
 export const ProfileAPI = {
     // запрос информации о пользователе
     getUserProfile(vkUserData) {
