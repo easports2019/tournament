@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea, File, CellButton, Button, Header, List, Cell, TabsItem, Tabs, View, Panel, HorizontalScroll, HorizontalCell, Gallery } from '@vkontakte/vkui'
+import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, 
+    Textarea, File, CellButton, Button, Header, List, Cell, TabsItem, Tabs, View, Panel, 
+    ActionSheet, ActionSheetItem, Gallery } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
     editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, acceptTeamToTournamentBid, declineTeamToTournamentBid,
-    getTournamentTeams, getTournamentGroups,  replaceTeam, deleteTeam, 
+    getTournamentTeams, getTournamentGroups,  replaceTeam, deleteTeam, changeTournamentTeamBidTournamentGroup, 
 } from '../../../../store/tournamentsReducer'
 import {
     getTeamInfo, setTeamMode, 
@@ -22,6 +24,7 @@ const TournamentItem = (props) => {
     let currentDate = new Date();
     let [tempGroupName, setTempGroupName] = useState("");
     let [currentTab, setCurrentTab] = useState("info");
+    let [activePopout, setActivePopout] = useState(null);
     // let [slideIndex, setSlideIndex] = useState(0);
     // let [isDraggable, setIsDraggable] = useState(true);
     // let [showArrows, setShowArrows] = useState(true);
@@ -72,11 +75,40 @@ const TournamentItem = (props) => {
         props.setTeamMode("view");
     }
 
-    const ReplaceTeam = (Team, tOldGroup) => {
-        
-        //props.replaceTeam(team, tOldGroup, tNewGroup);
+    const SelectTournamentGroup = (newGroup, oldGroup, team) => {
+        debugger
+        props.changeTournamentTeamBidTournamentGroup(team, newGroup, oldGroup, props.myProfile)
+    }
+    
+    
+    const SetPopup = (team, oldTg) => {
+        debugger
+        setActivePopout(
+        <ActionSheet 
+            onClose={() => setActivePopout(null)}
+            iosCloseItem={<ActionSheetItem autoclose mode="cancel">Отменить</ActionSheetItem>}
+            //toggleRef={this.baseTargetRef.current}
+          >
+            {
+                props.tournaments.selected.TournamentGroups.map(newTg => {
+                    return(
+                        <ActionSheetItem 
+                            onClick={() => {
+                                debugger
+                                SelectTournamentGroup(newTg, oldTg, team)}}
+                            autoclose
+                        >
+                            {newTg.Name}
+                        </ActionSheetItem>
+                    )
+                })
+            }
+            <ActionSheetItem autoclose>Отмена</ActionSheetItem>
+          </ActionSheet>)
         
     }
+
+    
 
     switch (props.mode) {
         case "view": {
@@ -179,7 +211,7 @@ const TournamentItem = (props) => {
         }; break;
         case "edit": {
             return (
-                <View activePanel={currentTab}>
+                <View popout={activePopout} activePanel={currentTab}>
                     <Panel id="info">
                         <Group>
                             <Header>Управление турниром</Header>
@@ -309,7 +341,7 @@ const TournamentItem = (props) => {
                                                                 }
                                                             actions={
                                                                 <>
-                                                                    <Button onClick={() => ReplaceTeam(team, tg)} mode="primary">Переместить</Button>
+                                                                    <Button onClick={() => SetPopup(team, tg)} mode="primary">Переместить</Button>
                                                                     <Button onClick={() => props.deleteTeam(team, tg)} mode="destructive">Удалить</Button>
                                                                 </>
                                                             }
@@ -366,7 +398,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, 
+    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, changeTournamentTeamBidTournamentGroup, 
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, acceptTeamToTournamentBid, declineTeamToTournamentBid, 
     delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, 
 })(TournamentItem)

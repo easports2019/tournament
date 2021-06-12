@@ -244,7 +244,7 @@ export const TeamAPI = {
     getTeamInfoByTeamId(teamId) {
         let formData = new FormData();
         formData.append("teamid", teamId);
-debugger
+
         return PostJsonInstance.post("SimpleTeam/GetById" + authQueryString, formData).then(data => {
             debugger
             return okObj(data.data);
@@ -370,6 +370,31 @@ export const CityTournamentAdminAPI = {
             })
     },
 
+    changeTeamTournamentGroup(team, newgroup, oldgroup,  userprofile){
+        debugger
+        let teamToSend = {
+            Id: team.Id
+        }
+        let newgroupToSend = {
+            Id: newgroup.Id,
+            TournamentId: newgroup.TournamentId,
+        }
+        let oldgroupToSend = {
+            Id: oldgroup.Id,
+            TournamentId: oldgroup.TournamentId,
+        }
+debugger
+        return PostJsonInstance.post("SimpeBidTeamToTournament/SetTeamTournamentGroup" + authQueryString, JSON.stringify({ team: { ...teamToSend }, 
+            newGroup: { ...newgroupToSend }, oldGroup: { ...oldgroupToSend }, userProfile: { ...userprofile } })).then(data => {
+            debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
+
     
     // возвращает заявки по турниру (для админа турнира)
     getTournamentTeamsByTournament(userprofile, tournament, startindex = 0) {
@@ -377,7 +402,7 @@ export const CityTournamentAdminAPI = {
         let tournamentToSend = {
             Id: tournament.Id
         }
-debugger
+
         return PostJsonInstance.post("SimpleTournament/GetTeamsByTournament" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
             debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);

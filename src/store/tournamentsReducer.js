@@ -696,7 +696,7 @@ export const getTournamentTeams = (tournament = null, userprofile = null) => {
     return dispatch => {
         if ((tournament != null) && (userprofile != null)){
             if (authQueryString && authQueryString.length > 0)
-            CityTournamentAdminAPI.getTournamentTeamsByTournament(userprofile, tournament)
+                CityTournamentAdminAPI.getTournamentTeamsByTournament(userprofile, tournament)
                     .then(pl => {
                         if (pl) {
                             debugger
@@ -720,6 +720,44 @@ export const getTournamentTeams = (tournament = null, userprofile = null) => {
         }
         else {
             dispatch(setErrorMessage("Не удалось загрузить группы и команды турнира, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// изменяет группу команды в турнире
+export const changeTournamentTeamBidTournamentGroup = (team = null, newgroup = null, oldgroup = null, userprofile = null) => {
+    debugger
+    return dispatch => {
+        if ((team != null) && (userprofile != null) && (newgroup != null) && (oldgroup != null)) {
+            debugger
+            if (authQueryString && authQueryString.length > 0)
+            
+                CityTournamentAdminAPI.changeTeamTournamentGroup(team, newgroup, oldgroup, userprofile)
+                    .then(pl => {
+                        if (pl) {
+                            debugger        
+                            dispatch(setTournamentTeams(pl.data))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось сменить группу"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось сменить группу: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            else {
+                dispatch(setErrorMessage("Не удалось сменить группу"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось сменить группу, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }

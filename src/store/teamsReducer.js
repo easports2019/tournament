@@ -1,5 +1,5 @@
 import { setGlobalPopout, setErrorMessage } from "./systemReducer";
-import { TeamAdminAPI, TeamAPI } from './../utils/api/api.js'
+import { TeamAdminAPI, TeamAPI, CityTournamentAdminAPI } from './../utils/api/api.js'
 import { TeamAdmins } from './constants/commonConstants'
 
 import { authQueryString } from './../utils/api/server';
@@ -600,7 +600,6 @@ export const deleteTeam = (team = null, userprofile = null) => {
         }
     }
 }
-
 
 // возвращает с сервера все турниры для админа по его UserProfileId
 export const getMyTeams = (userProfileId = -1) => {
