@@ -6,7 +6,7 @@ import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
     editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, acceptTeamToTournamentBid, declineTeamToTournamentBid,
-    getTournamentTeams, getTournamentGroups,  replaceTeam, deleteTeam, changeTournamentTeamBidTournamentGroup, 
+    getTournamentTeams, getTournamentGroups,  replaceTeam, deleteTeam, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament, 
 } from '../../../../store/tournamentsReducer'
 import {
     getTeamInfo, setTeamMode, 
@@ -42,7 +42,7 @@ const TournamentItem = (props) => {
     }, props.tournaments.selected.TournamentGroups)
 
     const addToTournament = () => {
-        debugger
+        
         if (tempGroupName.trim() != "") {
             //addGroupToTournament
             props.addTournamentGroup(props.tournaments.selected, props.myProfile, { Id: -1, Name: tempGroupName });
@@ -52,7 +52,7 @@ const TournamentItem = (props) => {
 
     const DelGroupFromTournament = (keyId, groupId) => {
         //props.tournaments.selected.Id, item.KeyId, item.Id
-        debugger
+        
         if (groupId < 0)
             props.delGroupFromTournamentByKeyId(props.tournaments.selected.Id, keyId); // (эту можно удалить пока локально без сервера)
         else
@@ -75,14 +75,19 @@ const TournamentItem = (props) => {
         props.setTeamMode("view");
     }
 
+    // удаление команды из турнира
+    const DeleteTeam = (team, tg) => {
+        
+        props.deleteTeamFromTournament(team, tg, props.myProfile,"Ваша команда удалена из турнира")
+    }
+
     const SelectTournamentGroup = (newGroup, oldGroup, team) => {
-        debugger
         props.changeTournamentTeamBidTournamentGroup(team, newGroup, oldGroup, props.myProfile)
     }
     
     
     const SetPopup = (team, oldTg) => {
-        debugger
+        
         setActivePopout(
         <ActionSheet 
             onClose={() => setActivePopout(null)}
@@ -94,7 +99,7 @@ const TournamentItem = (props) => {
                     return(
                         <ActionSheetItem 
                             onClick={() => {
-                                debugger
+                                
                                 SelectTournamentGroup(newTg, oldTg, team)}}
                             autoclose
                         >
@@ -186,7 +191,7 @@ const TournamentItem = (props) => {
                                 Выбрать фото
                             </File>
                         </FormItem> */}
-                        <Group header={<Header mode="secondary">Группы</Header>}>
+                        {/* <Group header={<Header mode="secondary">Группы</Header>}>
                             {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
                                 <List>
                                     {props.tournaments.selected.TournamentGroups.map((item) => <ListItem KeyId={-1} Delete={() => DelGroupFromTournament(item.KeyId, item.Id)} Name={item.Name}></ListItem>)}
@@ -200,7 +205,7 @@ const TournamentItem = (props) => {
                         <FormItem top="Новая группа/лига">
                             <Input type="text" defaultValue={tempGroupName} value={tempGroupName} onChange={e => setTempGroupName(e.currentTarget.value)} placeholder="Название, например, Лига 1" />
                             <CellButton onClick={addToTournament} before={<Icon28AddOutline />}>Добавить группу/лигу</CellButton>
-                        </FormItem>
+                        </FormItem> */}
                         <FormItem top="Подверждение">
                             <Button onClick={() => props.saveSelectedTournament(props.tournaments.selected, props.myProfile)}>Сохранить</Button>
                             <Button onClick={props.resetTournament} mode="secondary">Отмена</Button>
@@ -342,7 +347,7 @@ const TournamentItem = (props) => {
                                                             actions={
                                                                 <>
                                                                     <Button onClick={() => SetPopup(team, tg)} mode="primary">Переместить</Button>
-                                                                    <Button onClick={() => props.deleteTeam(team, tg)} mode="destructive">Удалить</Button>
+                                                                    <Button onClick={() => DeleteTeam(team, tg)} mode="destructive">Удалить</Button>
                                                                 </>
                                                             }
                                                         >{team.Name}</RichCell>
@@ -398,7 +403,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, changeTournamentTeamBidTournamentGroup, 
+    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament,
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, acceptTeamToTournamentBid, declineTeamToTournamentBid, 
     delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, 
 })(TournamentItem)

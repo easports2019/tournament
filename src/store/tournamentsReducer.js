@@ -133,6 +133,7 @@ let tournamentReducer = (state = initState, action) => {
             };
         }
         case TOURNAMENT_DEL_BID: {
+            debugger
             return {
                 ...state,
                 bidsNew: [...state.bidsNew.filter(x => x.Id != action.bid.Id)],
@@ -257,7 +258,7 @@ let tournamentReducer = (state = initState, action) => {
             };
         }
         case TOURNAMENT_SET_TOURNAMENTTEAMS: {
-
+debugger
             let newTGroups = [];
             
 
@@ -699,7 +700,7 @@ export const getTournamentTeams = (tournament = null, userprofile = null) => {
                 CityTournamentAdminAPI.getTournamentTeamsByTournament(userprofile, tournament)
                     .then(pl => {
                         if (pl) {
-                            debugger
+                            
                             dispatch(setTournamentTeams(pl.data))
                             dispatch(setGlobalPopout(false))
                         }
@@ -731,13 +732,13 @@ export const changeTournamentTeamBidTournamentGroup = (team = null, newgroup = n
     debugger
     return dispatch => {
         if ((team != null) && (userprofile != null) && (newgroup != null) && (oldgroup != null)) {
-            debugger
+            
             if (authQueryString && authQueryString.length > 0)
             
                 CityTournamentAdminAPI.changeTeamTournamentGroup(team, newgroup, oldgroup, userprofile)
                     .then(pl => {
                         if (pl) {
-                            debugger        
+                            
                             dispatch(setTournamentTeams(pl.data))
                             dispatch(setGlobalPopout(false))
                         }
@@ -869,6 +870,43 @@ export const declineTeamToTournamentBid = (bid = null, tournament = null, userpr
         }
         else {
             dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// Удаляет команду из турнира
+export const deleteTeamFromTournament = (team = null, tournamentGroup = null, userprofile = null, admintext = "") => {
+    
+    return dispatch => {
+        if ((tournamentGroup != null) && (userprofile != null)  && (team != null)){
+            if (authQueryString && authQueryString.length > 0)
+                CityTournamentAdminAPI.deleteTeamFromTournamentByTeam(team, tournamentGroup, userprofile, admintext)
+                    .then(pl => {
+                        if (pl && pl.data) {
+                            // изменить полученный турнир в списке
+                            debugger
+                            dispatch(setTournamentTeams(pl.data))
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось удалить команду из турнира"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось удалить команду из турнира: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            else {
+                dispatch(setErrorMessage("Не удалось удалить команду из турнира"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось удалить команду из турнира, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }

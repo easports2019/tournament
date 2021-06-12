@@ -31,7 +31,7 @@ export let okObj = (dat) => {
 //         return false;
 //     },
 //     check: function(){
-//         //debugger
+//         ////debugger
 //         this_.requests = this_.requests ? this_.requests.map(req => {
 //             let now = new Date();
 //             if ((req.time - now).getSeconds() < this_.settings.timeout){
@@ -79,7 +79,7 @@ export const PlaceAPI = {
     // запрос всех мест города по Id города
     // startindex - индекс, с которого начинать ответ
     getAllInCityByCityUmbracoId(cityId, startindex = 0) {
-        ////debugger
+        //////debugger
         //if (!ApiSendInfo.checkRequest("PlaceAPIgetAllInCityByCityUmbracoId")){
         //ApiSendInfo.addRequest("PlaceAPIgetAllInCityByCityUmbracoId");
         let formData = new FormData();
@@ -157,7 +157,7 @@ export const CollectAPI = {
     },
 
     add(collect_source) {
-        //debugger
+        ////debugger
 
         let collect = {
             'Id': collect_source.id,
@@ -246,7 +246,7 @@ export const TeamAPI = {
         formData.append("teamid", teamId);
 
         return PostJsonInstance.post("SimpleTeam/GetById" + authQueryString, formData).then(data => {
-            debugger
+            //debugger
             return okObj(data.data);
         })
             .catch(error => {
@@ -371,7 +371,7 @@ export const CityTournamentAdminAPI = {
     },
 
     changeTeamTournamentGroup(team, newgroup, oldgroup,  userprofile){
-        debugger
+        //debugger
         let teamToSend = {
             Id: team.Id
         }
@@ -383,14 +383,14 @@ export const CityTournamentAdminAPI = {
             Id: oldgroup.Id,
             TournamentId: oldgroup.TournamentId,
         }
-debugger
+//debugger
         return PostJsonInstance.post("SimpeBidTeamToTournament/SetTeamTournamentGroup" + authQueryString, JSON.stringify({ team: { ...teamToSend }, 
             newGroup: { ...newgroupToSend }, oldGroup: { ...oldgroupToSend }, userProfile: { ...userprofile } })).then(data => {
-            debugger
+            //debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                debugger
+                //debugger
                 return errorObj(error)
             })
     },
@@ -398,17 +398,17 @@ debugger
     
     // возвращает заявки по турниру (для админа турнира)
     getTournamentTeamsByTournament(userprofile, tournament, startindex = 0) {
-        //debugger 
+        ////debugger 
         let tournamentToSend = {
             Id: tournament.Id
         }
 
         return PostJsonInstance.post("SimpleTournament/GetTeamsByTournament" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
-            debugger
+            //debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                debugger
+                //debugger
                 return errorObj(error)
             })
     },
@@ -428,7 +428,7 @@ debugger
     },
 
     saveTournament(tournament, userprofile) {
-        //debugger
+        ////debugger
         
 
         if (tournament.Id < 0){
@@ -441,11 +441,11 @@ debugger
             }
 
             return PostJsonInstance.post("SimpleTournament/Add" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
-                //debugger
+                ////debugger
                 return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
             })
                 .catch(error => {
-                    //debugger
+                    ////debugger
                     return errorObj(error)
                 })
         }
@@ -465,11 +465,11 @@ debugger
             }
 
             return PostJsonInstance.post("SimpleTournament/Update" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
-                //debugger
+                ////debugger
                 return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
             })
                 .catch(error => {
-                    //debugger
+                    ////debugger
                     return errorObj(error)
                 })
         }
@@ -498,7 +498,7 @@ debugger
 
     /// удаление турнира (пометка на удаление)
     deleteTournament(tournament, userprofile) {
-        //debugger
+        ////debugger
         let tournamentToSend = {
             ...tournament,
             WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
@@ -507,6 +507,28 @@ debugger
             CityId: userprofile.CityUmbracoId,
         }
         return PostJsonInstance.post("SimpleTournament/Delete" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+            ////debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                ////debugger
+                return errorObj(error)
+            })
+    },
+
+    // удаление команды (отклонение заявки от команды) из турнира
+    deleteTeamFromTournamentByTeam(team, tg, userprofile, admintext){
+        //debugger
+        let teamToSend = {
+            Id: team.Id
+        }
+        let tournamentGroupToSend = {
+            Id: tg.Id,
+            TournamentId: tg.TournamentId,
+        }
+//debugger
+        return PostJsonInstance.post("SimpeBidTeamToTournament/DeleteTeamFromTournament" + authQueryString, JSON.stringify({ team: { ...teamToSend }, 
+            tournamentGroup: { ...tournamentGroupToSend }, userProfile: { ...userprofile }, admintext: admintext })).then(data => {
             //debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
@@ -518,7 +540,7 @@ debugger
 
     /// удаление группы турнира
     deleteTournamentGroup(tournament, userprofile, tournamentGroupId) {
-        //debugger
+        ////debugger
         let tournamentToSend = {
             ...tournament,
             WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
@@ -531,18 +553,18 @@ debugger
             Id: tournamentGroupId,
         }
         return PostJsonInstance.post("SimpleTournamentGroup/Delete" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile }, tournamentGroup: {...tournamentGroup} })).then(data => {
-            //debugger
+            ////debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                //debugger
+                ////debugger
                 return errorObj(error)
             })
     },
    
     /// добавление группы турнира
     addTournamentGroup(tournament, userprofile, tGroup) {
-        //debugger
+        ////debugger
         let tournamentToSend = {
             ...tournament,
             WhenBegin: new Date(tournament.WhenBegin.year, tournament.WhenBegin.month - 1, tournament.WhenBegin.day + 1),
@@ -556,11 +578,11 @@ debugger
             Name: tGroup.Name,
         }
         return PostJsonInstance.post("SimpleTournamentGroup/Add" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile }, tournamentGroup: {...tournamentGroup} })).then(data => {
-            //debugger
+            ////debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                //debugger
+                ////debugger
                 return errorObj(error)
             })
     },
@@ -568,14 +590,14 @@ debugger
 
 
     // AddContact(contact){
-    //     //debugger
+    //     ////debugger
     //     //return instace.get('/contacts/getcontacts');
     //     let Contact= contact;
     //     return jsonInstace.post(baseUrl + 'Contacts/New', JSON.stringify({...Contact})).then(x => {
-    //         //debugger
+    //         ////debugger
     //         return x.data;
     //     }).catch(y => {
-    //         //debugger
+    //         ////debugger
     //         console.log(y)
     //     });
     // },
@@ -636,11 +658,11 @@ export const TeamAdminAPI = {
             }
 
             return PostJsonInstance.post("SimpleTeam/Add" + authQueryString, JSON.stringify({ team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
-                //debugger
+                ////debugger
                 return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
             })
                 .catch(error => {
-                    //debugger
+                    ////debugger
                     return errorObj(error)
                 })
         }
@@ -653,11 +675,11 @@ export const TeamAdminAPI = {
             }
 
             return PostJsonInstance.post("SimpleTeam/Update" + authQueryString, JSON.stringify({ team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
-                //debugger
+                ////debugger
                 return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
             })
                 .catch(error => {
-                    //debugger
+                    ////debugger
                     return errorObj(error)
                 })
         }
@@ -693,11 +715,11 @@ export const TeamAdminAPI = {
             CityId: team.CityId, // важный момент. пока не загружен с сервера существующий турнир, мы не знаем к какому городу привязка. берем CityUmbracoId из профиля (на сервере в Add это обрабатывается)
         }
         return PostJsonInstance.post("SimpleTeam/Delete" + authQueryString, JSON.stringify({ team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
-            //debugger
+            ////debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                //debugger
+                ////debugger
                 return errorObj(error)
             })
     },
@@ -706,7 +728,7 @@ export const TeamAdminAPI = {
 export const BidTeamAPI = {
     
     getActualTournaments(userprofile, team, startindex = 0) {
-        //debugger 
+        ////debugger 
         let teamToSend = {
             ...team,
             WhenBorn: new Date(team.WhenBorn.year, team.WhenBorn.month - 1, team.WhenBorn.day + 1),
@@ -714,17 +736,17 @@ export const BidTeamAPI = {
         }
 
         return PostJsonInstance.post("SimpeBidTeamToTournament/GetActualTournaments" + authQueryString, JSON.stringify({ team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
-            //debugger
+            ////debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                //debugger
+                ////debugger
                 return errorObj(error)
             })
     },
 
     getTeamBidsByTeam(userprofile, team, startindex = 0) {
-        //debugger 
+        ////debugger 
         let teamToSend = {
             ...team,
             WhenBorn: new Date(team.WhenBorn.year, team.WhenBorn.month - 1, team.WhenBorn.day + 1),
@@ -732,11 +754,11 @@ export const BidTeamAPI = {
         }
 
         return PostJsonInstance.post("SimpeBidTeamToTournament/GetTeamBidsByTeam" + authQueryString, JSON.stringify({ team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
-            //debugger
+            ////debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                //debugger
+                ////debugger
                 return errorObj(error)
             })
     },
@@ -744,7 +766,7 @@ export const BidTeamAPI = {
 
     // возвращает заявки по турниру (для админа турнира)
     getTeamBidsByTournament(userprofile, tournament, startindex = 0) {
-        //debugger 
+        ////debugger 
         let tournamentToSend = {
             Id: tournament.Id
         }
@@ -761,19 +783,19 @@ export const BidTeamAPI = {
 
     // согласовывает заявку (для админа турнира)
     acceptTeamToTournamentBid(bid, userprofile, tournament, admintext) {
-        //debugger 
+        ////debugger 
         let tournamentToSend = {
             Id: tournament.Id
         }
-   debugger     
+   //debugger     
         bid.AdminTournamentComment = admintext;
 
         return PostJsonInstance.post("SimpeBidTeamToTournament/AcceptBid" + authQueryString, JSON.stringify({ bid: {...bid}, tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
-            debugger
+            //debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                debugger
+                //debugger
                 return errorObj(error)
             })
     },
@@ -781,26 +803,26 @@ export const BidTeamAPI = {
     
     // отклоняет заявку (для админа турнира)
     declineTeamToTournamentBid(bid, userprofile, tournament, admintext) {
-        //debugger 
+        ////debugger 
         let tournamentToSend = {
             Id: tournament.Id
         }
-   debugger     
+   //debugger     
         bid.AdminTournamentComment = admintext;
 
         return PostJsonInstance.post("SimpeBidTeamToTournament/DeclineBid" + authQueryString, JSON.stringify({ bid: {...bid}, tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
-            debugger
+            //debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                debugger
+                //debugger
                 return errorObj(error)
             })
     },
 
 
     addBidTeamToTournament(tournamentgroup, userprofile, team, teamName, startindex = 0) {
-        //debugger 
+        ////debugger 
         let teamToSend = {
             ...team,
             WhenBorn: new Date(team.WhenBorn.year, team.WhenBorn.month - 1, team.WhenBorn.day + 1),
@@ -822,17 +844,17 @@ export const BidTeamAPI = {
                 }
 
         return PostJsonInstance.post("SimpeBidTeamToTournament/Add" + authQueryString, JSON.stringify({ bidTeamToTournament: { ...bid }, team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
-            debugger
+            //debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                debugger
+                //debugger
                 return errorObj(error)
             })
     },
     
     delBidTeamToTournament(bid, userprofile, team) {
-        //debugger 
+        ////debugger 
         let teamToSend = {
             ...team,
             WhenBorn: new Date(team.WhenBorn.year, team.WhenBorn.month - 1, team.WhenBorn.day + 1),
@@ -840,29 +862,29 @@ export const BidTeamAPI = {
         }
 
         return PostJsonInstance.post("SimpeBidTeamToTournament/Delete" + authQueryString, JSON.stringify({ bidTeamToTournament: { ...bid }, team: { ...teamToSend }, userProfile: { ...userprofile } })).then(data => {
-            //debugger
+            ////debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                //debugger
+                ////debugger
                 return errorObj(error)
             })
     },
     
     /// допуск комады к турниру
     approveBidTeamToTournament(bid, userprofile, tournament, approve, admincomment) {
-        //debugger 
+        ////debugger 
         let bidToSend = {...bid,
             AdminTournamentComment: admincomment,
             Approve: approve,
         }
 
         return PostJsonInstance.post("SimpeBidTeamToTournament/Approve" + authQueryString, JSON.stringify({ bid: { ...bidToSend }, tournament: { ...tournament }, userProfile: { ...userprofile } })).then(data => {
-            //debugger
+            ////debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                //debugger
+                ////debugger
                 return errorObj(error)
             })
     },
