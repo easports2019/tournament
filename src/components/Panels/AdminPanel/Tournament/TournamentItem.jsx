@@ -16,6 +16,7 @@ import { connect } from 'react-redux';
 import ListItem from '../ListItem/ListItem';
 import BidListItem from '../ListItem/BidListItem';
 import Icon24ChevronRightWithHistory from '../../Common/WithHistory/Icon24ChevronRightWithHistory';
+import Shedule from '../../Common/Shedule/Shedule';
 
 
 
@@ -224,6 +225,7 @@ const TournamentItem = (props) => {
                                 <TabsItem onClick={() => setCurrentTab("info")}>Основное</TabsItem>
                                 <TabsItem onClick={() => setCurrentTab("bids")}>Заявки</TabsItem>
                                 <TabsItem onClick={() => setCurrentTab("teams")}>Команды</TabsItem>
+                            <TabsItem onClick={() => setCurrentTab("shedule")}>Расписание</TabsItem>
                             </Tabs>
                             <FormLayout>
                                 <FormItem top="Ваш город">
@@ -289,6 +291,7 @@ const TournamentItem = (props) => {
                             <TabsItem onClick={() => setCurrentTab("info")}>Основное</TabsItem>
                             <TabsItem onClick={() => setCurrentTab("bids")}>Заявки</TabsItem>
                             <TabsItem onClick={() => setCurrentTab("teams")}>Команды</TabsItem>
+                            <TabsItem onClick={() => setCurrentTab("shedule")}>Расписание</TabsItem>
                         </Tabs>
                         <FormLayout>
                             <FormItem top="Ваш город">
@@ -321,6 +324,7 @@ const TournamentItem = (props) => {
                             <TabsItem onClick={() => setCurrentTab("info")}>Основное</TabsItem>
                             <TabsItem onClick={() => setCurrentTab("bids")}>Заявки</TabsItem>
                             <TabsItem onClick={() => setCurrentTab("teams")}>Команды</TabsItem>
+                            <TabsItem onClick={() => setCurrentTab("shedule")}>Расписание</TabsItem>
                         </Tabs>
                         <FormLayout>
                             <FormItem top="Ваш город">
@@ -379,6 +383,27 @@ const TournamentItem = (props) => {
                             </Group>
                         </FormLayout>
                     </Panel>
+                    <Panel id="shedule">
+                        <Header>Расписание</Header>
+                        <Tabs mode="buttons">
+                            <TabsItem onClick={() => setCurrentTab("info")}>Основное</TabsItem>
+                            <TabsItem onClick={() => setCurrentTab("bids")}>Заявки</TabsItem>
+                            <TabsItem onClick={() => setCurrentTab("teams")}>Команды</TabsItem>
+                            <TabsItem onClick={() => setCurrentTab("shedule")}>Расписание</TabsItem>
+                        </Tabs>
+                        <FormLayout>
+                            <FormItem top="Ваш город">
+                                <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
+                            </FormItem>
+                            <Group header={<Header mode="secondary">Группы</Header>}>
+                                <CellButton>Добавить</CellButton>
+                                <Shedule mode="admin" tournament={props.tournaments.selected} todayIs={new Date()}></Shedule>
+
+                                <CellButton>Добавить</CellButton>
+                            </Group>
+                        </FormLayout>
+                    </Panel>
+                    
                 </View>
                 // <Tabs>
                 //     <TabsItem>
