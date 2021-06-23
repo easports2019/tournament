@@ -72,6 +72,29 @@ export const BidTeam = {
 
 }
 
+export const Match = {
+    Id: -1,
+    Name: "Матч",
+    Description: "Описание матча",
+    Picture: "",
+    When: { day: currentDate.getDay(), month: currentDate.getMonth() + 1, year: currentDate.getFullYear() },
+    TournamentGroup: {},
+    TournamentGroupId: -1,
+    Place: {},
+    PlaceId: -1,
+    Team1: {},
+    Team1Id: -1,
+    Team2: {},
+    Team2Id: -1,
+    Team1Goals: 0,
+    Team2Goals: 0,
+    MatchEvents: [],
+    Deleted: false,
+    Published: false,
+    ErrorMessage: "",
+
+}
+
 export const EmptyTournament = {
     Id : -1,
     Name: "",

@@ -12,6 +12,7 @@ import paymentReducer from './paymentReducer.js'
 import mainMenuReducer from './mainMenuReducer.js'
 import systemReducer from './systemReducer.js'
 import cityReducer from './cityReducer.js'
+import matchReducer from './matchReducer.js'
 import {composeWithDevTools} from 'redux-devtools-extension'
 import thunkMiddleware from 'redux-thunk'
 
@@ -31,6 +32,7 @@ let reducers = combineReducers({
     teamsEntity: teams,
     teamsEntity: teams,
     bidTeamsEntity: bidTeams,
+    matches: matchReducer,
     userEntity: userReducer,
     cityEntity: cityReducer,
     ampluaEntity: ampluaReducer,

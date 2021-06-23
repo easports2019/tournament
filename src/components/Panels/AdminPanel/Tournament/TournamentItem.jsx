@@ -225,7 +225,7 @@ const TournamentItem = (props) => {
                                 <TabsItem onClick={() => setCurrentTab("info")}>Основное</TabsItem>
                                 <TabsItem onClick={() => setCurrentTab("bids")}>Заявки</TabsItem>
                                 <TabsItem onClick={() => setCurrentTab("teams")}>Команды</TabsItem>
-                            <TabsItem onClick={() => setCurrentTab("shedule")}>Расписание</TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("shedule")}>Расписание</TabsItem>
                             </Tabs>
                             <FormLayout>
                                 <FormItem top="Ваш город">
@@ -395,11 +395,8 @@ const TournamentItem = (props) => {
                             <FormItem top="Ваш город">
                                 <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
                             </FormItem>
-                            <Group header={<Header mode="secondary">Группы</Header>}>
-                                <CellButton>Добавить</CellButton>
-                                <Shedule mode="admin" tournament={props.tournaments.selected} todayIs={new Date()}></Shedule>
-
-                                <CellButton>Добавить</CellButton>
+                            <Group header={<Header mode="secondary">Матчи</Header>}>
+                                <Shedule access="admin" tournament={props.tournaments.selected} todayIs={new Date()}></Shedule>
                             </Group>
                         </FormLayout>
                     </Panel>
@@ -428,7 +425,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament,
+    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament, 
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, acceptTeamToTournamentBid, declineTeamToTournamentBid, 
     delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, 
 })(TournamentItem)

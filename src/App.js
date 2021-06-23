@@ -417,10 +417,11 @@ const App = (props) => {
 								//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
 								>
 									Игрок
-						</PanelHeader>
-					Игрок
-				</Panel>
+								</PanelHeader>
+							Игрок
+							</Panel>
 						</View>
+						
 
 					</Epic>
 				</AppRoot>
