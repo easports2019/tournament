@@ -1,5 +1,5 @@
 import { setGlobalPopout, setErrorMessage } from "./systemReducer";
-import { CityTournamentAdminAPI, BidTeamAPI } from './../utils/api/api.js'
+import { CityTournamentAdminAPI, MatchAPI } from './../utils/api/api.js'
 import { Match } from './constants/commonConstants'
 import { EmptyTournament } from './constants/commonConstants'
 
@@ -80,6 +80,41 @@ export const getAllMatchesByTournament = (tournament = null, userProfile = null,
             {
                 if (authQueryString && authQueryString.length > 0)
                     CityTournamentAdminAPI.getAll(startindex)
+                        .then(pl => {
+                            if (pl && pl.data.length > 0) {
+
+                                dispatch((pl.data));
+                                dispatch(setGlobalPopout(false))
+                            }
+                            else {
+
+                                dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                                dispatch(setGlobalPopout(false))
+                            }
+                        })
+                        .catch(error => {
+
+                            dispatch(setErrorMessage(error))
+                            dispatch(setGlobalPopout(false))
+                        })
+                else {
+
+                    dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                    dispatch(setGlobalPopout(false))
+
+                }
+            }
+        
+    }
+}
+
+
+export const addMatchToShedule = (match = null, userProfile = null, hours = 0, minutes = 0) => {
+    return dispatch => {
+        if ((match != null) && (userProfile != null)) 
+            {
+                if (authQueryString && authQueryString.length > 0)
+                    MatchAPI.addMatch(match, userProfile)
                         .then(pl => {
                             if (pl && pl.data.length > 0) {
 

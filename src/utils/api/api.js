@@ -890,3 +890,21 @@ export const BidTeamAPI = {
     },
 
 }
+
+export const MatchAPI = {
+    addMatch(matchInfo, userprofile, hours, minutes) {
+        debugger 
+        //new Date()
+        matchInfo.When = new Date(matchInfo.When.year, matchInfo.When.month - 1, matchInfo.When.day, hours, minutes );
+        return PostJsonInstance.post("Match/Add" + authQueryString, JSON.stringify({ match: { ...matchInfo }, userProfile: { ...userprofile } })).then(data => {
+            debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                //debugger
+                return errorObj(error)
+            })
+    },
+    
+
+}
