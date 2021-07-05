@@ -113,8 +113,9 @@ export const addMatchToShedule = (match = null, userProfile = null, hours = 0, m
     return dispatch => {
         if ((match != null) && (userProfile != null)) 
             {
-                if (authQueryString && authQueryString.length > 0)
-                    MatchAPI.addMatch(match, userProfile)
+                if (authQueryString && authQueryString.length > 0){
+                debugger
+                    MatchAPI.addMatch(match, userProfile, Number(hours) > 21 ? 24-Number(hours) : Number(hours)+3 , minutes)
                         .then(pl => {
                             if (pl && pl.data.length > 0) {
 
@@ -132,6 +133,7 @@ export const addMatchToShedule = (match = null, userProfile = null, hours = 0, m
                             dispatch(setErrorMessage(error))
                             dispatch(setGlobalPopout(false))
                         })
+                    }
                 else {
 
                     dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))

@@ -55,7 +55,7 @@ const Shedule = (props) => {
     }
 
     let addMatch = () => {
-        debugger
+        
         let match = {
             When: selectedDate,
             TournamentGroupId: selectedTournamentGroup,
@@ -158,7 +158,7 @@ const Shedule = (props) => {
                                 min={{day: 1, month: 1, year: new Date().getFullYear()-1}}
                                 max={{day: 1, month: 1, year: new Date().getFullYear()+1}}
                                 defaultValue={selectedDate}
-                                onDateChange={(value) => {setSelectedDate(value)}}
+                                onDateChange={(value) => setSelectedDate(value)}
                                 />
                             </FormItem>
                             <FormItem top="Время">
@@ -167,7 +167,7 @@ const Shedule = (props) => {
                                 
                                 options={hours}
                                 value={selectedHour}
-                                onChange={(option) => setSelectedHour(option.value)}
+                                onChange={(option) => setSelectedHour(option.currentTarget.value)}
                                 renderOption={({...otherProps }) => {
                                     return (
                                     <CustomSelectOption
@@ -182,7 +182,7 @@ const Shedule = (props) => {
                                 
                                 options={minutes}
                                 value={selectedMinute}
-                                onChange={(option) => setSelectedMinute(option.value)}
+                                onChange={(option) => setSelectedMinute(option.currentTarget.value)}
                                 renderOption={({...otherProps }) => {
                                     return (
                                     <CustomSelectOption
