@@ -1,18 +1,30 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, InfoRow, Group, List, CellButton, Button, FormItem, CustomSelect, DatePicker, CustomSelectOption } from '@vkontakte/vkui'
+import { RichCell, Avatar, InfoRow, Group, List, CellButton, Button, FormItem, CustomSelect, DatePicker, CustomSelectOption, Header, SimpleCell } from '@vkontakte/vkui'
 import Icon24ChevronRightWithHistory from '../../Common/WithHistory/Icon24ChevronRightWithHistory'
 import { connect } from 'react-redux';
 import {
     getTournamentTeams, 
 } from '../../../../store/tournamentsReducer'
 import {
-    setMode, setAccess, addMatchToShedule, 
+    setMode, setAccess, addMatchToShedule, getAllMatchesByTournament,
 } from '../../../../store/matchReducer'
 
 
+// const SheduleContainer = (props) => {
+
+    
+    
+//     return <Shedule props={...props}></Shedule>
+// }
+
 
 const Shedule = (props) => {
-        
+    
+    useEffect(() => {
+        debugger
+        props.getAllMatchesByTournament(props.tournaments.selected, props.myProfile)
+    }, props.tournaments.selected)
+
     let isAdminMode = props.mode == "admin" ? true : false;
     let tournament = props.tournament;
     let today = props.todayIs;
@@ -54,6 +66,14 @@ const Shedule = (props) => {
         setSelectedTournamentGroupTeamList(getGroup(league_id).Teams.map(team => {return {value: team.Id, label: team.Name}}));
     }
 
+    let allMatchesInAllGroups = []
+    props.tournaments.selected.TournamentGroups.forEach(tg => {
+        
+        allMatchesInAllGroups.push({
+            TournamentGroup: {...tg}, 
+            Matches: [...props.matches.filter(m => m.TournamentGroup.Id == tg.Id)]})
+    })
+    
     let addMatch = () => {
         
         let match = {
@@ -85,8 +105,21 @@ const Shedule = (props) => {
                         <Group>
                             <CellButton onClick={() => props.setMode("add")}>Добавить</CellButton>
                             <List>
-                               
-                
+                               {allMatchesInAllGroups.map(groupAndMatchesItem => {
+                                   
+                                   return <Group  header={<Header mode="secondary">{groupAndMatchesItem.TournamentGroup.Name}</Header>}>
+                                       {groupAndMatchesItem.Matches.length > 0 ?
+                                       <List>
+                                            {groupAndMatchesItem.Matches.map(match => {
+                                                return <CellButton>{`${match.Team1.Name} - ${match.Team2.Name}`} </CellButton>
+                                            })}
+                                       </List>
+                                       :
+                                       <SimpleCell>Нет расписания в группе</SimpleCell>
+                               }
+                                   </Group>
+                               }
+                                )}
                             </List>
                             <CellButton onClick={() => props.setMode("add")}>Добавить</CellButton>
                         </Group>
@@ -246,6 +279,7 @@ let mapStateToProps = (state) => {
     return {
         tournaments: state.tournamentsEntity,
         mode: state.matches.mode,
+        matches: state.matches.matches,
         places: state.placeEntity.places,
         myProfile: state.profileEntity.myProfile,
         // пожалуй, нужно места загрузить сразу при запуске приложения и использовать их без изменения из хранилища, а не запрашивать каждый раз с сревера. они редко меняются.
@@ -254,5 +288,5 @@ let mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps,{
-    getTournamentTeams, setMode, setAccess, addMatchToShedule, 
+    getTournamentTeams, setMode, setAccess, addMatchToShedule, getAllMatchesByTournament,
 })(Shedule)

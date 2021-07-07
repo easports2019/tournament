@@ -906,5 +906,23 @@ export const MatchAPI = {
             })
     },
     
+    getAllMatchesByTournament(tournament, userprofile) {
+        debugger 
+        let tournamentToSend = {
+            Id: tournament.Id
+        }
+        //new Date()
+        //matchInfo.When = new Date(matchInfo.When.year, matchInfo.When.month - 1, matchInfo.When.day, hours, minutes );
+        //return PostJsonInstance.post("Match/GetByTournament" + authQueryString, JSON.stringify({ tournament: { ...tourn }, userProfile: { ...userprofile } })).then(data => {
+        return PostJsonInstance.post("Match/GetByTournament" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
+            debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
+    
 
 }

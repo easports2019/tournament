@@ -73,17 +73,18 @@ export const setMode = (mode) => {
 
 
 
-// все админы турниров города
+// все матчи турнира
 export const getAllMatchesByTournament = (tournament = null, userProfile = null, startindex = 0) => {
     return dispatch => {
-        if ((tournament != null) && (userprofile != null)) 
+        if ((tournament != null) && (userProfile != null)) 
             {
                 if (authQueryString && authQueryString.length > 0)
-                    CityTournamentAdminAPI.getAll(startindex)
+                MatchAPI.getAllMatchesByTournament(tournament, userProfile)
                         .then(pl => {
-                            if (pl && pl.data.length > 0) {
-
-                                dispatch((pl.data));
+                            debugger
+                            if (pl && pl.data && pl.data.length > 0) {
+                                debugger
+                                dispatch(setAllMatches(pl.data));
                                 dispatch(setGlobalPopout(false))
                             }
                             else {
@@ -108,7 +109,7 @@ export const getAllMatchesByTournament = (tournament = null, userProfile = null,
     }
 }
 
-
+// добавить матч в турнир
 export const addMatchToShedule = (match = null, userProfile = null, hours = 0, minutes = 0) => {
     return dispatch => {
         if ((match != null) && (userProfile != null)) 
