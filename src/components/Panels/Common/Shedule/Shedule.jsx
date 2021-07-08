@@ -111,7 +111,14 @@ const Shedule = (props) => {
                                        {groupAndMatchesItem.Matches.length > 0 ?
                                        <List>
                                             {groupAndMatchesItem.Matches.map(match => {
-                                                return <CellButton>{`${match.Team1.Name} - ${match.Team2.Name}`} </CellButton>
+                                                let place = props.places.find(p => p.PlaceId == match.PlaceId)
+                                                let date = new Date(match.When);
+                                                return <RichCell 
+                                                caption={place.Name}
+                                                text={`${date.toLocaleDateString()} в ${date.toLocaleTimeString()} `}
+                                                >
+                                                    {`${match.Team1.Name} - ${match.Team2.Name}`} 
+                                                </RichCell>
                                             })}
                                        </List>
                                        :
