@@ -6,7 +6,7 @@ import {
     getTournamentTeams, 
 } from '../../../../store/tournamentsReducer'
 import {
-    setMode, setAccess, addMatchToShedule, getAllMatchesByTournament,
+    setMode, setAccess, addMatchToShedule, getAllMatchesByTournament, delMatchFromShedule,
 } from '../../../../store/matchReducer'
 
 
@@ -93,10 +93,39 @@ const Shedule = (props) => {
         props.addMatchToShedule(match, props.myProfile, selectedHour, selectedMinute);
     }
 
+    let goToEditMatch = (match) => {
+        debugger
+
+        groups = tournament.TournamentGroups.map(g =>  {return {value: g.Id, label: g.Name}} )
+    //debugger
+        places = props.places
+                                .map(p =>  p.Name.length ? p : null)
+                                .filter(p => p)
+                                .map(p => {return {value: p.PlaceId, label: p.Name, title: p.Name}});
+        teams = [{value: 0, label: "Не выбрано"}]
+        hours = [...optMaker(24)];
+        minutes = [...optMaker(60)];
+        
+        let date = new Date(match.When);
+        
+        
+        setSelectedTournamentGroupTeamList(getGroup(match.TournamentGroupId).Teams.map(team => {return {value: team.Id, label: team.Name}}));
+        setSelectedTournamentGroup(match.TournamentGroupId);
+        setSelectedTeam1(match.Team1.Id)
+        setSelectedTeam2(match.Team2.Id)
+        setSelectedPlace(match.PlaceId)
+        setSelectedDate({day: date.getDate(), month: date.getMonth()+1, year: date.getFullYear()})
+        setSelectedHour(date.getHours())
+        setSelectedMinute(date.getMinutes())
+
+        props.setMode("edit")
+    }
+
 
 // выводим список существующего расписания с кнопками редактирования, удаления, переноса
 // группируем список по датам, сортируем от последних к первым (последние выше)
-// сделать кнопку сортировки
+// сделать кнопку сортировки\
+    debugger
     switch (props.access){
         case "admin": {
             switch (props.mode){
@@ -116,6 +145,12 @@ const Shedule = (props) => {
                                                 return <RichCell 
                                                 caption={place.Name}
                                                 text={`${date.toLocaleDateString()} в ${date.toLocaleTimeString()} `}
+                                                actions={
+                                                    <Button 
+                                                    onClick={() => props.delMatchFromShedule(match, props.myProfile)}
+                                                    mode="destructive">Удалить</Button>
+                                                }
+                                                onClick={() => goToEditMatch(match)}
                                                 >
                                                     {`${match.Team1.Name} - ${match.Team2.Name}`} 
                                                 </RichCell>
@@ -260,8 +295,118 @@ const Shedule = (props) => {
                 case "edit":{
                     return (
                         <Group>
+                            <FormItem top="Группа/лига">
+                                <CustomSelect
+                                placeholder="Не выбрано"
+                                options={groups}
+                                value={selectedTournamentGroup}
+                                onChange={(option) => changeGroup(option.currentTarget.value)}
+                                renderOption={({ ...otherProps }) => {
+                                    return (
+                                    <CustomSelectOption
+                                        {...otherProps}
+                                    />
+                                    );
+                                }}
+                                />
+                            </FormItem>
+                            <FormItem top="Команда 1">
+                                <CustomSelect
+                                placeholder="Не выбрано"
+                                options={selectedTournamentGroupTeamList}
+                                value={selectedTeam1}
+                                onChange={(option) => {
+                                    setSelectedTeam1(option.currentTarget.value)
+                                }}
+                                renderOption={({ ...otherProps }) => {
+                                    return (
+                                    <CustomSelectOption
+                                        
+                                        {...otherProps}
+                                    />
+                                    );
+                                }}
+                                />
+                            </FormItem>
+                            <FormItem top="Команда 2">
+                                <CustomSelect
+                                placeholder="Не выбрано"
+                                options={selectedTournamentGroupTeamList}
+                                value={selectedTeam2}
+                                onChange={(option) => {
+                                    setSelectedTeam2(option.currentTarget.value)
+                                }}
+                                renderOption={({ ...otherProps }) => {
+                                    return (
+                                    <CustomSelectOption
+                                        
+                                        {...otherProps}
+                                    />
+                                    );
+                                }}
+                                />
+                            </FormItem>
+                            <FormItem top="Дата">
+                                <DatePicker
+                                min={{day: 1, month: 1, year: new Date().getFullYear()-1}}
+                                max={{day: 1, month: 1, year: new Date().getFullYear()+1}}
+                                defaultValue={selectedDate}
+                                onDateChange={(value) => setSelectedDate(value)}
+                                />
+                            </FormItem>
+                            <FormItem top="Время">
+                                <CustomSelect
+                                placeholder="Не выбрано"
+                                
+                                options={hours}
+                                value={selectedHour}
+                                onChange={(option) => setSelectedHour(option.currentTarget.value)}
+                                renderOption={({...otherProps }) => {
+                                    return (
+                                    <CustomSelectOption
+                                        
+                                        {...otherProps}
+                                    />
+                                    );
+                                }}
+                                />
+                                <CustomSelect
+                                placeholder="Не выбрано"
+                                
+                                options={minutes}
+                                value={selectedMinute}
+                                onChange={(option) => setSelectedMinute(option.currentTarget.value)}
+                                renderOption={({...otherProps }) => {
+                                    return (
+                                    <CustomSelectOption
+                                        
+                                        {...otherProps}
+                                    />
+                                    );
+                                }}
+                                />
+                            </FormItem>
+                            
+                            <FormItem top="Место">
+                            <CustomSelect
+                                placeholder="Не выбрано"
+                                options={places}
+                                value={selectedPlace}
+                                onChange={(option) => 
+                                    //changePlace(option.currentTarget.value)
+                                    setSelectedPlace(option.currentTarget.value)
+                                }
+                                renderOption={({ ...otherProps }) => {
+                                    return (
+                                    <CustomSelectOption
+                                        {...otherProps}
+                                    />
+                                    );
+                                }}
+                                />
+                            </FormItem>
                             <Button onClick={() => props.setMode("list")}>Отмена</Button>
-                            <Button>Сохранить</Button>
+                            <Button onClick={() => addMatch()}>Сохранить</Button>
                         </Group>
                     )
                 }; break;
@@ -295,5 +440,5 @@ let mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps,{
-    getTournamentTeams, setMode, setAccess, addMatchToShedule, getAllMatchesByTournament,
+    getTournamentTeams, setMode, setAccess, addMatchToShedule, getAllMatchesByTournament, delMatchFromShedule,
 })(Shedule)

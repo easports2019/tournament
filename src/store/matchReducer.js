@@ -147,6 +147,44 @@ export const addMatchToShedule = (match = null, userProfile = null, hours = 0, m
 }
 
 
+// удалить матч из турнира
+export const delMatchFromShedule = (match = null, userProfile = null) => {
+    return dispatch => {
+        if ((match != null) && (userProfile != null)) 
+            {
+                if (authQueryString && authQueryString.length > 0){
+                debugger
+                    MatchAPI.delMatch(match, userProfile)
+                        .then(pl => {
+                            if (pl && pl.data.length > 0) {
+
+                                dispatch((pl.data));
+                                dispatch(setGlobalPopout(false))
+                            }
+                            else {
+
+                                dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                                dispatch(setGlobalPopout(false))
+                            }
+                        })
+                        .catch(error => {
+
+                            dispatch(setErrorMessage(error))
+                            dispatch(setGlobalPopout(false))
+                        })
+                    }
+                else {
+
+                    dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                    dispatch(setGlobalPopout(false))
+
+                }
+            }
+        
+    }
+}
+
+
 
 
     export default matchReducer;
