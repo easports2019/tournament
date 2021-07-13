@@ -341,6 +341,7 @@ export const CityTournamentAdminAPI = {
             })
     },
 
+    // возвращает всех админов города
     getAllInCityByCityId(cityUmbracoId, startindex = 0) {
         let formData = new FormData();
         formData.append("startindex", startindex);
@@ -939,4 +940,10 @@ export const MatchAPI = {
     },
     
 
+}
+
+export const TournamentAPI = {
+    getAllTournamentsInCityByCityUmbracoId(cityUmbId) {
+        
+    }
 }

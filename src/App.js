@@ -7,7 +7,7 @@ import { setActiveMenuItem } from './store/mainMenuReducer';
 import { getAllPlaces, getAllPlacesInCityByCityId } from './store/placeReducer';
 import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
 import { setGlobalPopout } from './store/systemReducer';
-import { getAllCityTournamentAdminsByCityId } from './store/tournamentsReducer';
+import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId } from './store/tournamentsReducer';
 import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity  } from './store/bidTeamsReducer';
 import { getAllCitiesFromServer } from './store/cityReducer';
 import { setShowAdminTourneyTab } from './store/systemReducer';
@@ -35,7 +35,7 @@ const App = (props) => {
 	const [viewCollectTab, setCollectViewTab] = useState("main");
 
 	
-
+	// это системное, загрузка приложения вк
 	useEffect(() => {
 		bridge.subscribe(({ detail: { type, data } }) => {
 			if (type === 'VKWebAppUpdateConfig') {
@@ -101,6 +101,8 @@ const App = (props) => {
 
 	}, []);
 
+
+	// загрузка мест, админов города
 	useEffect(() => {
 
 		// а это уже когда прогрузился и выбран город профиля
@@ -113,6 +115,9 @@ const App = (props) => {
 
 			// получаем список админов турниров города по umbId города
 			props.getAllCityTournamentAdminsByCityId(props.myProfile.CityUmbracoId);
+
+			// получаем список активных турниров города по umbId города и текущей дате
+			props.getTournamentsByCityId(props.myProfile.CityUmbracoId);
 		}
 
 		// это пока не прогрузился город профиля (не выбран)
@@ -161,6 +166,7 @@ const App = (props) => {
 	}, [props.vkProfile])
 
 
+	// регистрация пользователя
 	useEffect(() => {
 
 		if (props.vkProfile && props.vkProfile.city) {
@@ -170,6 +176,8 @@ const App = (props) => {
 		}
 	}, [props.triedToGetProfile])
 
+
+	// загрузка профиля
 	useEffect(() => {
 
 		if (props.vkProfile && props.vkProfile.city) {
@@ -217,6 +225,8 @@ const App = (props) => {
 		// }
 	}, [props.myProfile])
 
+	
+	// отобразить панель админа турниров
 	useEffect(() => {
 		// если загрузились админы города
 		if ((props.tournamentAdmins != undefined) && (props.tournamentAdmins.length > 0)) {
@@ -305,8 +315,14 @@ const App = (props) => {
 									left={<BackButton isBack={true} />}
 								//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
 								>
-									Все сборы
-						</PanelHeader>
+									Все турниры
+								</PanelHeader>
+								<Group header={<Header>Текущие турниры города</Header>}>
+									{/* <TournamentItem mode="view"></TournamentItem> */}
+								</Group>
+								<Group hidden header={<Header>Архивные турниры города</Header>}>
+									
+								</Group>
 							</Panel>
 						</View>
 						<View id="profile" activePanel="main" modal={modalWindow} popout={popout}>
@@ -451,7 +467,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity,
+	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId,
 	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile,
 	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab,
 })(App);

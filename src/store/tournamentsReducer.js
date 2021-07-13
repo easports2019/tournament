@@ -1,5 +1,5 @@
 import { setGlobalPopout, setErrorMessage } from "./systemReducer";
-import { CityTournamentAdminAPI, BidTeamAPI } from './../utils/api/api.js'
+import { CityTournamentAdminAPI, BidTeamAPI, TournamentAPI } from './../utils/api/api.js'
 import { cityTournamentAdmins } from './constants/commonConstants'
 import { EmptyTournament } from './constants/commonConstants'
 
@@ -1018,6 +1018,44 @@ export const getMyTournaments = (userProfileId = -1) => {
                         if (pl && pl.data.length > 0) {
                             
                             dispatch(setMyTournaments(pl.data));
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось загрузить турниры"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось загрузить турниры: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            
+            else {
+                dispatch(setErrorMessage("Не удалось загрузить турниры"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось загрузить турниры, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// возвращает с сервера все турниры города для пользователя
+export const getTournamentsByCityId = (cityUmbId = -1) => {
+    return dispatch => {
+        if (cityUmbId != null){
+            if (authQueryString && authQueryString.length > 0)
+            
+                
+            TournamentAPI.getAllTournamentsInCityByCityUmbracoId(cityUmbId)
+                    .then(pl => {
+                        if (pl && pl.data.length > 0) {
+                            
+                            dispatch(setTournaments(pl.data));
                             dispatch(setGlobalPopout(false))
                         }
                         else {
