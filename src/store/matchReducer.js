@@ -119,7 +119,7 @@ export const addMatchToShedule = (match = null, userProfile = null, hours = 0, m
                     MatchAPI.addMatch(match, userProfile, Number(hours) > 21 ? 24-Number(hours) : Number(hours)+3 , minutes)
                         .then(pl => {
                             if (pl && pl.data.length > 0) {
-
+                                dispatch(setAllMatches(pl.data));
                                 dispatch((pl.data));
                                 dispatch(setGlobalPopout(false))
                             }
@@ -148,16 +148,16 @@ export const addMatchToShedule = (match = null, userProfile = null, hours = 0, m
 
 
 // удалить матч из турнира
-export const delMatchFromShedule = (match = null, userProfile = null) => {
+export const delMatchFromShedule = (match = null, userProfile = null, hours = 0, minutes = 0) => {
     return dispatch => {
         if ((match != null) && (userProfile != null)) 
             {
                 if (authQueryString && authQueryString.length > 0){
                 debugger
-                    MatchAPI.delMatch(match, userProfile)
+                    MatchAPI.delMatch(match, userProfile, Number(hours) > 21 ? 24-Number(hours) : Number(hours)+3 , minutes)
                         .then(pl => {
                             if (pl && pl.data.length > 0) {
-
+                                dispatch(setAllMatches(pl.data));
                                 dispatch((pl.data));
                                 dispatch(setGlobalPopout(false))
                             }
