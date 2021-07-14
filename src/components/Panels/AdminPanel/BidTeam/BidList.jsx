@@ -15,7 +15,7 @@ const BidList = (props) => {
             <List>
                 {(props.List && props.List.length > 0) ?
                     props.List.map(item => {
-                        
+                        debugger
                         if (item.Approved && !item.Published)
                             return (
                                 <RichCell

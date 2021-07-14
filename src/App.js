@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import bridge from '@vkontakte/vk-bridge';
-import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider, Badge, Header } from '@vkontakte/vkui';
+import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider, Badge, Header, List, RichCell } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 
 import { setActiveMenuItem } from './store/mainMenuReducer';
@@ -102,7 +102,7 @@ const App = (props) => {
 	}, []);
 
 
-	// загрузка мест, админов города
+	// загрузка мест, админов города, текущих турниров
 	useEffect(() => {
 
 		// а это уже когда прогрузился и выбран город профиля
@@ -267,6 +267,7 @@ const App = (props) => {
 	if ((Array.isArray(props.tournamentsForBids.selectedTournament)) && (props.tournamentsForBids.selectedTournament.length > 0))
 		debugger
 
+		
 	return (
 		<ConfigProvider>
 			<AdaptivityProvider>
@@ -318,6 +319,15 @@ const App = (props) => {
 									Все турниры
 								</PanelHeader>
 								<Group header={<Header>Текущие турниры города</Header>}>
+									<List>
+
+										{
+										props.tournament.tournaments.map(t => {
+											return <RichCell
+												caption="Не начался?"
+											>{t.Name}</RichCell>
+										})}
+									</List>
 									{/* <TournamentItem mode="view"></TournamentItem> */}
 								</Group>
 								<Group hidden header={<Header>Архивные турниры города</Header>}>

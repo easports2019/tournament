@@ -943,7 +943,18 @@ export const MatchAPI = {
 }
 
 export const TournamentAPI = {
-    getAllTournamentsInCityByCityUmbracoId(cityUmbId) {
-        
+    getAllTournamentsInCityByCityUmbracoId(cityUmbracoId) {
+        debugger
+        let formData = new FormData();
+        //formData.append("startindex", startindex);
+        formData.append("cityumbracoid", cityUmbracoId);
+        return PostJsonInstance.post("SimpleTournament/GetAllCurrentInCity" + authQueryString, formData).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
     }
 }
