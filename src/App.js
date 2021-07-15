@@ -7,7 +7,7 @@ import { setActiveMenuItem } from './store/mainMenuReducer';
 import { getAllPlaces, getAllPlacesInCityByCityId } from './store/placeReducer';
 import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
 import { setGlobalPopout } from './store/systemReducer';
-import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId } from './store/tournamentsReducer';
+import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
 import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity  } from './store/bidTeamsReducer';
 import { getAllCitiesFromServer } from './store/cityReducer';
 import { setShowAdminTourneyTab } from './store/systemReducer';
@@ -39,6 +39,7 @@ const App = (props) => {
 	useEffect(() => {
 		bridge.subscribe(({ detail: { type, data } }) => {
 			if (type === 'VKWebAppUpdateConfig') {
+				
 				const schemeAttribute = document.createAttribute('scheme');
 				schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
 				document.body.attributes.setNamedItem(schemeAttribute);
@@ -46,6 +47,7 @@ const App = (props) => {
 		});
 
 		async function fetchData() {
+			
 			const user = await bridge.send('VKWebAppGetUserInfo');
 
 
@@ -240,6 +242,16 @@ const App = (props) => {
 		}
 	}, [props.tournamentAdmins])
 
+
+	const CellClick = (item) => {
+        
+        props.setSelectedTournament(item);
+        props.setTournamentMode("edit");
+		// надо заполнять TournamentGroups!
+		props.setActiveMenuItem("tournamentitem");
+		//toMenuName="tournamentadmin" selected={"tournamentadmin" === props.mainMenu.activeItem.name} data-story="tournamentadmin"
+    }
+
 	// useEffect(() =>{
 	// 	debugger
 	// 	if (props.vkProfile && props.vkProfile.city) {
@@ -290,7 +302,7 @@ const App = (props) => {
 								//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
 								>
 									Горячее
-						</PanelHeader>
+								</PanelHeader>
 								<Group>
 									{/* <AddCollectButton isBack={false} toMenuName="addcollect">Создать сбор</AddCollectButton> */}
 									<InfoRow header="Информация">
@@ -323,12 +335,19 @@ const App = (props) => {
 
 										{
 										props.tournament.tournaments.map(t => {
+											
 											return <RichCell
-												caption="Не начался?"
+												caption={`Организатор: ${t.Founder.Name} ${t.Founder.Surname}`}
+												text={(new Date(t.WhenBegin) > new Date()) ? 
+													`Стартует 
+													${new Date(t.WhenBegin).getDate() <= 9 ? "0" + (new Date(t.WhenBegin).getDate()) : (new Date(t.WhenBegin).getDate())}.${new Date(t.WhenBegin).getMonth()+1 <= 9 ? "0" + (new Date(t.WhenBegin).getMonth()+1) : (new Date(t.WhenBegin).getMonth()+1)}.${new Date(t.WhenBegin).getFullYear()}`
+													: 
+													"В процессе"}
+												onClick={() => CellClick(t)} 
 											>{t.Name}</RichCell>
 										})}
 									</List>
-									{/* <TournamentItem mode="view"></TournamentItem> */}
+									
 								</Group>
 								<Group hidden header={<Header>Архивные турниры города</Header>}>
 									
@@ -391,7 +410,10 @@ const App = (props) => {
 									Турнир
 								</PanelHeader>
 								<Group>
-									<TournamentItem mode={props.tournament.mode}></TournamentItem>
+									<TournamentItem 
+									// mode={props.tournament.mode}
+									mode="view"
+									></TournamentItem>
 								</Group>
 							</Panel>
 						</View>
@@ -477,7 +499,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId,
+	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode,
 	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile,
 	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab,
 })(App);
