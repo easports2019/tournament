@@ -21,7 +21,7 @@ import {
 const Shedule = (props) => {
     
     useEffect(() => {
-        debugger
+        
         props.getAllMatchesByTournament(props.tournaments.selected, props.myProfile)
     }, props.tournaments.selected)
 
@@ -151,7 +151,7 @@ const Shedule = (props) => {
 // выводим список существующего расписания с кнопками редактирования, удаления, переноса
 // группируем список по датам, сортируем от последних к первым (последние выше)
 // сделать кнопку сортировки\
-    debugger
+    
     switch (props.access){
         case "admin": {
             switch (props.mode){
@@ -471,7 +471,34 @@ const Shedule = (props) => {
         case "user": {
             switch (props.mode){
                 case "list":{
-            
+                    return (
+                        <Group>
+                            <List>
+                               {allMatchesInAllGroups.map(groupAndMatchesItem => {
+                                   
+                                   return <Group  header={<Header mode="secondary">{groupAndMatchesItem.TournamentGroup.Name}</Header>}>
+                                       {groupAndMatchesItem.Matches.length > 0 ?
+                                       <List>
+                                            {groupAndMatchesItem.Matches.map(match => {
+                                                let place = props.places.find(p => p.PlaceId == match.PlaceId)
+                                                let date = new Date(match.When);
+                                                return <RichCell 
+                                                caption={place.Name}
+                                                text={`${date.toLocaleDateString()} в ${date.toLocaleTimeString()} `}
+                                                >
+                                                    {`${match.Team1.Name} - ${match.Team2.Name}`} 
+                                                </RichCell>
+                                            })}
+                                       </List>
+                                       :
+                                       <SimpleCell>Нет расписания в группе</SimpleCell>
+                               }
+                                   </Group>
+                               }
+                                )}
+                            </List>
+                        </Group>
+                    )
                 }; break;
                 case "view":{}; break;
                 case "add":{}; break;

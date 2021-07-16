@@ -246,7 +246,7 @@ const App = (props) => {
 	const CellClick = (item) => {
         
         props.setSelectedTournament(item);
-        props.setTournamentMode("edit");
+        props.setTournamentMode("view");
 		// надо заполнять TournamentGroups!
 		props.setActiveMenuItem("tournamentitem");
 		//toMenuName="tournamentadmin" selected={"tournamentadmin" === props.mainMenu.activeItem.name} data-story="tournamentadmin"
@@ -411,8 +411,9 @@ const App = (props) => {
 								</PanelHeader>
 								<Group>
 									<TournamentItem 
-									// mode={props.tournament.mode}
-									mode="view"
+									mode={props.tournament.mode}
+									//Tab="shedule"
+									//mode="view"
 									></TournamentItem>
 								</Group>
 							</Panel>

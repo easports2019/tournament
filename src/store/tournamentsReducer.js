@@ -259,7 +259,7 @@ let tournamentReducer = (state = initState, action) => {
             };
         }
         case TOURNAMENT_SET_TOURNAMENTTEAMS: {
-debugger
+
             let newTGroups = [];
             
 

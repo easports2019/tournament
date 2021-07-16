@@ -894,11 +894,11 @@ export const BidTeamAPI = {
 
 export const MatchAPI = {
     addMatch(matchInfo, userprofile, hours, minutes) {
-        debugger 
+        
         //new Date()
         matchInfo.When = new Date(matchInfo.When.year, matchInfo.When.month - 1, matchInfo.When.day, hours, minutes );
         return PostJsonInstance.post("Match/Add" + authQueryString, JSON.stringify({ match: { ...matchInfo }, userProfile: { ...userprofile } })).then(data => {
-            debugger
+            
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
@@ -908,11 +908,11 @@ export const MatchAPI = {
     },
     
     delMatch(matchInfo, userprofile, hours, minutes) {
-        debugger 
+        
         //new Date()
         matchInfo.When = new Date(matchInfo.When.year, matchInfo.When.month - 1, matchInfo.When.day, hours, minutes );
         return PostJsonInstance.post("Match/Del" + authQueryString, JSON.stringify({ match: { ...matchInfo }, userProfile: { ...userprofile } })).then(data => {
-            debugger
+            
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
@@ -922,7 +922,7 @@ export const MatchAPI = {
     },
     
     getAllMatchesByTournament(tournament, userprofile) {
-        debugger 
+        
         let tournamentToSend = {
             Id: tournament.Id
         }
@@ -930,11 +930,11 @@ export const MatchAPI = {
         //matchInfo.When = new Date(matchInfo.When.year, matchInfo.When.month - 1, matchInfo.When.day, hours, minutes );
         //return PostJsonInstance.post("Match/GetByTournament" + authQueryString, JSON.stringify({ tournament: { ...tourn }, userProfile: { ...userprofile } })).then(data => {
         return PostJsonInstance.post("Match/GetByTournament" + authQueryString, JSON.stringify({ tournament: { ...tournamentToSend }, userProfile: { ...userprofile } })).then(data => {
-            debugger
+            
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {
-                debugger
+                
                 return errorObj(error)
             })
     },
@@ -944,7 +944,7 @@ export const MatchAPI = {
 
 export const TournamentAPI = {
     getAllTournamentsInCityByCityUmbracoId(cityUmbracoId) {
-        debugger
+        
         let formData = new FormData();
         //formData.append("startindex", startindex);
         formData.append("cityumbracoid", cityUmbracoId);

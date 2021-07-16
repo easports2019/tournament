@@ -81,9 +81,9 @@ export const getAllMatchesByTournament = (tournament = null, userProfile = null,
                 if (authQueryString && authQueryString.length > 0)
                 MatchAPI.getAllMatchesByTournament(tournament, userProfile)
                         .then(pl => {
-                            debugger
+                            
                             if (pl && pl.data && pl.data.length > 0) {
-                                debugger
+                                
                                 dispatch(setAllMatches(pl.data));
                                 dispatch(setGlobalPopout(false))
                             }
@@ -115,7 +115,7 @@ export const addMatchToShedule = (match = null, userProfile = null, hours = 0, m
         if ((match != null) && (userProfile != null)) 
             {
                 if (authQueryString && authQueryString.length > 0){
-                debugger
+                
                     MatchAPI.addMatch(match, userProfile, Number(hours) > 21 ? 24-Number(hours) : Number(hours)+3 , minutes)
                         .then(pl => {
                             if (pl && pl.data.length > 0) {
@@ -153,7 +153,7 @@ export const delMatchFromShedule = (match = null, userProfile = null, hours = 0,
         if ((match != null) && (userProfile != null)) 
             {
                 if (authQueryString && authQueryString.length > 0){
-                debugger
+                
                     MatchAPI.delMatch(match, userProfile, Number(hours) > 21 ? 24-Number(hours) : Number(hours)+3 , minutes)
                         .then(pl => {
                             if (pl && pl.data.length > 0) {
