@@ -130,6 +130,7 @@ const TournamentItem = (props) => {
                     <Panel id="shedule">
                         <Tabs mode="buttons">
                             <TabsItem onClick={() => setCurrentTab("shedule")}>Матчи</TabsItem>
+                            <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
                             <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
                         </Tabs>
                         <FormLayout>
@@ -145,6 +146,7 @@ const TournamentItem = (props) => {
                         <Group>
                             <Tabs mode="buttons">
                                 <TabsItem onClick={() => setCurrentTab("shedule")}>Матчи</TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
                                 <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
                             </Tabs>
                             <FormItem top="Ваш город">
@@ -170,6 +172,29 @@ const TournamentItem = (props) => {
                             </FormItem>
                             <FormItem top="Регламент турнира">
                                 <InfoRow>{props.tournaments.selected.Reglament}</InfoRow>
+                            </FormItem>
+                            <Group header={<Header mode="secondary">Группы</Header>}>
+                                {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
+                                    <List>
+                                        {props.tournaments.selected.TournamentGroups.map((item) => <InfoRow>{item.Name}</InfoRow>)}
+                                    </List>
+                                    :
+                                    <FormItem>
+                                        <InfoRow>Нет групп</InfoRow>
+                                    </FormItem>
+                                }
+                            </Group>
+                        </Group>
+                    </Panel>
+                    <Panel id="tables">
+                        <Group>
+                            <Tabs mode="buttons">
+                                <TabsItem onClick={() => setCurrentTab("shedule")}>Матчи</TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
+                            </Tabs>
+                            <FormItem top="Ваш город">
+                                <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
                             </FormItem>
                             <Group header={<Header mode="secondary">Группы</Header>}>
                                 {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
