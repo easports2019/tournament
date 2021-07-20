@@ -91,6 +91,8 @@ const Shedule = (props) => {
             PlaceId: selectedPlace,
             Team1Id: selectedTeam1,
             Team2Id: selectedTeam2,
+            BidTeamToTournamentId1: -1,
+            BidTeamToTournamentId2: -1,
             Team1Goals: selectedTeam1Goals,
             Team2Goals: selectedTeam2Goals,
         }

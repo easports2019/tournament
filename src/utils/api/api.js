@@ -897,7 +897,7 @@ export const MatchAPI = {
         
         //new Date()
         matchInfo.When = new Date(matchInfo.When.year, matchInfo.When.month - 1, matchInfo.When.day, hours, minutes );
-        return PostJsonInstance.post("Match/Add" + authQueryString, JSON.stringify({ match: { ...matchInfo }, userProfile: { ...userprofile } })).then(data => {
+        return PostJsonInstance.post("Match/Add2" + authQueryString, JSON.stringify({ match: { ...matchInfo }, userProfile: { ...userprofile } })).then(data => {
             
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
