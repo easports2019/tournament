@@ -8,7 +8,7 @@ import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
     editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, acceptTeamToTournamentBid, declineTeamToTournamentBid,
-    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament,
+    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament, setTournamentMatchLength,
 } from '../../../../store/tournamentsReducer'
 import {
     getTeamInfo, setTeamMode,
@@ -91,8 +91,8 @@ const TournamentItem = (props) => {
     const SelectTournamentGroup = (newGroup, oldGroup, team) => {
         props.changeTournamentTeamBidTournamentGroup(team, newGroup, oldGroup, props.myProfile)
     }
-
-
+    
+    
     const SetPopup = (team, oldTg) => {
 
         setActivePopout(
@@ -248,6 +248,14 @@ const TournamentItem = (props) => {
                         <FormItem top="Регламент турнира">
                             <Textarea defaultValue={props.tournaments.selected.Reglament} value={props.tournaments.selected.Reglament} placeholder="Регламент турнира" onChange={e => props.setTournamentReglament(e.currentTarget.value)} />
                         </FormItem>
+                        <FormItem top="Длительность матча, минут">
+                            <Input type="Number"
+                            defaultValue={props.tournaments.selected.MatchLength} 
+                            value={props.tournaments.selected.MatchLength} 
+                            placeholder="60" 
+                            onChange={e => props.setTournamentMatchLength(e.currentTarget.value)}
+                            ></Input>
+                        </FormItem>
                         {/* <FormItem top="Загрузите ваше фото">
                             <File before={<Icon24Camera />} controlSize="m">
                                 Выбрать фото
@@ -318,6 +326,14 @@ const TournamentItem = (props) => {
                                 </FormItem>
                                 <FormItem top="Регламент турнира">
                                     <Textarea defaultValue={props.tournaments.selected.Reglament} placeholder="Регламент турнира" onChange={e => props.setTournamentReglament(e.currentTarget.value)} />
+                                </FormItem>
+                                <FormItem top="Длительность матча, минут">
+                                    <Input type="Number"
+                                    defaultValue={props.tournaments.selected.MatchLength} 
+                                    value={props.tournaments.selected.MatchLength} 
+                                    placeholder="60" 
+                                    onChange={e => props.setTournamentMatchLength(e.currentTarget.value)}
+                                    ></Input>
                                 </FormItem>
                                 {/* <FormItem top="Загрузите ваше фото">
                             <File before={<Icon24Camera />} controlSize="m">
@@ -486,7 +502,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament,
+    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament, setTournamentMatchLength, 
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, acceptTeamToTournamentBid, declineTeamToTournamentBid,
     delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids,
 })(TournamentItem)

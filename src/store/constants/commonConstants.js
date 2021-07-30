@@ -107,6 +107,7 @@ export const EmptyTournament = {
     WhenEnd: {day: currentDate.getDay(), month: currentDate.getMonth()+1, year: currentDate.getFullYear()},
     Details: "",
     Reglament: "", 
+    MatchLength: 60,
     Logo: "",
     CityId: -1,
     TournamentGroups: [], 

@@ -8,6 +8,7 @@ import {
 import {
     setMode, setAccess, addMatchToShedule, getAllMatchesByTournament, delMatchFromShedule,
 } from '../../../../store/matchReducer'
+import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
 
 
 // const SheduleContainer = (props) => {
@@ -57,6 +58,7 @@ const Shedule = (props) => {
     const [selectedTeam1Goals, setTeam1Goals] = React.useState(0);
     const [selectedTeam2Goals, setTeam2Goals] = React.useState(0);
     const [selectedPlace, setSelectedPlace] = React.useState(0);
+    const [selectedPlayed, setSelectedPlayed] = React.useState(false);
     const [selectedDate, setSelectedDate] = React.useState({ day: new Date().getDate(), month: new Date().getMonth() + 1, year: new Date().getFullYear() });
     const [selectedHour, setSelectedHour] = React.useState([hours[0].value]);
     const [selectedMinute, setSelectedMinute] = React.useState(minutes[0].value);
@@ -95,6 +97,7 @@ const Shedule = (props) => {
             BidTeamToTournamentId2: -1,
             Team1Goals: selectedTeam1Goals,
             Team2Goals: selectedTeam2Goals,
+            Played: selectedPlayed,
         }
 
         props.addMatchToShedule(match, props.myProfile, selectedHour, selectedMinute);
@@ -113,6 +116,7 @@ const Shedule = (props) => {
             PlaceId: selectedPlace,
             Team1Id: selectedTeam1,
             Team2Id: selectedTeam2,
+            Played: selectedPlayed,
         }
 
         props.delMatchFromShedule(match, props.myProfile, selectedHour, selectedMinute)
@@ -143,6 +147,7 @@ const Shedule = (props) => {
         setSelectedTeam1(match.Team1.Id)
         setSelectedTeam2(match.Team2.Id)
         setSelectedPlace(match.PlaceId)
+        setSelectedPlayed(match.Played)
         setSelectedDate({ day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear() })
         setSelectedHour(date.getHours())
         setSelectedMinute(date.getMinutes())
@@ -173,10 +178,17 @@ const Shedule = (props) => {
                                                     let date = new Date(match.When);
                                                     return <RichCell
                                                         caption={place.Name}
-                                                        text={`${date.toLocaleDateString()} в ${date.toLocaleTimeString()} `}
+                                                        text={
+                                                            match.Played ?
+                                                            <span style={{"color": "green"}}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :
+                                                            <span style={{"color": "blue"}}>Состоится {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span>
+                                                        }
                                                         onClick={() => goToEditMatch(match)}
                                                     >
-                                                        {`${match.Team1.Name} - ${match.Team2.Name}`}
+                                                        {match.Played ? 
+                                                        `${match.Team1.Name} ${match.Team1Goals} - ${match.Team2Goals} ${match.Team2.Name}` :
+                                                        `${match.Team1.Name} - ${match.Team2.Name}`
+                                                        }
                                                     </RichCell>
                                                 })}
                                             </List>
@@ -292,7 +304,40 @@ const Shedule = (props) => {
                                     }}
                                 />
                             </FormItem>
+                            <FormItem top="Счёт">
+                                <Div>Команда 1</Div>
+                                <CustomSelect
+                                    placeholder="0"
+                                    title="Команда 1"
+                                    options={teamGoals}
+                                    value={selectedTeam1Goals}
+                                    onChange={(option) => setTeam1Goals(option.currentTarget.value)}
+                                    renderOption={({ ...otherProps }) => {
+                                        return (
+                                            <CustomSelectOption
 
+                                                {...otherProps}
+                                            />
+                                        );
+                                    }}
+                                />
+                                <Div>Команда 2</Div>
+                                <CustomSelect
+                                    placeholder="0"
+                                    title="Команда 2"
+                                    options={teamGoals}
+                                    value={selectedTeam2Goals}
+                                    onChange={(option) => setTeam2Goals(option.currentTarget.value)}
+                                    renderOption={({ ...otherProps }) => {
+                                        return (
+                                            <CustomSelectOption
+
+                                                {...otherProps}
+                                            />
+                                        );
+                                    }}
+                                />
+                            </FormItem>
                             <FormItem top="Место">
                                 <CustomSelect
                                     placeholder="Не выбрано"
@@ -310,6 +355,9 @@ const Shedule = (props) => {
                                         );
                                     }}
                                 />
+                            </FormItem>
+                            <FormItem top="Матч сыгран">
+                                <Checkbox checked={selectedPlayed} onChange={() => setSelectedPlayed(!selectedPlayed)}>Сыгран</Checkbox>
                             </FormItem>
                             <Button onClick={() => props.setMode("list")}>Отмена</Button>
                             <Button onClick={() => addMatch()}>Добавить</Button>
@@ -462,6 +510,9 @@ const Shedule = (props) => {
                                         );
                                     }}
                                 />
+                            </FormItem>
+                            <FormItem top="Матч сыгран">
+                                <Checkbox checked={selectedPlayed} onChange={() => setSelectedPlayed(!selectedPlayed)}>Сыгран</Checkbox>
                             </FormItem>
                             <Button onClick={() => props.setMode("list")}>Отмена</Button>
                             <Button onClick={() => addMatch()}>Сохранить</Button>

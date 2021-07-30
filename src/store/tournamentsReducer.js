@@ -14,6 +14,7 @@ const TOURNAMENT_SET_TOURNAMENTTEAMS = "TOURNAMENT_SET_TOURNAMENTTEAMS";
 const TOURNAMENT_SET_MYTOURNAMENT = "TOURNAMENT_SET_MYTOURNAMENT";
 const TOURNAMENT_DELETE_MYTOURNAMENT = "TOURNAMENT_DELETE_MYTOURNAMENT";
 const TOURNAMENT_SET_MODE = "TOURNAMENT_SET_MODE";
+const TOURNAMENT_MATCH_LENGTH = "TOURNAMENT_MATCH_LENGTH";
 const TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS = "TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS";
 const TOURNAMENT_SET_WHEN_BEGIN = "TOURNAMENT_SET_WHEN_BEGIN";
 const TOURNAMENT_SET_WHEN_END = "TOURNAMENT_SET_WHEN_END";
@@ -121,6 +122,14 @@ let tournamentReducer = (state = initState, action) => {
                 selected: {...emptyTournament},
             };
         }
+        case TOURNAMENT_MATCH_LENGTH: {
+            return {
+                ...state,
+                selected: {...state.selected, 
+                MatchLength: action.value,
+                },
+            };
+        }
         case TOURNAMENT_SET_ALL_CITYTOURNAMENTADMINS: {
             return {
                 ...state,
@@ -134,7 +143,6 @@ let tournamentReducer = (state = initState, action) => {
             };
         }
         case TOURNAMENT_DEL_BID: {
-            debugger
             return {
                 ...state,
                 bidsNew: [...state.bidsNew.filter(x => x.Id != action.bid.Id)],
@@ -389,6 +397,13 @@ export const setTournamentMode = (mode) => {
 export const setTournamentName = (value) => {
     return {
         type: TOURNAMENT_SET_NAME,
+        value
+    }
+}
+
+export const setTournamentMatchLength = (value) => {
+    return {
+        type: TOURNAMENT_MATCH_LENGTH,
         value
     }
 }

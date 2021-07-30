@@ -10,6 +10,7 @@ let demoMatch = Match;
 const MATCH_SET_ALL_MATCHES = "MATCH_SET_ALL_MATCHES";
 const MATCH_SET_ACCESS = "MATCH_SET_ACCESS";
 const MATCH_SET_MODE = "MATCH_SET_MODE";
+const MATCH_SET_PLAYED = "MATCH_SET_PLAYED";
 
 
 const currentDate = new Date();
@@ -37,6 +38,12 @@ let matchReducer = (state = initState, action) => {
                 access: action.access,
             };
         }
+        case MATCH_SET_PLAYED: {
+            return {
+                ...state,
+                access: action.played,
+            };
+        }
         case MATCH_SET_MODE: {
             return {
                 ...state,
@@ -61,6 +68,13 @@ export const setAccess = (access) => {
     return {
         type: MATCH_SET_ACCESS,
         access
+    }
+}
+
+export const setPlayed = (played) => {
+    return {
+        type: MATCH_SET_PLAYED,
+        played
     }
 }
 
