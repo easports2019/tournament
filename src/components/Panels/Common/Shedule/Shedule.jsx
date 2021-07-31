@@ -58,6 +58,7 @@ const Shedule = (props) => {
     const [selectedTeam1Goals, setTeam1Goals] = React.useState(0);
     const [selectedTeam2Goals, setTeam2Goals] = React.useState(0);
     const [selectedPlace, setSelectedPlace] = React.useState(0);
+    const [selectedId, setSelectedId] = React.useState(0);
     const [selectedPlayed, setSelectedPlayed] = React.useState(false);
     const [selectedDate, setSelectedDate] = React.useState({ day: new Date().getDate(), month: new Date().getMonth() + 1, year: new Date().getFullYear() });
     const [selectedHour, setSelectedHour] = React.useState([hours[0].value]);
@@ -81,15 +82,13 @@ const Shedule = (props) => {
         })
     })
 
-    let addMatch = () => {
+    let addMatch = (editId) => {
 
-        let match = {
+        let match = (editId >= 0) ?
+        {
+            Id: editId,
             When: selectedDate,
             TournamentGroupId: selectedTournamentGroup,
-            // TournamentGroup: {
-            //     Id: selectedTournamentGroup,
-            //     Tournament: {...props.tournaments.selected}
-            // },
             PlaceId: selectedPlace,
             Team1Id: selectedTeam1,
             Team2Id: selectedTeam2,
@@ -98,7 +97,19 @@ const Shedule = (props) => {
             Team1Goals: selectedTeam1Goals,
             Team2Goals: selectedTeam2Goals,
             Played: selectedPlayed,
-        }
+        } :
+        {
+            When: selectedDate,
+            TournamentGroupId: selectedTournamentGroup,
+            PlaceId: selectedPlace,
+            Team1Id: selectedTeam1,
+            Team2Id: selectedTeam2,
+            BidTeamToTournamentId1: -1,
+            BidTeamToTournamentId2: -1,
+            Team1Goals: selectedTeam1Goals,
+            Team2Goals: selectedTeam2Goals,
+            Played: selectedPlayed,
+        };
 
         props.addMatchToShedule(match, props.myProfile, selectedHour, selectedMinute);
     }
@@ -108,6 +119,7 @@ const Shedule = (props) => {
 
         let match = {
             When: selectedDate,
+            Id: selectedId,
             TournamentGroupId: selectedTournamentGroup,
             // TournamentGroup: {
             //     Id: selectedTournamentGroup,
@@ -142,6 +154,7 @@ const Shedule = (props) => {
 
         setSelectedTournamentGroupTeamList(getGroup(match.TournamentGroupId).Teams.map(team => { return { value: team.Id, label: team.Name } }));
         setSelectedTournamentGroup(match.TournamentGroupId);
+        setSelectedId(match.Id);
         setTeam1Goals(match.Team1Goals);
         setTeam2Goals(match.Team2Goals);
         setSelectedTeam1(match.Team1.Id)
@@ -360,7 +373,7 @@ const Shedule = (props) => {
                                 <Checkbox checked={selectedPlayed} onChange={() => setSelectedPlayed(!selectedPlayed)}>Сыгран</Checkbox>
                             </FormItem>
                             <Button onClick={() => props.setMode("list")}>Отмена</Button>
-                            <Button onClick={() => addMatch()}>Добавить</Button>
+                            <Button onClick={() => addMatch(-1)}>Добавить</Button>
                         </Group>
                     )
                 }; break;
@@ -515,7 +528,7 @@ const Shedule = (props) => {
                                 <Checkbox checked={selectedPlayed} onChange={() => setSelectedPlayed(!selectedPlayed)}>Сыгран</Checkbox>
                             </FormItem>
                             <Button onClick={() => props.setMode("list")}>Отмена</Button>
-                            <Button onClick={() => addMatch()}>Сохранить</Button>
+                            <Button onClick={() => addMatch(selectedId)}>Сохранить</Button>
                             <Button onClick={() => delCurrentMatch()} align="right" mode="destructive">Удалить</Button>
                         </Group>
                     )
