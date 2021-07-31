@@ -32,6 +32,7 @@ const TOURNAMENT_SET_MY_TOURNAMENTS = "TOURNAMENT_SET_MY_TOURNAMENTS";
 const TOURNAMENT_SET_TOURNAMENT_BY_ID = "TOURNAMENT_SET_TOURNAMENT_BY_ID";
 const TOURNAMENT_SET_NEW_BIDS = "TOURNAMENT_SET_NEW_BIDS";
 const TOURNAMENT_DEL_BID = "TOURNAMENT_DEL_BID";
+const TOURNAMENT_SET_SELECTED_TOURNAMENT_TABLES = "TOURNAMENT_SET_SELECTED_TOURNAMENT_TABLES";
 
 const currentDate = new Date();
 const emptyTournament = EmptyTournament
@@ -41,6 +42,7 @@ const initState = {
     bidsNew: [], // новые заявки на турниры
     selectedForView: {}, // выбранный турнир для просмотра в пользовательском режиме (а надо ли?)
     selected: emptyTournament, // выбранный для просмотра/создания/редактирования турнир
+    selectedTables: [],  // турнирные таблицы выбранного турнира для просмотра пользователями
     myTournaments: [], // те, что я создал
     cityTournamentAdmins: [], // админы текущего города
     mode: "view", // режим отображения турнира ("view" - просмотр, "add" - добавление, "edit" - редактирование)
@@ -85,6 +87,13 @@ let tournamentReducer = (state = initState, action) => {
             return {
                 ...state,
                 myTournaments: [...state.myTournaments.filter(tour => tour.Id != action.mytournament.Id )],
+            };
+        }
+        case TOURNAMENT_SET_SELECTED_TOURNAMENT_TABLES: {
+            
+            return {
+                ...state,
+                selectedTables: [...action.tables],
             };
         }
         case TOURNAMENT_SET_SELECTED_TOURNAMENT: {
@@ -324,6 +333,13 @@ export const setTournaments = (tournaments) => {
     return {
         type: TOURNAMENT_SET_ALL_TOURNAMENTS,
         tournaments
+    }
+}
+
+export const setTournamentTables = (tables) => {
+    return {
+        type: TOURNAMENT_SET_SELECTED_TOURNAMENT_TABLES,
+        tables
     }
 }
 
@@ -1092,6 +1108,44 @@ export const getTournamentsByCityId = (cityUmbId = -1) => {
         }
         else {
             dispatch(setErrorMessage("Не удалось загрузить турниры, в функцию передан null"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// возвращает с сервера турнирные таблицы групп/лиг выбранного турнира
+export const getTournamentTablesByTournamentId = (tournamentId = -1) => {
+    return dispatch => {
+        if (tournamentId != null){
+            if (authQueryString && authQueryString.length > 0)
+            
+                
+            TournamentAPI.getTournamentTablesByTournamentId(tournamentId)
+                    .then(pl => {
+                        if (pl && pl.data.length > 0) {
+                            
+                            dispatch(setTournamentTables(pl.data));
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось загрузить турнирные таблицы"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось загрузить турнирные таблицы: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+            
+            else {
+                dispatch(setErrorMessage("Не удалось загрузить турнирные таблицы"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось загрузить турнирные таблицы, в функцию передан null"))
             dispatch(setGlobalPopout(false))
 
         }

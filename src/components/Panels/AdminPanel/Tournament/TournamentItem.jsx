@@ -8,7 +8,7 @@ import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
     editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, acceptTeamToTournamentBid, declineTeamToTournamentBid,
-    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament, setTournamentMatchLength,
+    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament, setTournamentMatchLength, getTournamentTablesByTournamentId,
 } from '../../../../store/tournamentsReducer'
 import {
     getTeamInfo, setTeamMode,
@@ -32,21 +32,23 @@ const TournamentItem = (props) => {
     // let [isDraggable, setIsDraggable] = useState(true);
     // let [showArrows, setShowArrows] = useState(true);
 
-// это надо потом удалить. я вручную задал отображение вкладки расписания при открытии в режиме просмотра (для пользователей)
+    // это надо потом удалить. я вручную задал отображение вкладки расписания при открытии в режиме просмотра (для пользователей)
 
-     useEffect(() => {
+    useEffect(() => {
         props.getTournamentNewBids(props.tournaments.selected, props.myProfile)
         props.getTournamentGroups(props.tournaments.selected)
+        props.getTournamentTablesByTournamentId(props.tournaments.selected.Id)
 
     }, props.tournaments.selected)
-    
+
     useEffect(() => {
-        props.mode == "view" ? setCurrentTab("shedule") : setCurrentTab("info") 
+        props.mode == "view" ? setCurrentTab("shedule") : setCurrentTab("info")
     }, props.mode)
 
     useEffect(() => {
         props.getTournamentTeams(props.tournaments.selected, props.myProfile)
     }, props.tournaments.selected.TournamentGroups)
+
 
     const addToTournament = () => {
 
@@ -91,8 +93,8 @@ const TournamentItem = (props) => {
     const SelectTournamentGroup = (newGroup, oldGroup, team) => {
         props.changeTournamentTeamBidTournamentGroup(team, newGroup, oldGroup, props.myProfile)
     }
-    
-    
+
+
     const SetPopup = (team, oldTg) => {
 
         setActivePopout(
@@ -199,7 +201,57 @@ const TournamentItem = (props) => {
                             <Group header={<Header mode="secondary">Группы</Header>}>
                                 {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
                                     <List>
-                                        {props.tournaments.selected.TournamentGroups.map((item) => <InfoRow>{item.Name}</InfoRow>)}
+                                        {props.tournaments.selected.TournamentGroups.map((item) => {
+                                            if (item.Name != "") {
+                                                let table = props.tournaments.selectedTables.filter(tT => tT.TournamentGroupId == item.Id);
+                                                table.sort((firstItem, secondItem) => secondItem.Points - firstItem.Points);
+                                                let index = 1;
+
+                                                return (
+                                                    <>
+                                                        <InfoRow>Группа/лига: {item.Name}</InfoRow>
+                                                        <table>
+                                                            <tr>
+                                                                <th>Место</th>
+                                                                <th>Команда</th>
+                                                                <th>И</th>
+                                                                <th>В</th>
+                                                                <th>П</th>
+                                                                <th>Н</th>
+                                                                <th>МЗ</th>
+                                                                <th>МП</th>
+                                                                <th>МР</th>
+                                                                <th>О</th>
+                                                            </tr>
+                                                            {
+                                                                table.map((row) => {
+                                                                    return (
+                                                                        <tr>
+                                                                            <td>{index++}</td>
+                                                                            <td>{row.TeamName}</td>
+                                                                            <td>{row.Games}</td>
+                                                                            <td>{row.Wins}</td>
+                                                                            <td>{row.Loses}</td>
+                                                                            <td>{row.Draws}</td>
+                                                                            <td>{row.GoalsScored}</td>
+                                                                            <td>{row.GoalsMissed}</td>
+                                                                            <td>{row.GoalsDifference}</td>
+                                                                            <td>{row.Points}</td>
+                                                                        </tr>
+                                                                    )
+
+                                                                }
+
+                                                                )}
+                                                        </table>
+                                                    </>
+
+                                                )
+                                            }
+                                            else
+                                                return null;
+                                        })
+                                        }
                                     </List>
                                     :
                                     <FormItem>
@@ -250,10 +302,10 @@ const TournamentItem = (props) => {
                         </FormItem>
                         <FormItem top="Длительность матча, минут">
                             <Input type="Number"
-                            defaultValue={props.tournaments.selected.MatchLength} 
-                            value={props.tournaments.selected.MatchLength} 
-                            placeholder="60" 
-                            onChange={e => props.setTournamentMatchLength(e.currentTarget.value)}
+                                defaultValue={props.tournaments.selected.MatchLength}
+                                value={props.tournaments.selected.MatchLength}
+                                placeholder="60"
+                                onChange={e => props.setTournamentMatchLength(e.currentTarget.value)}
                             ></Input>
                         </FormItem>
                         {/* <FormItem top="Загрузите ваше фото">
@@ -329,10 +381,10 @@ const TournamentItem = (props) => {
                                 </FormItem>
                                 <FormItem top="Длительность матча, минут">
                                     <Input type="Number"
-                                    defaultValue={props.tournaments.selected.MatchLength} 
-                                    value={props.tournaments.selected.MatchLength} 
-                                    placeholder="60" 
-                                    onChange={e => props.setTournamentMatchLength(e.currentTarget.value)}
+                                        defaultValue={props.tournaments.selected.MatchLength}
+                                        value={props.tournaments.selected.MatchLength}
+                                        placeholder="60"
+                                        onChange={e => props.setTournamentMatchLength(e.currentTarget.value)}
                                     ></Input>
                                 </FormItem>
                                 {/* <FormItem top="Загрузите ваше фото">
@@ -496,13 +548,14 @@ const mapStateToProps = (state) => {
     return {
         tournaments: state.tournamentsEntity,
         SelectedName: state.tournamentsEntity.selected.Name,
+        TournamentTables: state.tournamentsEntity.selectedTables,
         cities: state.cityEntity.cities,
         myProfile: state.profileEntity.myProfile,
     }
 }
 
 export default connect(mapStateToProps, {
-    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament, setTournamentMatchLength, 
+    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament, setTournamentMatchLength,
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, acceptTeamToTournamentBid, declineTeamToTournamentBid,
-    delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids,
+    delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, getTournamentTablesByTournamentId,
 })(TournamentItem)

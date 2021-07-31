@@ -956,5 +956,20 @@ export const TournamentAPI = {
 
                 return errorObj(error)
             })
+    },
+    
+    
+    getTournamentTablesByTournamentId(tournamentId) {
+        
+        let formData = new FormData();
+        formData.append("tournamentId", tournamentId);
+        return PostJsonInstance.post("Tables/GetByTournamentId" + authQueryString, formData).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
     }
 }
