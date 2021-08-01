@@ -85,31 +85,31 @@ const Shedule = (props) => {
     let addMatch = (editId) => {
 
         let match = (editId >= 0) ?
-        {
-            Id: editId,
-            When: selectedDate,
-            TournamentGroupId: selectedTournamentGroup,
-            PlaceId: selectedPlace,
-            Team1Id: selectedTeam1,
-            Team2Id: selectedTeam2,
-            BidTeamToTournamentId1: -1,
-            BidTeamToTournamentId2: -1,
-            Team1Goals: selectedTeam1Goals,
-            Team2Goals: selectedTeam2Goals,
-            Played: selectedPlayed,
-        } :
-        {
-            When: selectedDate,
-            TournamentGroupId: selectedTournamentGroup,
-            PlaceId: selectedPlace,
-            Team1Id: selectedTeam1,
-            Team2Id: selectedTeam2,
-            BidTeamToTournamentId1: -1,
-            BidTeamToTournamentId2: -1,
-            Team1Goals: selectedTeam1Goals,
-            Team2Goals: selectedTeam2Goals,
-            Played: selectedPlayed,
-        };
+            {
+                Id: editId,
+                When: selectedDate,
+                TournamentGroupId: selectedTournamentGroup,
+                PlaceId: selectedPlace,
+                Team1Id: selectedTeam1,
+                Team2Id: selectedTeam2,
+                BidTeamToTournamentId1: -1,
+                BidTeamToTournamentId2: -1,
+                Team1Goals: selectedTeam1Goals,
+                Team2Goals: selectedTeam2Goals,
+                Played: selectedPlayed,
+            } :
+            {
+                When: selectedDate,
+                TournamentGroupId: selectedTournamentGroup,
+                PlaceId: selectedPlace,
+                Team1Id: selectedTeam1,
+                Team2Id: selectedTeam2,
+                BidTeamToTournamentId1: -1,
+                BidTeamToTournamentId2: -1,
+                Team1Goals: selectedTeam1Goals,
+                Team2Goals: selectedTeam2Goals,
+                Played: selectedPlayed,
+            };
 
         props.addMatchToShedule(match, props.myProfile, selectedHour, selectedMinute);
     }
@@ -193,14 +193,14 @@ const Shedule = (props) => {
                                                         caption={place.Name}
                                                         text={
                                                             match.Played ?
-                                                            <span style={{"color": "green"}}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :
-                                                            <span style={{"color": "blue"}}>Состоится {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span>
+                                                                <span style={{ "color": "green" }}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :
+                                                                <span style={{ "color": "blue" }}>Состоится {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span>
                                                         }
                                                         onClick={() => goToEditMatch(match)}
                                                     >
-                                                        {match.Played ? 
-                                                        `${match.Team1.Name} ${match.Team1Goals} - ${match.Team2Goals} ${match.Team2.Name}` :
-                                                        `${match.Team1.Name} - ${match.Team2.Name}`
+                                                        {match.Played ?
+                                                            `${match.Team1.Name} ${match.Team1Goals} - ${match.Team2Goals} ${match.Team2.Name}` :
+                                                            `${match.Team1.Name} - ${match.Team2.Name}`
                                                         }
                                                     </RichCell>
                                                 })}
@@ -542,26 +542,33 @@ const Shedule = (props) => {
                         <Group>
                             <List>
                                 {allMatchesInAllGroups.map(groupAndMatchesItem => {
-                                    
+
                                     return (
                                         <Group header={<Header mode="secondary">{groupAndMatchesItem.TournamentGroup.Name}</Header>}>
                                             {
-                                                groupAndMatchesItem.Matches.length > 0 
-                                                ?
-                                                <List>
-                                                    {groupAndMatchesItem.Matches.map(match => {
-                                                        let place = props.places.find(p => p.PlaceId == match.PlaceId)
-                                                        let date = new Date(match.When);
-                                                        return <RichCell
-                                                            caption={place.Name}
-                                                            text={`${date.toLocaleDateString()} в ${date.toLocaleTimeString()} `}
-                                                        >
-                                                            {`${match.Team1.Name} - ${match.Team2.Name}`}
-                                                        </RichCell>
-                                                    })}
-                                                </List>
-                                                :
-                                                <SimpleCell>Нет расписания в группе</SimpleCell>
+                                                groupAndMatchesItem.Matches.length > 0
+                                                    ?
+                                                    <List>
+                                                        {groupAndMatchesItem.Matches.map(match => {
+                                                            let place = props.places.find(p => p.PlaceId == match.PlaceId)
+                                                            let date = new Date(match.When);
+                                                            return <RichCell
+                                                                caption={place.Name}
+                                                                text={
+                                                                    match.Played ?
+                                                                        <span style={{ "color": "green" }}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :
+                                                                        <span style={{ "color": "blue" }}>Состоится {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span>
+                                                                }
+                                                            >
+                                                                {match.Played ?
+                                                                    `${match.Team1.Name} ${match.Team1Goals} - ${match.Team2Goals} ${match.Team2.Name}` :
+                                                                    `${match.Team1.Name} - ${match.Team2.Name}`
+                                                                }
+                                                            </RichCell>
+                                                        })}
+                                                    </List>
+                                                    :
+                                                    <SimpleCell>Нет расписания в группе</SimpleCell>
                                             }
                                         </Group>
                                     )
