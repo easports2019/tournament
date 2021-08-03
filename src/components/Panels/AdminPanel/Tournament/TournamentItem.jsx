@@ -204,15 +204,14 @@ const TournamentItem = (props) => {
                                         {props.tournaments.selected.TournamentGroups.map((item) => {
                                             if (item.Name != "") {
                                                 let table = props.tournaments.selectedTables.filter(tT => tT.TournamentGroupId == item.Id);
-                                                table.sort((firstItem, secondItem) => secondItem.Points - firstItem.Points);
-                                                let index = 1;
+                                                table.sort((firstItem, secondItem) => firstItem.Place - secondItem.Place);
 
                                                 return (
                                                     <>
                                                         <InfoRow>Группа/лига: {item.Name}</InfoRow>
                                                         <table>
                                                             <tr>
-                                                                <th>Место</th>
+                                                                <th>М</th>
                                                                 <th>Команда</th>
                                                                 <th>И</th>
                                                                 <th>В</th>
@@ -227,7 +226,7 @@ const TournamentItem = (props) => {
                                                                 table.map((row) => {
                                                                     return (
                                                                         <tr>
-                                                                            <td>{index++}</td>
+                                                                            <td>{row.Place}</td>
                                                                             <td>{row.TeamName}</td>
                                                                             <td>{row.Games}</td>
                                                                             <td>{row.Wins}</td>

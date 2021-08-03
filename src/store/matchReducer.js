@@ -8,6 +8,7 @@ import { authQueryString } from './../utils/api/server';
 let demoMatch = Match;
 
 const MATCH_SET_ALL_MATCHES = "MATCH_SET_ALL_MATCHES";
+const MATCH_SET_HOT_MATCHES = "MATCH_SET_HOT_MATCHES";
 const MATCH_SET_ACCESS = "MATCH_SET_ACCESS";
 const MATCH_SET_MODE = "MATCH_SET_MODE";
 const MATCH_SET_PLAYED = "MATCH_SET_PLAYED";
@@ -18,6 +19,7 @@ const emptyTournament = EmptyTournament
 
 const initState = {
     matches: [],
+    hot: [],
     selected: {},
     access: "user",
     mode: "list", // режим отображения турнира ("list" - список, "view" - просмотр, "add" - добавление, "edit" - редактирование)
@@ -30,6 +32,13 @@ let matchReducer = (state = initState, action) => {
             return {
                 ...state,
                 matches: [...action.matches],
+            };
+        }
+        case MATCH_SET_HOT_MATCHES: {
+            debugger
+            return {
+                ...state,
+                hot: [...action.matches],
             };
         }
         case MATCH_SET_ACCESS: {
@@ -60,6 +69,13 @@ let matchReducer = (state = initState, action) => {
 export const setAllMatches = (matches) => {
     return {
         type: MATCH_SET_ALL_MATCHES,
+        matches
+    }
+}
+
+export const setHotMatches = (matches) => {
+    return {
+        type: MATCH_SET_HOT_MATCHES,
         matches
     }
 }
@@ -198,6 +214,43 @@ export const delMatchFromShedule = (match = null, userProfile = null, hours = 0,
     }
 }
 
+// возвращает актуальные матчи города
+export const getMatchesInCurrentCity = (userProfile = null) => {
+    return dispatch => {
+        if (userProfile != null) 
+            {
+                if (authQueryString && authQueryString.length > 0){
+                
+                    MatchAPI.getCurrentMatchesByCity(userProfile)
+                        .then(pl => {
+                            debugger
+                            if (pl && pl.data.length > 0) {
+                                dispatch(setHotMatches(pl.data));
+                                dispatch((pl.data));
+                                dispatch(setGlobalPopout(false))
+                            }
+                            else {
+
+                                dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                                dispatch(setGlobalPopout(false))
+                            }
+                        })
+                        .catch(error => {
+
+                            dispatch(setErrorMessage(error))
+                            dispatch(setGlobalPopout(false))
+                        })
+                    }
+                else {
+
+                    dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                    dispatch(setGlobalPopout(false))
+
+                }
+            }
+        
+    }
+}
 
 
 

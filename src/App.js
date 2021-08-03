@@ -8,6 +8,7 @@ import { getAllPlaces, getAllPlacesInCityByCityId } from './store/placeReducer';
 import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
 import { setGlobalPopout } from './store/systemReducer';
 import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
+import { getMatchesInCurrentCity } from './store/matchReducer';
 import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity  } from './store/bidTeamsReducer';
 import { getAllCitiesFromServer } from './store/cityReducer';
 import { setShowAdminTourneyTab } from './store/systemReducer';
@@ -26,6 +27,7 @@ import TeamAdminPanel from './components/Panels/AdminPanel/Team/TeamAdminPanel';
 import TournamentItem from './components/Panels/AdminPanel/Tournament/TournamentItem';
 import TeamItem from './components/Panels/AdminPanel/Team/TeamItem';
 import BidTeamTournamentGroupsList from './components/Panels/AdminPanel/BidTeam/BidTeamTournamentGroupsList';
+import Hot from './components/Panels/Common/Hot/Hot';
 
 
 const App = (props) => {
@@ -137,7 +139,8 @@ const App = (props) => {
 
 	useEffect(() => {
 		if (props.places && props.places.length > 0) {
-
+			
+			props.getMatchesInCurrentCity(props.myProfile);
 		}
 	}, [props.places])
 
@@ -299,25 +302,23 @@ const App = (props) => {
 							<Panel id="main">
 								<PanelHeader
 									left={<BackButton isBack={true} />}
-								//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
 								>
 									Горячее
 								</PanelHeader>
 								<Group>
-									{/* <AddCollectButton isBack={false} toMenuName="addcollect">Создать сбор</AddCollectButton> */}
 									<InfoRow header="Информация">
 										Турниры любительской лиги твоего города
 									</InfoRow>
 								</Group>
 								<Group header={<Header mode="secondary">Матчи</Header>}>
 									<Tabs>
-										<TabsItem after={<Badge mode="prominent" />}>Сегодня</TabsItem>
+										{/* <TabsItem after={<Badge mode="prominent" />}>Сегодня</TabsItem> */}
 										<TabsItem selected after={<Badge mode="prominent" />}>
+											<Hot Matches={props.matches.hot}></Hot>
+        								</TabsItem>
+										{/* <TabsItem after={<Badge mode="prominent" />}>
 											Завтра
-        								</TabsItem>
-										<TabsItem after={<Badge mode="prominent" />}>
-											Позже
-        								</TabsItem>
+        								</TabsItem> */}
 									</Tabs>
 								</Group>
 							</Panel>
@@ -495,6 +496,7 @@ const mapStateToProps = (state) => {
 		tournament: state.tournamentsEntity,
 		team: state.teamsEntity,
 		bidTeams: state.bidTeamsEntity,
+		matches: state.matches,
         tournamentsForBids: state.bidTeamsEntity,
 	}
 }
@@ -502,5 +504,5 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode,
 	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile,
-	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab,
+	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab, getMatchesInCurrentCity,
 })(App);

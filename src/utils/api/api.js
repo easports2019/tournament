@@ -939,6 +939,19 @@ export const MatchAPI = {
             })
     },
     
+    getCurrentMatchesByCity(userProfile) {
+        let formData = new FormData();
+        formData.append("cityumbracoid", userProfile.CityUmbracoId);
+        return PostJsonInstance.post("Match/GetByCity" + authQueryString, formData).then(data => {
+            debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                
+                return errorObj(error)
+            })
+    },
+    
 
 }
 
