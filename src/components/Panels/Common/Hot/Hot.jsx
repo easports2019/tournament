@@ -20,11 +20,11 @@ import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
 
 
 const Hot = (props) => {
-    
+    debugger
     return (
         <Group>
             <List>
-                {props.Matches.map(match => {
+                {props.Matches && props.Matches.map(match => {
                     let date = new Date(match.When);
                     return (
                             <RichCell

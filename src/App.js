@@ -8,7 +8,7 @@ import { getAllPlaces, getAllPlacesInCityByCityId } from './store/placeReducer';
 import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
 import { setGlobalPopout } from './store/systemReducer';
 import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
-import { getMatchesInCurrentCity } from './store/matchReducer';
+import { getMatchesInCurrentCity, setHotPanel } from './store/matchReducer';
 import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity  } from './store/bidTeamsReducer';
 import { getAllCitiesFromServer } from './store/cityReducer';
 import { setShowAdminTourneyTab } from './store/systemReducer';
@@ -298,13 +298,9 @@ const App = (props) => {
 								{props.ShowAdminTeamTab && <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Мои команды"></TabbarItemWithHistory>}
 							</Tabbar>}>
 
-						<View id="hot" activePanel="main" modal={modalWindow} popout={popout}>
-							<Panel id="main">
-								<PanelHeader
-									left={<BackButton isBack={true} />}
-								>
-									Горячее
-								</PanelHeader>
+						<View id="hot" activePanel={props.matches.hotPanel} modal={modalWindow} popout={popout}>
+							<Panel id="yesterday">
+								<PanelHeader left={<BackButton isBack={true} />}>Вчера</PanelHeader>
 								<Group>
 									<InfoRow header="Информация">
 										Турниры любительской лиги твоего города
@@ -312,14 +308,43 @@ const App = (props) => {
 								</Group>
 								<Group header={<Header mode="secondary">Матчи</Header>}>
 									<Tabs>
-										{/* <TabsItem after={<Badge mode="prominent" />}>Сегодня</TabsItem> */}
-										<TabsItem selected after={<Badge mode="prominent" />}>
-											<Hot Matches={props.matches.hot}></Hot>
-        								</TabsItem>
-										{/* <TabsItem after={<Badge mode="prominent" />}>
-											Завтра
-        								</TabsItem> */}
+										<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("yesterday")}>Вчера</TabsItem>
+										<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("today")}>Сегодня</TabsItem>
+										<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("tomorrow")}>Завтра</TabsItem>
 									</Tabs>
+									<Hot Matches={props.matches.hot.yesterday}></Hot>
+								</Group>
+							</Panel>
+							<Panel id="today">
+								<PanelHeader left={<BackButton isBack={true} />}>Сегодня</PanelHeader>
+								<Group>
+									<InfoRow header="Информация">
+										Турниры любительской лиги твоего города
+									</InfoRow>
+								</Group>
+								<Group header={<Header mode="secondary">Матчи</Header>}>
+									<Tabs>
+										<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("yesterday")}>Вчера</TabsItem>
+										<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("today")}>Сегодня</TabsItem>
+										<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("tomorrow")}>Завтра</TabsItem>
+									</Tabs>
+									<Hot Matches={props.matches.hot.today}></Hot>
+								</Group>
+							</Panel>
+							<Panel id="tomorrow">
+							<PanelHeader left={<BackButton isBack={true} />}>Завтра</PanelHeader>
+								<Group>
+									<InfoRow header="Информация">
+										Турниры любительской лиги твоего города
+									</InfoRow>
+								</Group>
+								<Group header={<Header mode="secondary">Матчи</Header>}>
+									<Tabs>
+										<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("yesterday")}>Вчера</TabsItem>
+										<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("today")}>Сегодня</TabsItem>
+										<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("tomorrow")}>Завтра</TabsItem>
+									</Tabs>
+									<Hot Matches={props.matches.hot.tomorrow}></Hot>
 								</Group>
 							</Panel>
 						</View>
@@ -503,6 +528,6 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode,
-	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile,
+	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel,
 	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab, getMatchesInCurrentCity,
 })(App);

@@ -12,14 +12,25 @@ const MATCH_SET_HOT_MATCHES = "MATCH_SET_HOT_MATCHES";
 const MATCH_SET_ACCESS = "MATCH_SET_ACCESS";
 const MATCH_SET_MODE = "MATCH_SET_MODE";
 const MATCH_SET_PLAYED = "MATCH_SET_PLAYED";
+const MATCH_SET_HOT_PANEL = "MATCH_SET_HOT_PANEL";
 
+Date.prototype.addDays = function(days) {
+    var date = new Date(this.getFullYear(), this.getMonth(), this.getDate(), 0, 0, 0);
+    date.setDate(date.getDate() + days);
+    return date;
+}
 
 const currentDate = new Date();
 const emptyTournament = EmptyTournament
 
 const initState = {
     matches: [],
-    hot: [],
+    hot: {
+        yesterday: [],
+        today: [],
+        tomorrow: [],
+    },
+    hotPanel: "today", // "yesterday", "tomorrow"
     selected: {},
     access: "user",
     mode: "list", // режим отображения турнира ("list" - список, "view" - просмотр, "add" - добавление, "edit" - редактирование)
@@ -35,10 +46,20 @@ let matchReducer = (state = initState, action) => {
             };
         }
         case MATCH_SET_HOT_MATCHES: {
-            debugger
+            
+            let date = new Date();
+            let today = date.addDays(1).addDays(-1);
+            let yesterday = date.addDays(-1);
+            let tomorrow_begin = date.addDays(1);
+            let tomorrow_end = date.addDays(2);
+
             return {
                 ...state,
-                hot: [...action.matches],
+                hot: {
+                    yesterday: [...action.matches.filter(match => ((new Date(match.When) >= yesterday) && (new Date(match.When) < today)))],
+                    today: [...action.matches.filter(match => ((new Date(match.When) >= today) && (new Date(match.When) < tomorrow_begin)))],
+                    tomorrow: [...action.matches.filter(match => ((new Date(match.When) >= tomorrow_begin) && (new Date(match.When) < tomorrow_end)))],
+                },
             };
         }
         case MATCH_SET_ACCESS: {
@@ -57,6 +78,12 @@ let matchReducer = (state = initState, action) => {
             return {
                 ...state,
                 mode: action.mode,
+            };
+        }
+        case MATCH_SET_HOT_PANEL: {
+            return {
+                ...state,
+                hotPanel: action.panelName,
             };
         }
 
@@ -98,6 +125,13 @@ export const setMode = (mode) => {
     return {
         type: MATCH_SET_MODE,
         mode
+    }
+}
+
+export const setHotPanel = (panelName) => {
+    return {
+        type: MATCH_SET_HOT_PANEL,
+        panelName
     }
 }
 
