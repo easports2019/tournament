@@ -147,7 +147,10 @@ const App = (props) => {
 	// при смене глобального Popout и возникновении ошибки
 	useEffect(() => {
 		if (props.errorObject && props.errorObject.resultcode != 0)
+		{
+			debugger
 			setModalWindow(<ModalCommon modalName="Error" data={props.errorObject} Close={() => setModalWindow(null)}></ModalCommon>)
+		}
 		else {
 			setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 		}
@@ -247,7 +250,7 @@ const App = (props) => {
 
 
 	const CellClick = (item) => {
-        
+        debugger
         props.setSelectedTournament(item);
         props.setTournamentMode("view");
 		// надо заполнять TournamentGroups!
@@ -284,9 +287,7 @@ const App = (props) => {
 
 		
 	return (
-		<ConfigProvider>
-			<AdaptivityProvider>
-				<AppRoot>
+		
 					<Epic
 						activeStory={props.mainMenu.activeItem.name}
 						tabbar={
@@ -499,9 +500,7 @@ const App = (props) => {
 						
 
 					</Epic>
-				</AppRoot>
-			</AdaptivityProvider>
-		</ConfigProvider>
+				
 	);
 }
 

@@ -20,7 +20,7 @@ import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
 
 
 const Hot = (props) => {
-    debugger
+    
     return (
         <Group>
             <List>
