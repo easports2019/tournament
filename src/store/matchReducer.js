@@ -53,14 +53,25 @@ let matchReducer = (state = initState, action) => {
             let tomorrow_begin = date.addDays(1);
             let tomorrow_end = date.addDays(2);
 
-            return {
+            let st = {
                 ...state,
                 hot: {
-                    yesterday: [...action.matches.filter(match => ((new Date(match.When) >= yesterday) && (new Date(match.When) < today)))],
-                    today: [...action.matches.filter(match => ((new Date(match.When) >= today) && (new Date(match.When) < tomorrow_begin)))],
-                    tomorrow: [...action.matches.filter(match => ((new Date(match.When) >= tomorrow_begin) && (new Date(match.When) < tomorrow_end)))],
+                    yesterday: [...action.matches.filter(match => {
+                        
+                        return ((new Date(match.When) >= yesterday) && (new Date(match.When) < today))
+                    })],
+                    today: [...action.matches.filter(match =>  {
+                        
+                        return ((new Date(match.When) >= today) && (new Date(match.When) < tomorrow_begin))
+                    })],
+                    tomorrow: [...action.matches.filter(match =>  {
+                        
+                        return ((new Date(match.When) >= tomorrow_begin) && (new Date(match.When) < tomorrow_end))
+                    })],
                 },
             };
+            
+            return st;
         }
         case MATCH_SET_ACCESS: {
             return {
@@ -257,15 +268,14 @@ export const getMatchesInCurrentCity = (userProfile = null) => {
                 
                     MatchAPI.getCurrentMatchesByCity(userProfile)
                         .then(pl => {
-                            debugger
+                            
                             if (pl && pl.data.length > 0) {
                                 dispatch(setHotMatches(pl.data));
                                 dispatch((pl.data));
                                 dispatch(setGlobalPopout(false))
                             }
                             else {
-
-                                dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                                dispatch(setErrorMessage("Не получены данные MatchAPI.getCurrentMatchesByCity"))
                                 dispatch(setGlobalPopout(false))
                             }
                         })

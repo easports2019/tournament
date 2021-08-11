@@ -1096,6 +1096,7 @@ export const getTournamentsByCityId = (cityUmbId = -1) => {
                         }
                     })
                     .catch(error => {
+                        debugger
                         dispatch(setErrorMessage("Не удалось загрузить турниры: " + error))
                         dispatch(setGlobalPopout(false))
                     })

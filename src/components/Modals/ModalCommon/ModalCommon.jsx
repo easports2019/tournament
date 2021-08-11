@@ -14,6 +14,7 @@ let ModalCommon = (props) => {
 		
     }, [])
     
+    
 
     return (
         <ModalRoot activeModal={props.modalName}>
@@ -38,7 +39,8 @@ let ModalCommon = (props) => {
             <ModalCard
                 id="Error"
                 onClose={props.Close}
-                header={props.data.message ? props.data.message : "Произошла неизвестная ошибка"}
+                //header={props.data.message ? props.data.message : "Произошла неизвестная ошибка"}
+                header={props.data ? props.data : "Произошла неизвестная ошибка"}
                 actions={<Button size="l" mode="primary" onClick={props.Close}>Закрыть</Button>}>
                     {/* <Textarea defaultValue="" /> */}
             </ModalCard>

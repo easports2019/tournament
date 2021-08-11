@@ -155,6 +155,9 @@ export const CollectAPI = {
                 return errorObj(error)
             })
     },
+    
+    
+    
 
     add(collect_source) {
         ////debugger
@@ -224,7 +227,26 @@ export const CollectAPI = {
         //     	console.log(collect);
         //     	console.log("error Collects/Add: " + y);
         //     })
-    }
+    },
+
+
+    // запрос всех сборов в городе по его Id
+    // cityId - Id города
+    // startindex - индекс, с которого начинать ответ
+    getAllSimpleByCityUmbracoId(cityId, startindex = 0) {
+        debugger
+        let formData = new FormData();
+        formData.append("startindex", startindex);
+        formData.append("cityId", cityId);
+        return PostJsonInstance.post("SimpleCollect/GetSimpleCollectsInCityByCityId" + authQueryString, formData).then(data => {
+            //return okObj(data.data);
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+
+        })
+            .catch(error => {
+                return errorObj(error)
+            })
+    },
 }
 
 export const TeamAPI = {
@@ -943,7 +965,7 @@ export const MatchAPI = {
         let formData = new FormData();
         formData.append("cityumbracoid", userProfile.CityUmbracoId);
         return PostJsonInstance.post("Match/GetByCity" + authQueryString, formData).then(data => {
-            debugger
+            //debugger
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })
             .catch(error => {

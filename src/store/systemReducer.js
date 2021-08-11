@@ -14,7 +14,8 @@ const initState = {
     currentMenu: {},
     history: ["hot"],
     GlobalPopout: false,
-    ErrorObject: {resultcode: 0, result: "Ok", data: null, message: ""},
+    //ErrorObject: {resultcode: 0, result: "Ok", data: null, message: ""},
+    ErrorObject: "",
     ShowAdminTourneyTab: false,
     ShowAdminTeamTab: true,
 
@@ -41,11 +42,19 @@ export let systemReducer = (state = initState, action) =>
             };
         }
         case SYSTEM_SET_ERROR_MESSAGE: {
+            
             return {...state,
-                ErrorObject: {...action.errorObject},
+                ErrorObject: {...action.errorMessage},
+                // че-то ошибочки начинают какие-то левые вылезать, если делать все как тут нужно
+                // ErrorObject: {...state.ErrorObject,
+                //     message: action.errorMessage,
+                //     resultcode: -1, 
+                //     result: "",
+                // }
             };
         }
         case SYSTEM_RESET_ERROR: {
+            
             return {...state,
                 ErrorObject: {...initState.ErrorObject},
             };
@@ -104,10 +113,10 @@ export const setGlobalPopout = (on) => {
     }
 }
 
-export const setErrorMessage = (errorObject) => {
+export const setErrorMessage = (errorMessage) => {
     return {
         type: SYSTEM_SET_ERROR_MESSAGE,
-        errorObject
+        errorMessage
     }
 }
 

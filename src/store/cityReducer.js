@@ -41,18 +41,22 @@ export const getAllCitiesFromServer = () => {
                     
                     if (pl && pl.data) {
                         dispatch(setCities(pl.data));
+                        dispatch(setGlobalPopout(false))
                     }
                     else {
                         dispatch(setErrorMessage(errorObj("Не получен ответ от сервера")))
+                        dispatch(setGlobalPopout(false))
                     }
                 })
                 .catch(error => {
                     
                     dispatch(setErrorMessage(error))
+                    dispatch(setGlobalPopout(false))
                 })
         else {
             
             dispatch(setErrorMessage(errorObj("Вы не авторизованы")))
+            dispatch(setGlobalPopout(false))
         }
     }
 }

@@ -6,7 +6,8 @@ import '@vkontakte/vkui/dist/vkui.css';
 import { setActiveMenuItem } from './store/mainMenuReducer';
 import { getAllPlaces, getAllPlacesInCityByCityId } from './store/placeReducer';
 import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
-import { setGlobalPopout } from './store/systemReducer';
+import { setGlobalPopout, resetError } from './store/systemReducer';
+import { getAllSimpleCollectsInCityByCityUmbracoId } from './store/collectReducer';
 import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
 import { getMatchesInCurrentCity, setHotPanel } from './store/matchReducer';
 import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity  } from './store/bidTeamsReducer';
@@ -36,6 +37,10 @@ const App = (props) => {
 	const [modalWindow, setModalWindow] = useState(null);
 	const [viewCollectTab, setCollectViewTab] = useState("main");
 
+	const CloseModal = () => {
+		props.resetError()
+		setModalWindow(null)
+	}
 	
 	// это системное, загрузка приложения вк
 	useEffect(() => {
@@ -122,6 +127,9 @@ const App = (props) => {
 
 			// получаем список активных турниров города по umbId города и текущей дате
 			props.getTournamentsByCityId(props.myProfile.CityUmbracoId);
+
+			// получаем список простых сборов
+			props.getAllSimpleCollectsInCityByCityUmbracoId(props.myProfile.CityUmbracoId);
 		}
 
 		// это пока не прогрузился город профиля (не выбран)
@@ -146,15 +154,16 @@ const App = (props) => {
 
 	// при смене глобального Popout и возникновении ошибки
 	useEffect(() => {
-		if (props.errorObject && props.errorObject.resultcode != 0)
+		//if (props.errorObject && props.errorObject.resultcode != 0)
+		if (props.errorObject && props.errorObject != "")
 		{
-			debugger
-			setModalWindow(<ModalCommon modalName="Error" data={props.errorObject} Close={() => setModalWindow(null)}></ModalCommon>)
+			//setModalWindow(<ModalCommon modalName="Error" data={props.errorObject} Close={CloseModal}></ModalCommon>)
 		}
 		else {
 			setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 		}
-	}, [props.globalPopout, props.errorObject])
+	//}, [props.globalPopout, props.errorObject])
+	}, [props.errorObject])
 
 
 	// при загрузке профиля (по факту приложения)
@@ -213,7 +222,7 @@ const App = (props) => {
 					}
 
 					if (props.myProfile.CityUmbracoId != null && props.myProfile.CityUmbracoId == -1) {
-						debugger
+						//debugger
 						// предлагаем выбрать город
 						setPopout(null);
 						setModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => setModalWindow(null)}></ModalCommon>)
@@ -250,7 +259,7 @@ const App = (props) => {
 
 
 	const CellClick = (item) => {
-        debugger
+        //debugger
         props.setSelectedTournament(item);
         props.setTournamentMode("view");
 		// надо заполнять TournamentGroups!
@@ -282,8 +291,8 @@ const App = (props) => {
 	}
 	).filter(i => i);
 
-	if ((Array.isArray(props.tournamentsForBids.selectedTournament)) && (props.tournamentsForBids.selectedTournament.length > 0))
-		debugger
+	//if ((Array.isArray(props.tournamentsForBids.selectedTournament)) && (props.tournamentsForBids.selectedTournament.length > 0))
+		//debugger
 
 		
 	return (
@@ -515,6 +524,7 @@ const mapStateToProps = (state) => {
 		vkProfile: state.profileEntity.vkProfile,
 		myProfile: state.profileEntity.myProfile,
 		errorObject: state.system.ErrorObject,
+		//`errorMessage: state.system.ErrorObject.message,
 		triedToGetProfile: state.profileEntity.triedToGetProfile,
 		tournamentAdmins: state.tournamentsEntity.cityTournamentAdmins,
 		tournament: state.tournamentsEntity,
@@ -526,7 +536,8 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
+	getAllSimpleCollectsInCityByCityUmbracoId, 
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode,
-	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel,
+	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError,
 	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab, getMatchesInCurrentCity,
 })(App);
