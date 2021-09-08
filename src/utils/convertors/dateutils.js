@@ -3,7 +3,7 @@ import {timeSlotsInOneHour} from '../../store/constants/commonConstants'
 export function isDate(str) {
     return (Object.prototype.toString.call(new Date(str)) === "[object Date]");
   }
-
+ 
 export const getAge = (date) => {
     if (date != undefined) 
         return Math.trunc((Date.now() - date.getTime()) / 31536000000);

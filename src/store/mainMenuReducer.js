@@ -89,6 +89,14 @@ const initState = {
         enabled: true,
         show: false,
     },
+    {
+        id: 9,
+        name: "collectslist",
+        title: "Все сборы",
+        position: 12,
+        enabled: true,
+        show: true,
+    },
     
 ],
     activeItem: {id: 0, name: "hot", title: "Горячее", position: 0, enabled: true, show: true,},
