@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import bridge from '@vkontakte/vk-bridge';
-import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider, Badge, Header, List, RichCell } from '@vkontakte/vkui';
+import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider, Badge, Header, List, RichCell, CellButton } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 
 import { setActiveMenuItem } from './store/mainMenuReducer';
 import { getAllPlaces, getAllPlacesInCityByCityId } from './store/placeReducer';
 import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
 import { setGlobalPopout, resetError } from './store/systemReducer';
-import { getAllSimpleCollectsInCityByCityUmbracoId } from './store/collectReducer';
+import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect } from './store/collectReducer';
 import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
 import { getMatchesInCurrentCity, setHotPanel } from './store/matchReducer';
 import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity  } from './store/bidTeamsReducer';
 import { getAllCitiesFromServer } from './store/cityReducer';
 import { setShowAdminTourneyTab } from './store/systemReducer';
+import {addToTime} from './utils/convertors/dateUtils'
 
 
 import { Epic, Tabbar, TabbarItem, Panel, PanelHeader, PanelHeaderButton, PanelHeaderBack, Tabs, TabsItem, Div, Avatar, Group, SimpleCell, InfoRow } from '@vkontakte/vkui';
@@ -29,6 +30,7 @@ import TournamentItem from './components/Panels/AdminPanel/Tournament/Tournament
 import TeamItem from './components/Panels/AdminPanel/Team/TeamItem';
 import BidTeamTournamentGroupsList from './components/Panels/AdminPanel/BidTeam/BidTeamTournamentGroupsList';
 import Hot from './components/Panels/Common/Hot/Hot';
+import SimpleCollectItem from './components/Panels/AdminPanel/Collect/SimpleCollect/SimpleCollectItem';
 
 
 const App = (props) => {
@@ -41,6 +43,20 @@ const App = (props) => {
 		props.resetError()
 		setModalWindow(null)
 	}
+
+	async function fetchData() {
+			
+		const user = await bridge.send('VKWebAppGetUserInfo');
+
+
+		setUser(user);
+		props.setVkProfileInfo(user);
+		props.getAllCitiesFromServer();
+
+
+		//Build an object which matches the structure of our view model class
+		//setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
+	}
 	
 	// это системное, загрузка приложения вк
 	useEffect(() => {
@@ -52,20 +68,6 @@ const App = (props) => {
 				document.body.attributes.setNamedItem(schemeAttribute);
 			}
 		});
-
-		async function fetchData() {
-			
-			const user = await bridge.send('VKWebAppGetUserInfo');
-
-
-			setUser(user);
-			props.setVkProfileInfo(user);
-			props.getAllCitiesFromServer();
-
-
-			//Build an object which matches the structure of our view model class
-			//setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
-		}
 
 		async function getDataFromServer() {
 
@@ -267,6 +269,16 @@ const App = (props) => {
 		//toMenuName="tournamentadmin" selected={"tournamentadmin" === props.mainMenu.activeItem.name} data-story="tournamentadmin"
     }
 
+	const CollectSelect = (item) => {
+        //debugger
+        props.selectSimpleCollect(item);
+		props.setActiveMenuItem("collectadmin");
+    }
+
+	const UpdateFromServer = () => {
+		window.location.reload(true);
+	}
+
 	// useEffect(() =>{
 	// 	debugger
 	// 	if (props.vkProfile && props.vkProfile.city) {
@@ -329,6 +341,7 @@ const App = (props) => {
 							<Panel id="today">
 								<PanelHeader left={<BackButton isBack={true} />}>Сегодня</PanelHeader>
 								<Group>
+									<CellButton onClick={() => UpdateFromServer()}>Обновить информацию</CellButton>
 									<InfoRow header="Информация">
 										Турниры любительской лиги твоего города
 									</InfoRow>
@@ -389,6 +402,61 @@ const App = (props) => {
 								<Group hidden header={<Header>Архивные турниры города</Header>}>
 									
 								</Group>
+							</Panel>
+						</View>
+						<View id="collectslist" activePanel="main" modal={modalWindow} popout={popout}>
+							<Panel id="main">
+								<PanelHeader
+									left={<BackButton isBack={true} />}
+								//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+								>
+									Все сборы
+								</PanelHeader>
+								<Group header={<Header>Текущие сборы города</Header>}>
+									<List>
+
+										{
+										props.collect.collects.map(t => {
+											let timeEnding = addToTime(new Date(t.When), 0, t.DurationMinutes);
+											
+											return <RichCell
+												caption={`Организатор: ${t.Creator.Name} ${t.Creator.Surname}`}
+												text={(new Date(t.When) > new Date()) ? 
+													`Начало 
+													${new Date(t.When).getDate() <= 9 ? "0" + (new Date(t.When).getDate()) : (new Date(t.When).getDate())}.${new Date(t.When).getMonth()+1 <= 9 ? "0" + (new Date(t.When).getMonth()+1) : (new Date(t.When).getMonth()+1)}.${new Date(t.When).getFullYear()}
+													в 
+													${new Date(t.When).getHours() <= 9 ? "0" + (new Date(t.When).getHours()) : (new Date(t.When).getHours())}:${new Date(t.When).getMinutes() <= 9 ? "0" + (new Date(t.When).getMinutes()) : (new Date(t.When).getMinutes())}
+													`
+													: 
+													((timeEnding > new Date()) 
+													? 
+													"В процессе"
+													:
+													"Закончен"
+													)
+													}
+												onClick={() => CollectSelect(t)} 
+											>
+												{t.Name}
+											</RichCell>
+										})}
+									</List>
+									
+								</Group>
+								<Group hidden header={<Header>Архивные сборы</Header>}>
+									
+								</Group>
+							</Panel>
+						</View>
+						<View id="collectadmin" activePanel="main" modal={modalWindow} popout={popout}>
+							<Panel id="main">
+								<PanelHeader
+									left={<BackButton isBack={true} />}
+								//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+								>
+									Управление сборами
+						</PanelHeader>
+								<SimpleCollectItem Mode="view"></SimpleCollectItem>
 							</Panel>
 						</View>
 						<View id="profile" activePanel="main" modal={modalWindow} popout={popout}>
@@ -529,6 +597,7 @@ const mapStateToProps = (state) => {
 		triedToGetProfile: state.profileEntity.triedToGetProfile,
 		tournamentAdmins: state.tournamentsEntity.cityTournamentAdmins,
 		tournament: state.tournamentsEntity,
+		collect: state.collectEntity,
 		team: state.teamsEntity,
 		bidTeams: state.bidTeamsEntity,
 		matches: state.matches,
@@ -539,6 +608,6 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
 	getAllSimpleCollectsInCityByCityUmbracoId, 
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode,
-	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError,
+	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError, selectSimpleCollect,
 	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab, getMatchesInCurrentCity,
 })(App);

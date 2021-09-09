@@ -97,6 +97,14 @@ const initState = {
         enabled: true,
         show: true,
     },
+    {
+        id: 10,
+        name: "collectadmin",
+        title: "Сбор",
+        position: 12,
+        enabled: true,
+        show: true,
+    },
     
 ],
     activeItem: {id: 0, name: "hot", title: "Горячее", position: 0, enabled: true, show: true,},

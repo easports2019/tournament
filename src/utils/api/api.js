@@ -234,7 +234,7 @@ export const CollectAPI = {
     // cityId - Id города
     // startindex - индекс, с которого начинать ответ
     getAllSimpleByCityUmbracoId(cityId, startindex = 0) {
-        debugger
+        //debugger
         let formData = new FormData();
         formData.append("startindex", startindex);
         formData.append("cityId", cityId);

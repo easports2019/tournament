@@ -38,6 +38,10 @@ export const timeToString = (hours, minutes, seconds) => {
     return res;
 }
 
+export const dateTimeToTimeString = (datetime) => {
+    return timeToString(new Date(datetime).getHours(), new Date(datetime).getMinutes())
+}
+
 export const dateToString = (date, ...args) => {
     if (typeof date == "string")
         date = new Date(date);
@@ -83,6 +87,26 @@ export const addToDate = (date, ...args) => {
 
     if (args[2]) // добавить годы
         newDate = new Date(newDate.getFullYear() + args[2], newDate.getMonth(), newDate.getDate())
+
+    return newDate;
+}
+
+// прибавляет к дате переданное в параметрах количество часов, минут, секунд. первый параметр -часы, второй- минуты и т.д.
+export const addToTime = (date, ...args) => {
+     
+    if (typeof date == "string")
+        date = new Date(date);
+    
+    let newDate = date;
+    
+    if (args[0]) // добавить часы
+        newDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), newDate.getHours() + args[0])
+
+    if (args[1]) // добавить минуты
+        newDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), newDate.getHours(), newDate.getMinutes() + args[1])
+
+    if (args[2]) // добавить секунды
+        newDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), newDate.getHours(), newDate.getMinutes(), newDate.getSeconds() + args[2])
 
     return newDate;
 }
