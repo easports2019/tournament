@@ -187,6 +187,7 @@ const Shedule = (props) => {
                                         {groupAndMatchesItem.Matches.length > 0 ?
                                             <List>
                                                 {groupAndMatchesItem.Matches.map(match => {
+                                                    
                                                     let place = props.places.find(p => p.PlaceId == match.PlaceId)
                                                     let date = new Date(match.When);
                                                     return <RichCell
