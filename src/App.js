@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import bridge from '@vkontakte/vk-bridge';
-import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider, Badge, Header, List, RichCell, CellButton } from '@vkontakte/vkui';
+import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider, Badge, Header, List, RichCell, CellButton, FormItem } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 
 import { setActiveMenuItem } from './store/mainMenuReducer';
 import { getAllPlaces, getAllPlacesInCityByCityId } from './store/placeReducer';
+import { getAllSimplePlacesInCityByCityId } from './store/simplePlaceReducer';
 import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
 import { setGlobalPopout, resetError } from './store/systemReducer';
-import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect } from './store/collectReducer';
+import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect, setCollectItemMode } from './store/collectReducer';
 import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
 import { getMatchesInCurrentCity, setHotPanel } from './store/matchReducer';
 import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity  } from './store/bidTeamsReducer';
@@ -31,6 +32,7 @@ import TeamItem from './components/Panels/AdminPanel/Team/TeamItem';
 import BidTeamTournamentGroupsList from './components/Panels/AdminPanel/BidTeam/BidTeamTournamentGroupsList';
 import Hot from './components/Panels/Common/Hot/Hot';
 import SimpleCollectItem from './components/Panels/AdminPanel/Collect/SimpleCollect/SimpleCollectItem';
+import ButtonWithHistory from './components/Panels/Common/WithHistory/ButtonWithHistory';
 
 
 const App = (props) => {
@@ -123,12 +125,15 @@ const App = (props) => {
 
 			// получаем список мест по umbId города
 			props.getAllPlacesInCityByCityId(props.myProfile.CityUmbracoId);
-
+			
 			// получаем список админов турниров города по umbId города
 			props.getAllCityTournamentAdminsByCityId(props.myProfile.CityUmbracoId);
-
+			
 			// получаем список активных турниров города по umbId города и текущей дате
 			props.getTournamentsByCityId(props.myProfile.CityUmbracoId);
+			
+			// получаем список простых мест по umbId города
+			props.getAllSimplePlacesInCityByCityId(props.myProfile.CityUmbracoId);
 
 			// получаем список простых сборов
 			props.getAllSimpleCollectsInCityByCityUmbracoId(props.myProfile.CityUmbracoId);
@@ -272,6 +277,14 @@ const App = (props) => {
 	const CollectSelect = (item) => {
         //debugger
         props.selectSimpleCollect(item);
+		props.setCollectItemMode("view");
+		props.setActiveMenuItem("collectadmin");
+    }
+	
+	
+	const CollectAdd = () => {
+        //debugger
+        props.setCollectItemMode("add");
 		props.setActiveMenuItem("collectadmin");
     }
 
@@ -412,6 +425,10 @@ const App = (props) => {
 								>
 									Все сборы
 								</PanelHeader>
+								<FormItem>
+									{/* <ButtonWithHistory> */}
+									<CellButton onClick={CollectAdd}>Арендовать площадку и собрать людей</CellButton>
+								</FormItem>
 								<Group header={<Header>Текущие сборы города</Header>}>
 									<List>
 
@@ -456,7 +473,7 @@ const App = (props) => {
 								>
 									Управление сборами
 						</PanelHeader>
-								<SimpleCollectItem Mode="view"></SimpleCollectItem>
+								<SimpleCollectItem></SimpleCollectItem>
 							</Panel>
 						</View>
 						<View id="profile" activePanel="main" modal={modalWindow} popout={popout}>
@@ -606,8 +623,8 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-	getAllSimpleCollectsInCityByCityUmbracoId, 
-	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode,
+	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId,
+	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode, setCollectItemMode,
 	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError, selectSimpleCollect,
 	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab, getMatchesInCurrentCity,
 })(App);

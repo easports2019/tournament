@@ -300,6 +300,9 @@ export const geo = {
     ],
 }
 
+export const simplePlaces =  []
+
+
 export const places =  [
         {
             PlaceId: 0,

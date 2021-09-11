@@ -8,6 +8,7 @@ import { authQueryString } from './../utils/api/server';
 
 const COLLECTS_SET_ALL_SIMPLE_COLLECTS = "COLLECTS_SET_ALL_SIMPLE_COLLECTS";
 const COLLECTS_SELECT_SIMPLE_COLLECT = "COLLECTS_SELECT_SIMPLE_COLLECT";
+const COLLECTS_SET_COLLECT_ITEM_MODE = "COLLECTS_SET_COLLECT_ITEM_MODE";
 
 Date.prototype.addDays = function(days) {
     var date = new Date(this.getFullYear(), this.getMonth(), this.getDate(), 0, 0, 0);
@@ -20,6 +21,7 @@ const currentDate = new Date();
 const initState = {
     collects: [],
     selected: {},
+    mode: "view",
 }
 
 
@@ -35,6 +37,12 @@ let collectReducer = (state = initState, action) => {
             return{
                 ...state,
                 selected: action.simplecollect,
+            }
+        }
+        case COLLECTS_SET_COLLECT_ITEM_MODE: {
+            return{
+                ...state,
+                mode: action.mode,
             }
         }
         default: {
@@ -54,6 +62,13 @@ export const selectSimpleCollect = (simplecollect) => {
     return {
         type: COLLECTS_SELECT_SIMPLE_COLLECT,
         simplecollect
+    }
+}
+
+export const setCollectItemMode = (mode) => {
+    return {
+        type: COLLECTS_SET_COLLECT_ITEM_MODE,
+        mode
     }
 }
 

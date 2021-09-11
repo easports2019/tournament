@@ -8,6 +8,7 @@ import teams from './teamsReducer.js'
 import bidTeams from './bidTeamsReducer.js'
 import ampluaReducer from './ampluaReducer.js'
 import placeReducer from './placeReducer.js'
+import simplePlaceReducer from './simplePlaceReducer.js'
 import paymentReducer from './paymentReducer.js'
 import mainMenuReducer from './mainMenuReducer.js'
 import systemReducer from './systemReducer.js'
@@ -37,6 +38,7 @@ let reducers = combineReducers({
     cityEntity: cityReducer,
     ampluaEntity: ampluaReducer,
     placeEntity: placeReducer,
+    simplePlaceEntity: simplePlaceReducer,
     paymentEntity: paymentReducer,
     mainMenu: mainMenuReducer,
     system: systemReducer,

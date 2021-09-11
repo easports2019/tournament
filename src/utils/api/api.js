@@ -114,6 +114,29 @@ export const PlaceAPI = {
 
 }
 
+export const SimplePlaceAPI = {
+
+    // запрос всех мест города по Id города
+    // startindex - индекс, с которого начинать ответ
+    getAllInCityByCityUmbracoId(cityId, startindex = 0) {
+        //////debugger
+        //if (!ApiSendInfo.checkRequest("PlaceAPIgetAllInCityByCityUmbracoId")){
+        //ApiSendInfo.addRequest("PlaceAPIgetAllInCityByCityUmbracoId");
+        let formData = new FormData();
+        formData.append("startindex", startindex);
+        formData.append("cityumbracoid", cityId);
+        return PostJsonInstance.post("SimplePlace/GetSimplePlacesInCity" + authQueryString, formData).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                return errorObj(error)
+            })
+        //}
+    },
+
+}
+
 export const CollectAPI = {
 
     getAll() {
@@ -238,6 +261,7 @@ export const CollectAPI = {
         let formData = new FormData();
         formData.append("startindex", startindex);
         formData.append("cityId", cityId);
+        formData.append("history", false);
         return PostJsonInstance.post("SimpleCollect/GetSimpleCollectsInCityByCityId" + authQueryString, formData).then(data => {
             //return okObj(data.data);
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
