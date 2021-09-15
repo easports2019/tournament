@@ -5,7 +5,7 @@ import '@vkontakte/vkui/dist/vkui.css';
 
 import { setActiveMenuItem } from './store/mainMenuReducer';
 import { getAllPlaces, getAllPlacesInCityByCityId } from './store/placeReducer';
-import { getAllSimplePlacesInCityByCityId } from './store/simplePlaceReducer';
+import { getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId } from './store/simplePlaceReducer';
 import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
 import { setGlobalPopout, resetError } from './store/systemReducer';
 import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect, setCollectItemMode } from './store/collectReducer';
@@ -137,6 +137,9 @@ const App = (props) => {
 
 			// получаем список простых сборов
 			props.getAllSimpleCollectsInCityByCityUmbracoId(props.myProfile.CityUmbracoId);
+			
+			// получаем список аренд
+			props.getAllRentsInCityByCityId(props.myProfile.CityUmbracoId);
 		}
 
 		// это пока не прогрузился город профиля (не выбран)
@@ -623,7 +626,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId,
+	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId,
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode, setCollectItemMode,
 	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError, selectSimpleCollect,
 	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab, getMatchesInCurrentCity,

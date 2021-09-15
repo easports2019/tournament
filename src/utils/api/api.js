@@ -135,6 +135,27 @@ export const SimplePlaceAPI = {
         //}
     },
 
+    // запрос всех аренд города по Id города
+    // startindex - индекс, с которого начинать ответ
+    // history - запрос истории (true) или актуального (false)
+    getAllRentsInCityByCityUmbracoId(cityId, startindex = 0) {
+        //////debugger
+        //if (!ApiSendInfo.checkRequest("PlaceAPIgetAllInCityByCityUmbracoId")){
+        //ApiSendInfo.addRequest("PlaceAPIgetAllInCityByCityUmbracoId");
+        let formData = new FormData();
+        formData.append("startindex", startindex);
+        formData.append("cityumbracoid", cityId);
+        formData.append("history", false);
+        return PostJsonInstance.post("Rents/GetRentsInCityByCityId" + authQueryString, formData).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                return errorObj(error)
+            })
+        //}
+    },
+
 }
 
 export const CollectAPI = {

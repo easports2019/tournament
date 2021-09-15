@@ -191,7 +191,7 @@ const SimpleCollectItem = (props) => {
                         {/* <InfoRow>{dateToString(props.collect.selected.When)} в {dateTimeToTimeString(props.collect.selected.When)}</InfoRow> */}
                     </FormItem>
                     <FormItem top="Информация">
-                        <Textarea defaultValue={details} value={details} onChange={e => setDetails(e.currentTarget.value)} placeholder="Дополнительная информация для участников" />
+                        <Textarea defaultValue={details} value={details} onChange={e => setDetails(e.currentTarget.value)} placeholder="Сделать чтобы можно было покупать аренду без сбора. сбор опционально делается" />
                     </FormItem>
                     <FormItem top="Сколько человек нужно">
                         <Input type="Number"
@@ -223,7 +223,8 @@ const SimpleCollectItem = (props) => {
                     </FormItem>
                     <FormItem top="Публикация">
                         {/* <InfoRow>{props.collect.selected.Cost}</InfoRow> */}
-                        <CellButton>Опубликовать сбор</CellButton>
+                        <CellButton>Создать сбор</CellButton>
+                        <CellButton>Перейти к оплате сбора (соберу людей сам)</CellButton>
                     </FormItem>
                 </>
             )
