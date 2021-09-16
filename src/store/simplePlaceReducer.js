@@ -7,13 +7,13 @@ const demoPlaces = simplePlaces;
 
 const PLACES_SET_ALL_PLACES = "PLACES_SET_ALL_PLACES";
 const PLACES_SET_PLACE_BY_UMBRACO_ID = "PLACES_SET_PLACE_BY_UMBRACO_ID";
-const PLACES_SET_RENTS = "PLACES_SET_RENTS";
+const PLACES_SET_SELECTED_PLACE = "PLACES_SET_SELECTED_PLACE";
 
 
 
 const initState = {
     places: [],
-    rents: [],
+    selectedPlace: {},
 }
 
 
@@ -25,16 +25,16 @@ let simplePlaceReducer = (state = initState, action) => {
                 places: [...action.places],
             };
         }
+        case PLACES_SET_SELECTED_PLACE: {
+            return {
+                ...state,
+                selectedPlace: state.places.find(x => x.Id == action.placeId),
+            };
+        }
         case PLACES_SET_PLACE_BY_UMBRACO_ID: {
             return {
                 ...state,
                 places: [...action.places],
-            };
-        }
-        case PLACES_SET_RENTS: {
-            return {
-                ...state,
-                rents: [...action.rents],
             };
         }
         default: {
@@ -50,12 +50,13 @@ export const setPlaces = (places) => {
     }
 }
 
-export const setRents = (rents) => {
+export const setSelectedSimplePlace = (placeId) => {
     return {
-        type: PLACES_SET_RENTS,
-        rents
+        type: PLACES_SET_SELECTED_PLACE,
+        placeId
     }
 }
+
 
 export const setPlace = (placeId, placeData) => {
     return {
@@ -76,36 +77,6 @@ export const getAllSimplePlacesInCityByCityId = (cityId, startindex = 0) => {
                     if (pl && pl.data.length > 0) {
                         
                         dispatch(setPlaces(pl.data));
-                        dispatch(setGlobalPopout(false))
-                    }
-                    else {
-                        dispatch(setPlaces(demoPlaces))
-                        dispatch(setGlobalPopout(false))
-
-                    }
-                })
-                .catch(error => {
-                    dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
-                })
-        else {
-            dispatch(setPlaces(demoPlaces))
-            dispatch(setGlobalPopout(false))
-
-        }
-    }
-}
-
-// все аренды с сервера по UmbracoId города
-export const getAllRentsInCityByCityId = (cityId, startindex = 0) => {
-    return dispatch => {
-
-        if (authQueryString && authQueryString.length > 0)
-            SimplePlaceAPI.getAllRentsInCityByCityUmbracoId(cityId, startindex)
-                .then(pl => {
-                    if (pl && pl.data.length > 0) {
-                        
-                        dispatch(setRents(pl.data));
                         dispatch(setGlobalPopout(false))
                     }
                     else {

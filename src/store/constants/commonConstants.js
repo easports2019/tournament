@@ -302,6 +302,8 @@ export const geo = {
 
 export const simplePlaces =  []
 
+export const rents =  []
+
 
 export const places =  [
         {

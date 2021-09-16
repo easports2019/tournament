@@ -138,6 +138,15 @@ export const SimplePlaceAPI = {
     // запрос всех аренд города по Id города
     // startindex - индекс, с которого начинать ответ
     // history - запрос истории (true) или актуального (false)
+    
+
+}
+
+export const RentAPI = {
+
+    // запрос всех аренд города по Id города
+    // startindex - индекс, с которого начинать ответ
+    // history - запрос истории (true) или актуального (false)
     getAllRentsInCityByCityUmbracoId(cityId, startindex = 0) {
         //////debugger
         //if (!ApiSendInfo.checkRequest("PlaceAPIgetAllInCityByCityUmbracoId")){

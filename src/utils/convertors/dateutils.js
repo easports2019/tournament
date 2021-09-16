@@ -116,6 +116,18 @@ export const datesWithoutTimeIsSame = (date1, date2) => {
     return (date1.getFullYear() == date2.getFullYear() && date1.getMonth() == date2.getMonth() && date1.getDate() == date2.getDate())
 }
 
+// преобразование значения dateSelector из пакета vk ui в нативную дату JS
+export const dateSelectorValueToJSDateValue = (dsValue) => {
+    //{day: currentDate.getDate(), month: currentDate.getMonth()+1, year: currentDate.getFullYear()}
+    return new Date(dsValue.year, dsValue.month-1, dsValue.day)
+}
+
+// преобразование нативной даты JS в значение dateSelector из пакета vk ui
+export const jSDateValueToDateSelectorValue = (jsDate) => {
+    
+    return {day: jsDate.getDate(), month: jsDate.getMonth()+1, year: jsDate.getFullYear()}
+}
+
 // hours - количество часов в дне (по умолчанию 24 часа в сутках), slotsInHours - количество слотов под сбор в часу. по умолчанию 2 (каждые 30 минут)
 export const timeSlotsForCollects = (hours=24, slotsInHour=timeSlotsInOneHour()) => {
     let slotsNumber = hours * slotsInHour;  // сколько слотов в дне

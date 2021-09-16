@@ -5,7 +5,8 @@ import '@vkontakte/vkui/dist/vkui.css';
 
 import { setActiveMenuItem } from './store/mainMenuReducer';
 import { getAllPlaces, getAllPlacesInCityByCityId } from './store/placeReducer';
-import { getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId } from './store/simplePlaceReducer';
+import { getAllSimplePlacesInCityByCityId,  } from './store/simplePlaceReducer';
+import { getAllRentsInCityByCityId } from './store/rentReducer';
 import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
 import { setGlobalPopout, resetError } from './store/systemReducer';
 import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect, setCollectItemMode } from './store/collectReducer';
