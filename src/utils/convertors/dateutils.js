@@ -140,3 +140,16 @@ export const timeSlotsForCollects = (hours=24, slotsInHour=timeSlotsInOneHour())
     
     return slots
 }
+
+export const timeSlotsForSimpleCollects = (slotsNumber, slotsInHour=timeSlotsInOneHour(), startHour) => {
+    debugger
+    let oneSlotMinutes = 60 / slotsInHour;  // сколько минут один слот
+    let slots = [] // слоты
+    for (let i = 0; i < slotsNumber; i++)
+    {
+        slots.push({Hours: Math.trunc((i+startHour) / slotsInHour), Minutes: Math.round(((i+startHour) / slotsInHour - Math.trunc((i+startHour) / slotsInHour)) * 60), SlotMinutes: oneSlotMinutes})
+    }
+    
+    return slots
+
+}

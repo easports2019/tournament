@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea,
-     File, CellButton, Button, Header, List, Cell, Select, CustomSelectOption, IconButton,
-      CardGrid, Card, SplitLayout, SplitCol } from '@vkontakte/vkui'
+import {
+    RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea,
+    File, CellButton, Button, Header, List, Cell, Select, CustomSelectOption, IconButton,
+    CardGrid, Card, SplitLayout, SplitCol
+} from '@vkontakte/vkui'
 import { defaultPhotoPath } from './../../../../../store/dataTypes/common'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
-import { dateToString, dateTimeToTimeString, dateSelectorValueToJSDateValue, jSDateValueToDateSelectorValue } from './../../../../../utils/convertors/dateUtils';
+import {
+    dateToString, dateTimeToTimeString, datesWithoutTimeIsSame, timeSlotsForSimpleCollects,
+    dateSelectorValueToJSDateValue, jSDateValueToDateSelectorValue, timeSlotsForCollects
+} from './../../../../../utils/convertors/dateUtils';
 import { DeleteMemberFromCollect } from './../../../../../store/collectReducer';
+import { setSelectedRent } from './../../../../../store/rentReducer';
 import { setSelectedSimplePlace } from './../../../../../store/simplePlaceReducer';
 import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
 
@@ -16,7 +22,7 @@ import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
 
 const SimpleCollectItem = (props) => {
     let currentDate = new Date();
-    let  maxCollectDate = new Date();
+    let maxCollectDate = new Date();
     let workoutSelector = "";
 
     let [acceptBeMember, setAcceptBeMember] = useState(false)
@@ -29,50 +35,78 @@ const SimpleCollectItem = (props) => {
     let [costMembers, setCostMembers] = useState(200)
     let [costAll, setCostAll] = useState(2000)
     let [plus, setPlus] = useState(costAll - (costMembers * needMembers))
-    
+
     let [youAreMember, setYouAreMember] = useState((props.collect.selected.Members && props.collect.selected.Members.length > 0)
         ?
         props.collect.selected.Members.filter(m => m.UserProfileId == props.myProfile.UserProfileId).length > 0
         :
         false);
-        
+
     let simplePlaces = props.simplePlace.places;
 
     let changePlace = (e) => {
-        debugger
+        
         props.setSelectedSimplePlace(+e.currentTarget.value);
+        props.setSelectedRent(+e.currentTarget.value, dateSelectorValueToJSDateValue(selectedDate));
     }
 
     let changeDate = (value) => {
         setSelectedDate(value);
-        
+
     }
 
     if ((props.selectedPlace) && (props.selectedPlace.Worktime != null) && (props.selectedPlace.Worktime != undefined))
-        workoutSelector = props.selectedPlace.Worktime.map(wt => {
-            //selectedDate, wt, rents;jSDateValueToDateSelectorValue
+    {
+        let worktimeSlot = props.selectedPlace.Worktime.find(wt => {
+            //selectedDate, wt, rents
             let selectedDT = new Date(dateSelectorValueToJSDateValue(selectedDate)) // selected in box
-            let from = new Date(wt.FromTime)
-            let to = new Date(wt.ToTime)
-            debugger
-            let slotsBy30min = (to.valueOf() - from.valueOf()) / (30*60*1000);
-            let cols = slotsBy30min / 12;
-
-            
+            let from = new Date(wt.FromTime) // current item date and start time
+            let to = new Date(wt.ToTime) // current item date and end time
+            if (datesWithoutTimeIsSame(from, selectedDT))
+                return true;
+            else
+                return false;
         })
+            
+        debugger
+        if (worktimeSlot != null && worktimeSlot != undefined)
+        {
+            let from = new Date(worktimeSlot.FromTime) // current item date and start time
+            let to = new Date(worktimeSlot.ToTime) // current item date and end time
+
+            // если выбранная дата и дата текущего расписания совпадает, тогда 
+            let selectedDayRents = props.rent.selectedDayRents;
+            let slotsBy30min = (to.valueOf() - from.valueOf()) / (30 * 60 * 1000);
+            let cols = slotsBy30min / 12; // 12 записей в колонке
+            let currentSlotIndex = 12;
+            let splitCol = <SplitCol width="25%"></SplitCol>
+            let slots = timeSlotsForSimpleCollects(slotsBy30min, 2, from.getHours());
+            
+            workoutSelector = 
+            <SplitLayout>
+                <SplitCol width="25%">
+                    <IconButton>08:00</IconButton>
+                    <IconButton>08:30</IconButton>
+                    <IconButton>09:00</IconButton>
+                    <IconButton>09:30</IconButton>
+                    <IconButton>10:00</IconButton>
+                    <IconButton>10:30</IconButton>
+                    <IconButton>11:00</IconButton>
+                    <IconButton>11:30</IconButton>
+                </SplitCol>
+            </SplitLayout>
+            
+        }
+        else
+        {
+            workoutSelector = <InfoRow>Расписания нет</InfoRow>
+        }
+    }
     else
-        workoutSelector =  <SplitLayout>
-        <SplitCol width="25%">
-            <IconButton>08:00</IconButton>
-            <IconButton>08:30</IconButton>
-            <IconButton>09:00</IconButton>
-            <IconButton>09:30</IconButton>
-            <IconButton>10:00</IconButton>
-            <IconButton>10:30</IconButton>
-            <IconButton>11:00</IconButton>
-            <IconButton>11:30</IconButton>
-        </SplitCol>
-    </SplitLayout>
+        workoutSelector = <InfoRow>Расписания нет</InfoRow>
+        
+        
+
 
     const CancelMember = () => {
         props.DeleteMemberFromCollect(props.myProfile.UserProfileId, props.collect.selected.Id, cancelReason);
@@ -89,7 +123,7 @@ const SimpleCollectItem = (props) => {
 
     const calculateCostAll = (costall) => {
         setCostAll(costall);
-        let costMem = Math.round(costall/needMembers);
+        let costMem = Math.round(costall / needMembers);
         setCostMembers(costMem);
 
         setPlus((costMem * needMembers) - costall);
@@ -97,8 +131,8 @@ const SimpleCollectItem = (props) => {
 
     const calculateNeedMembers = (need) => {
         setNeedMembers(need);
-        setCostMembers(Math.round(costAll/need));
-        setPlus((Math.round(costAll/need) * need) - costAll);
+        setCostMembers(Math.round(costAll / need));
+        setPlus((Math.round(costAll / need) * need) - costAll);
     }
 
     const calculateCostMembers = (membercost) => {
@@ -175,29 +209,29 @@ const SimpleCollectItem = (props) => {
                             )
                             :
                             <FormItem top="Участие">
-                                {(new Date(props.collect.selected.When) > new Date()) ? 
-                                <>
-                                    <InfoRow>Вы подтвердили участвуете в сборе</InfoRow>
-                                    {(!showCancelMemberForm) ? 
-                                        <RichCell actions={<Button mode="destructive" onClick={() => setShowCancelMemberForm(true)}>Отказаться от участия</Button>}></RichCell>
-                                        :
-                                        <Group>
-                                            <FormItem>
-                                                <b>Вы хотите отказаться от участия? Укажите причину отказа</b>
-                                            </FormItem>
-                                            <FormItem>
-                                                <Input type="text" value={cancelReason} onChange={(e) => setCancelReason(e.currentTarget.value)} defaultValue="" />
-                                            </FormItem>
-                                            <FormItem>
-                                                <Button onClick={() => setShowCancelMemberForm(false)}>Не отказываться</Button>
-                                                {cancelReason.length > 4 && <Button onClick={CancelMember} mode="destructive">Отказаться</Button>}
-                                            </FormItem>
-                                        </Group>
-                                    }
-                                </>
-                                :
-                                <InfoRow>Вы участвовали в сборе</InfoRow>
-                            }
+                                {(new Date(props.collect.selected.When) > new Date()) ?
+                                    <>
+                                        <InfoRow>Вы подтвердили участвуете в сборе</InfoRow>
+                                        {(!showCancelMemberForm) ?
+                                            <RichCell actions={<Button mode="destructive" onClick={() => setShowCancelMemberForm(true)}>Отказаться от участия</Button>}></RichCell>
+                                            :
+                                            <Group>
+                                                <FormItem>
+                                                    <b>Вы хотите отказаться от участия? Укажите причину отказа</b>
+                                                </FormItem>
+                                                <FormItem>
+                                                    <Input type="text" value={cancelReason} onChange={(e) => setCancelReason(e.currentTarget.value)} defaultValue="" />
+                                                </FormItem>
+                                                <FormItem>
+                                                    <Button onClick={() => setShowCancelMemberForm(false)}>Не отказываться</Button>
+                                                    {cancelReason.length > 4 && <Button onClick={CancelMember} mode="destructive">Отказаться</Button>}
+                                                </FormItem>
+                                            </Group>
+                                        }
+                                    </>
+                                    :
+                                    <InfoRow>Вы участвовали в сборе</InfoRow>
+                                }
                             </FormItem>
                     }
                 </>
@@ -211,31 +245,32 @@ const SimpleCollectItem = (props) => {
                     </FormItem>
                     <FormItem top="Место">
                         <Select
-                        placeholder="Не выбрано" 
-                        onChange={e => changePlace(e)}
-                        options={simplePlaces.map(place => ({ label: place.Name, value: place.Id 
-                            // , avatar: user.photo_100 
-                        }))}
-                        renderOption={({ option, ...restProps }) => (
-                          <CustomSelectOption {...restProps} 
-                        //   before={<Avatar size={24} src={option.avatar} />} 
-                          />
-                        )}
+                            placeholder="Не выбрано"
+                            onChange={e => changePlace(e)}
+                            options={simplePlaces.map(place => ({
+                                label: place.Name, value: place.Id
+                                // , avatar: user.photo_100 
+                            }))}
+                            renderOption={({ option, ...restProps }) => (
+                                <CustomSelectOption {...restProps}
+                                //   before={<Avatar size={24} src={option.avatar} />} 
+                                />
+                            )}
                         />
                         {/* <RichCell caption={props.collect.selected.Place.Address}>{props.collect.selected.Place.Name}</RichCell> */}
                     </FormItem>
                     <FormItem top="Дата">
                         <DatePicker
                             min={jSDateValueToDateSelectorValue(currentDate)}
-                            max={{day: currentDate.getDate(), month: currentDate.getMonth()+2, year: currentDate.getFullYear()}}
+                            max={{ day: currentDate.getDate(), month: currentDate.getMonth() + 2, year: currentDate.getFullYear() }}
                             defaultValue={selectedDate}
-                            onDateChange={(value) => {changeDate(value)}}
+                            onDateChange={(value) => { changeDate(value) }}
                         />
                         {/* <InfoRow>{dateToString(props.collect.selected.When)} в {dateTimeToTimeString(props.collect.selected.When)}</InfoRow> */}
                     </FormItem>
                     <FormItem>
                         {workoutSelector}
-                    
+
                     </FormItem>
                     <FormItem top="Информация">
                         <Textarea defaultValue={details} value={details} onChange={e => setDetails(e.currentTarget.value)} placeholder="Сделать чтобы можно было покупать аренду без сбора. сбор опционально делается" />
@@ -277,7 +312,7 @@ const SimpleCollectItem = (props) => {
             )
         }; break;
         // case "edit": {
-        
+
         // };break;
         default: {
             <Group>
@@ -296,10 +331,11 @@ const mapStateToProps = (state) => {
         simplePlace: state.simplePlaceEntity,
         selectedPlace: state.simplePlaceEntity.selectedPlace,
         selectedRent: state.rentEntity.selectedRent,
+        rent: state.rentEntity,
         myProfile: state.profileEntity.myProfile,
     }
 }
 
 export default connect(mapStateToProps, {
-    DeleteMemberFromCollect, setSelectedSimplePlace,
+    DeleteMemberFromCollect, setSelectedSimplePlace,  setSelectedRent,
 })(SimpleCollectItem)
