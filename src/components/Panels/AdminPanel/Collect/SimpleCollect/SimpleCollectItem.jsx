@@ -81,18 +81,12 @@ const SimpleCollectItem = (props) => {
             let currentSlotIndex = 12;
             let splitCol = <SplitCol width="25%"></SplitCol>
             let slots = timeSlotsForSimpleCollects(slotsBy30min, 2, from.getHours());
+            let iButtons = slots.map(x => <IconButton>{`${x.Hours}:${x.Minutes}`}</IconButton>)
             
             workoutSelector = 
             <SplitLayout>
                 <SplitCol width="25%">
-                    <IconButton>08:00</IconButton>
-                    <IconButton>08:30</IconButton>
-                    <IconButton>09:00</IconButton>
-                    <IconButton>09:30</IconButton>
-                    <IconButton>10:00</IconButton>
-                    <IconButton>10:30</IconButton>
-                    <IconButton>11:00</IconButton>
-                    <IconButton>11:30</IconButton>
+                    {iButtons}
                 </SplitCol>
             </SplitLayout>
             
