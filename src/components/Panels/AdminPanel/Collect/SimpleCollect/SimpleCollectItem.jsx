@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import {
     RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea,
     File, CellButton, Button, Header, List, Cell, Select, CustomSelectOption, IconButton,
-    CardGrid, Card, SplitLayout, SplitCol
+    CardGrid, Card, SplitLayout, SplitCol, Div
 } from '@vkontakte/vkui'
 import { defaultPhotoPath } from './../../../../../store/dataTypes/common'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
@@ -68,26 +68,37 @@ const SimpleCollectItem = (props) => {
                 return false;
         })
             
-        debugger
+        // ! учесть перерывы и аренды
         if (worktimeSlot != null && worktimeSlot != undefined)
         {
             let from = new Date(worktimeSlot.FromTime) // current item date and start time
             let to = new Date(worktimeSlot.ToTime) // current item date and end time
-
+            
             // если выбранная дата и дата текущего расписания совпадает, тогда 
             let selectedDayRents = props.rent.selectedDayRents;
             let slotsBy30min = (to.valueOf() - from.valueOf()) / (30 * 60 * 1000);
-            let cols = slotsBy30min / 12; // 12 записей в колонке
-            let currentSlotIndex = 12;
-            let splitCol = <SplitCol width="25%"></SplitCol>
-            let slots = timeSlotsForSimpleCollects(slotsBy30min, 2, from.getHours());
-            let iButtons = slots.map(x => <IconButton>{`${x.Hours}:${x.Minutes}`}</IconButton>)
+            let numberOfCols = slotsBy30min < 4 ? slotsBy30min : 4;
+            let numberOfRows = Math.trunc(slotsBy30min/numberOfCols) == slotsBy30min/numberOfCols ? slotsBy30min/numberOfCols : Math.trunc(slotsBy30min/numberOfCols) + 1;
             
+            let slots = timeSlotsForSimpleCollects(slotsBy30min, 2, from.getHours());
+            let iButtons = slots.map(x => <Div>
+                    <Button>{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
+                </Div>)
+            let splitCols = []
+
+            for (let i = 0 ; i < numberOfCols; i ++)//4
+            {
+                let sCol = []
+                for (let j = 0; j < numberOfRows; j ++)//5
+                {
+                    sCol.push(iButtons[i * numberOfRows + j])
+                }
+                splitCols.push(<SplitCol width="25%">{sCol}</SplitCol>)
+            }
+
             workoutSelector = 
             <SplitLayout>
-                <SplitCol width="25%">
-                    {iButtons}
-                </SplitCol>
+                {splitCols}
             </SplitLayout>
             
         }
@@ -140,7 +151,7 @@ const SimpleCollectItem = (props) => {
             return (
                 <>
                     <FormItem top="Ваш город">
-                        <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
+                        <InfoRow>{(props.myProfile && props.myProfile.CityUmbracoName) ? props.myProfile.CityUmbracoName : ""}</InfoRow>
                     </FormItem>
                     <FormItem top="Дата и время">
                         <InfoRow>{dateToString(props.collect.selected.When)} в {dateTimeToTimeString(props.collect.selected.When)}</InfoRow>
