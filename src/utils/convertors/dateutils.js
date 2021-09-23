@@ -116,6 +116,11 @@ export const datesWithoutTimeIsSame = (date1, date2) => {
     return (date1.getFullYear() == date2.getFullYear() && date1.getMonth() == date2.getMonth() && date1.getDate() == date2.getDate())
 }
 
+// сравнение двух дат только по времени (часы и минуты) без даты. true - равны, false- не равны
+export const timesWithoutDateHourMinuteIsSame = (date1, date2) => {
+    return (date1.getHours() == date2.getHours() && date1.getMinutes() == date2.getMinutes())
+}
+
 // преобразование значения dateSelector из пакета vk ui в нативную дату JS
 export const dateSelectorValueToJSDateValue = (dsValue) => {
     //{day: currentDate.getDate(), month: currentDate.getMonth()+1, year: currentDate.getFullYear()}
@@ -150,7 +155,9 @@ export const timeSlotsForSimpleCollects = (slotsNumber, slotsInHour=timeSlotsInO
         slots.push({
             Hours: Math.trunc(i / slotsInHour) + startHour, 
             Minutes: Math.round((i / slotsInHour - Math.trunc(i / slotsInHour)) * 60), 
-            SlotMinutes: oneSlotMinutes})
+            SlotMinutes: oneSlotMinutes,
+            Enabled: true,}
+            )
     }
     
     return slots

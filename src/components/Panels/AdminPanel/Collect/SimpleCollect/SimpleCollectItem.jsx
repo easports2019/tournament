@@ -9,7 +9,7 @@ import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
 import {
     dateToString, dateTimeToTimeString, datesWithoutTimeIsSame, timeSlotsForSimpleCollects,
-    dateSelectorValueToJSDateValue, jSDateValueToDateSelectorValue, timeSlotsForCollects
+    dateSelectorValueToJSDateValue, jSDateValueToDateSelectorValue, timeSlotsForCollects, addToTime
 } from './../../../../../utils/convertors/dateUtils';
 import { DeleteMemberFromCollect } from './../../../../../store/collectReducer';
 import { setSelectedRent } from './../../../../../store/rentReducer';
@@ -45,7 +45,7 @@ const SimpleCollectItem = (props) => {
     let simplePlaces = props.simplePlace.places;
 
     let changePlace = (e) => {
-        
+
         props.setSelectedSimplePlace(+e.currentTarget.value);
         props.setSelectedRent(+e.currentTarget.value, dateSelectorValueToJSDateValue(selectedDate));
     }
@@ -55,8 +55,7 @@ const SimpleCollectItem = (props) => {
 
     }
 
-    if ((props.selectedPlace) && (props.selectedPlace.Worktime != null) && (props.selectedPlace.Worktime != undefined))
-    {
+    if ((props.selectedPlace) && (props.selectedPlace.Worktime != null) && (props.selectedPlace.Worktime != undefined)) {
         let worktimeSlot = props.selectedPlace.Worktime.find(wt => {
             //selectedDate, wt, rents
             let selectedDT = new Date(dateSelectorValueToJSDateValue(selectedDate)) // selected in box
@@ -67,50 +66,97 @@ const SimpleCollectItem = (props) => {
             else
                 return false;
         })
-            
+
         // ! учесть перерывы и аренды
-        if (worktimeSlot != null && worktimeSlot != undefined)
-        {
+        if (worktimeSlot != null && worktimeSlot != undefined) {
             let from = new Date(worktimeSlot.FromTime) // current item date and start time
             let to = new Date(worktimeSlot.ToTime) // current item date and end time
-            
+
             // если выбранная дата и дата текущего расписания совпадает, тогда 
             let selectedDayRents = props.rent.selectedDayRents;
-            let slotsBy30min = (to.valueOf() - from.valueOf()) / (30 * 60 * 1000);
-            let numberOfCols = slotsBy30min < 4 ? slotsBy30min : 4;
-            let numberOfRows = Math.trunc(slotsBy30min/numberOfCols) == slotsBy30min/numberOfCols ? slotsBy30min/numberOfCols : Math.trunc(slotsBy30min/numberOfCols) + 1;
-            
-            let slots = timeSlotsForSimpleCollects(slotsBy30min, 2, from.getHours());
-            let iButtons = slots.map(x => <Div>
-                    <Button>{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
-                </Div>)
+            let minutesOneSlot = 30; // количество минут в таймслоте
+            let minTimeSlotToRent = 2; // минимальный таймслот для аренды (в таймслотах, а не в минутах меряем)
+            let slotsNumber = (to.valueOf() - from.valueOf()) / (minutesOneSlot * 60 * 1000);
+            let numberOfCols = slotsNumber < 4 ? slotsNumber : 4;
+            let numberOfRows = Math.trunc(slotsNumber / numberOfCols) == slotsNumber / numberOfCols ? slotsNumber / numberOfCols : Math.trunc(slotsNumber / numberOfCols) + 1;
+
+            let slots = timeSlotsForSimpleCollects(slotsNumber, 60/minutesOneSlot, from.getHours()); // получили общее время работы с разбивкой по диапазонам (обычно по 30 минут)
+            // теперь надо получить перерывы и задизейблить их в массиве
+             if (worktimeSlot.Breaks && worktimeSlot.Breaks.length > 0)
+             {
+                 slots = slots.map(slot => {
+                    /*
+                    workout slot =
+                    {
+                        Hours: Math.trunc(i / slotsInHour) + startHour, 
+                        Minutes: Math.round((i / slotsInHour - Math.trunc(i / slotsInHour)) * 60), 
+                        SlotMinutes: oneSlotMinutes,
+                        Enabled: true,
+                    }
+                    */
+                     worktimeSlot.Breaks.forEach(brek => {
+                        
+                        let from = new Date(brek.FromTime);
+                        let to = new Date(brek.ToTime);
+
+                        let slotFromTime = new Date(from.getFullYear(), from.getMonth(), from.getDate(), slot.Hours, slot.Minutes);
+                        let slotToTime = new Date(from.getFullYear(), 
+                            from.getMonth(), 
+                            from.getDate(), 
+                            slot.Hours, 
+                            slot.Minutes);
+
+                        if (from <= slotFromTime  && (to > slotToTime))
+                        {
+                            slot.Enabled = false;
+                        }
+                     });
+                     return slot;
+                    }
+                 )
+
+             }
+
+
+
+            let iButtons = slots.map(x => {
+                if (x.Enabled) {
+                    return <Div>
+                        <Button mode="commerce">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
+                    </Div>
+                }
+                else {
+                    return <Div>
+                        <Button mode="secondary">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
+                    </Div>
+                }
+            })
             let splitCols = []
 
-            for (let i = 0 ; i < numberOfCols; i ++)//4
+            for (let i = 0; i < numberOfCols; i++)//4
             {
                 let sCol = []
-                for (let j = 0; j < numberOfRows; j ++)//5
+                for (let j = 0; j < numberOfRows; j++)//5
                 {
                     sCol.push(iButtons[i * numberOfRows + j])
                 }
                 splitCols.push(<SplitCol width="25%">{sCol}</SplitCol>)
             }
 
-            workoutSelector = 
-            <SplitLayout>
-                {splitCols}
-            </SplitLayout>
-            
+            workoutSelector =
+                <SplitLayout>
+                    {splitCols}
+                </SplitLayout>
+
         }
-        else
-        {
+        else {
             workoutSelector = <InfoRow>Расписания нет</InfoRow>
         }
     }
     else
         workoutSelector = <InfoRow>Расписания нет</InfoRow>
-        
-        
+
+
 
 
     const CancelMember = () => {
@@ -342,5 +388,5 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    DeleteMemberFromCollect, setSelectedSimplePlace,  setSelectedRent,
+    DeleteMemberFromCollect, setSelectedSimplePlace, setSelectedRent,
 })(SimpleCollectItem)
