@@ -156,7 +156,8 @@ export const timeSlotsForSimpleCollects = (slotsNumber, slotsInHour=timeSlotsInO
             Hours: Math.trunc(i / slotsInHour) + startHour, 
             Minutes: Math.round((i / slotsInHour - Math.trunc(i / slotsInHour)) * 60), 
             SlotMinutes: oneSlotMinutes,
-            Enabled: true,}
+            Enabled: true,
+            Rented: false,}
             )
     }
     

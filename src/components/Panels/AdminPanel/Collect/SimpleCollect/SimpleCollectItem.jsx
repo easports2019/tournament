@@ -80,11 +80,11 @@ const SimpleCollectItem = (props) => {
             let numberOfCols = slotsNumber < 4 ? slotsNumber : 4;
             let numberOfRows = Math.trunc(slotsNumber / numberOfCols) == slotsNumber / numberOfCols ? slotsNumber / numberOfCols : Math.trunc(slotsNumber / numberOfCols) + 1;
 
-            let slots = timeSlotsForSimpleCollects(slotsNumber, 60/minutesOneSlot, from.getHours()); // получили общее время работы с разбивкой по диапазонам (обычно по 30 минут)
-            // теперь надо получить перерывы и задизейблить их в массиве
-             if (worktimeSlot.Breaks && worktimeSlot.Breaks.length > 0)
-             {
-                 slots = slots.map(slot => {
+            let slots = timeSlotsForSimpleCollects(slotsNumber, 60 / minutesOneSlot, from.getHours()); // получили общее время работы с разбивкой по диапазонам (обычно по 30 минут)
+
+            // получаем перерывы и дизейблим их в массиве
+            if (worktimeSlot.Breaks && worktimeSlot.Breaks.length > 0) {
+                slots = slots.map(slot => {
                     /*
                     workout slot =
                     {
@@ -94,41 +94,83 @@ const SimpleCollectItem = (props) => {
                         Enabled: true,
                     }
                     */
-                     worktimeSlot.Breaks.forEach(brek => {
-                        
+
+                    // расставляем перерывы
+                    worktimeSlot.Breaks.forEach(brek => {
+
                         let from = new Date(brek.FromTime);
                         let to = new Date(brek.ToTime);
 
                         let slotFromTime = new Date(from.getFullYear(), from.getMonth(), from.getDate(), slot.Hours, slot.Minutes);
-                        let slotToTime = new Date(from.getFullYear(), 
-                            from.getMonth(), 
-                            from.getDate(), 
-                            slot.Hours, 
+                        let slotToTime = new Date(from.getFullYear(),
+                            from.getMonth(),
+                            from.getDate(),
+                            slot.Hours,
                             slot.Minutes);
 
-                        if (from <= slotFromTime  && (to > slotToTime))
-                        {
+                        if (from <= slotFromTime && (to > slotToTime)) {
                             slot.Enabled = false;
                         }
-                     });
-                     return slot;
-                    }
-                 )
+                    });
 
-             }
+                    
+                    // расставляем аренды
+                    props.rent.selectedDayRents.forEach(rnt => {
+                        
+                        let from = new Date(rnt.From);
+                        let to = addToTime(from, 0, rnt.DurationMinutes);
+
+                        let slotFromTime = new Date(from.getFullYear(), from.getMonth(), from.getDate(), slot.Hours, slot.Minutes);
+                        let slotToTime = new Date(from.getFullYear(),
+                            from.getMonth(),
+                            from.getDate(),
+                            slot.Hours,
+                            slot.Minutes);
+
+                        if (from <= slotFromTime && (to > slotToTime)) {
+                            
+                            if (rnt.Published)
+                                slot.Rented = true;
+                        }
+                    });
 
 
+                    
+                    return slot;
+                }
+                )
 
+            }
+
+
+            // маркируем доступное и недоступное время
             let iButtons = slots.map(x => {
                 if (x.Enabled) {
-                    return <Div>
-                        <Button mode="commerce">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
-                    </Div>
+                    if (x.Rented){
+                        return  <Div>
+                                <Button mode="destructive">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
+                            </Div>
+                    }
+                    else
+                    {
+                        return  <Div>
+                                <Button mode="commerce">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
+                            </Div>
+                    }
+                    
                 }
                 else {
-                    return <Div>
-                        <Button mode="secondary">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
-                    </Div>
+                    if (x.Rented){
+                        return  <Div>
+                                <Button mode="destructive">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
+                            </Div>
+                    }
+                    else
+                    {
+                        return <Div>
+                            <Button mode="secondary">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
+                        </Div>
+                    }
                 }
             })
             let splitCols = []
