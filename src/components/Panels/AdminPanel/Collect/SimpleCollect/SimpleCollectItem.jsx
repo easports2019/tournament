@@ -8,7 +8,7 @@ import { defaultPhotoPath } from './../../../../../store/dataTypes/common'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
 import {
-    dateToString, dateTimeToTimeString, datesWithoutTimeIsSame, timeSlotsForSimpleCollects,
+    dateToString, dateTimeToTimeString, datesWithoutTimeIsSame, timeSlotsForSimpleCollects,timeToString,
     dateSelectorValueToJSDateValue, jSDateValueToDateSelectorValue, timeSlotsForCollects, addToTime
 } from './../../../../../utils/convertors/dateUtils';
 import { DeleteMemberFromCollect } from './../../../../../store/collectReducer';
@@ -25,6 +25,9 @@ const SimpleCollectItem = (props) => {
     let maxCollectDate = new Date();
     let workoutSelector = "";
 
+    let minutesOneSlot = 30; // количество минут в таймслоте
+    let minTimeSlotToRent = 2; // минимальный таймслот для аренды (в таймслотах, а не в минутах меряем)
+
     let [acceptBeMember, setAcceptBeMember] = useState(false)
     let [showPanelBeMember, setShowPanelBeMember] = useState(false)
     let [showCancelMemberForm, setShowCancelMemberForm] = useState(false)
@@ -35,6 +38,8 @@ const SimpleCollectItem = (props) => {
     let [costMembers, setCostMembers] = useState(200)
     let [costAll, setCostAll] = useState(2000)
     let [plus, setPlus] = useState(costAll - (costMembers * needMembers))
+    let [selectedSlots, setSelectedSlots] = useState(new Array()) //  тут отдельные выбранные ячейки
+    let selectedTimeRanges = new Array() // тут сгруппированные выбранные ячейки отдельными диапазонами
 
     let [youAreMember, setYouAreMember] = useState((props.collect.selected.Members && props.collect.selected.Members.length > 0)
         ?
@@ -48,14 +53,52 @@ const SimpleCollectItem = (props) => {
 
         props.setSelectedSimplePlace(+e.currentTarget.value);
         props.setSelectedRent(+e.currentTarget.value, dateSelectorValueToJSDateValue(selectedDate));
+        setSelectedSlots([])
     }
 
     let changeDate = (value) => {
         setSelectedDate(value);
+        setSelectedSlots([])
 
     }
 
-    if ((props.selectedPlace) && (props.selectedPlace.Worktime != null) && (props.selectedPlace.Worktime != undefined)) {
+    let selectSlot = (value) => {
+        // взять минимальное количество слотов и сделать проверку на послеющие ячейки
+        // и это же самое нужно сделать на сервере! чтобы исключить двойную аренду
+        // проверить следующий слот (не конец смены, следующий не арендован, не перерыв)
+        let tmpSelectedSlot = [];
+
+        // выявили выбранное время
+        let res = selectedSlots.filter(ss => (ss.Hours == value.Hours && ss.Minutes == value.Minutes));
+        if (res.length != 0)
+            tmpSelectedSlot = selectedSlots.filter(ss => (ss.Hours != value.Hours || ss.Minutes != value.Minutes));
+        else
+            tmpSelectedSlot = [...selectedSlots, value];
+
+        // сортировка
+        tmpSelectedSlot.sort((a,b) => {
+            let i1 = a.Hours * (60 / minutesOneSlot * minutesOneSlot) +  a.Minutes;
+            let i2 = b.Hours * (60 / minutesOneSlot * minutesOneSlot) +  b.Minutes;
+
+            return (i1-i2)
+        })
+        
+
+        
+        setSelectedSlots(tmpSelectedSlot);
+    }
+
+    let gotoCollect = (value) => {
+        
+
+    }
+
+    // строим контрол выбора времени
+    // если место и время выборано
+    if ((props.selectedPlace) && (props.selectedPlace.Worktime != null) && (props.selectedPlace.Worktime != undefined)) 
+    {
+
+        // берем временной слот (один) из расписания именно тот, который совпадает с выбранной датой
         let worktimeSlot = props.selectedPlace.Worktime.find(wt => {
             //selectedDate, wt, rents
             let selectedDT = new Date(dateSelectorValueToJSDateValue(selectedDate)) // selected in box
@@ -67,33 +110,25 @@ const SimpleCollectItem = (props) => {
                 return false;
         })
 
-        // ! учесть перерывы и аренды
-        if (worktimeSlot != null && worktimeSlot != undefined) {
+        // если верменной слот найден, производим с ним модификации по формированию и покраске кнопок, а также назначения им действий
+        if (worktimeSlot != null && worktimeSlot != undefined) 
+        {
             let from = new Date(worktimeSlot.FromTime) // current item date and start time
             let to = new Date(worktimeSlot.ToTime) // current item date and end time
 
             // если выбранная дата и дата текущего расписания совпадает, тогда 
             let selectedDayRents = props.rent.selectedDayRents;
-            let minutesOneSlot = 30; // количество минут в таймслоте
-            let minTimeSlotToRent = 2; // минимальный таймслот для аренды (в таймслотах, а не в минутах меряем)
-            let slotsNumber = (to.valueOf() - from.valueOf()) / (minutesOneSlot * 60 * 1000);
-            let numberOfCols = slotsNumber < 4 ? slotsNumber : 4;
-            let numberOfRows = Math.trunc(slotsNumber / numberOfCols) == slotsNumber / numberOfCols ? slotsNumber / numberOfCols : Math.trunc(slotsNumber / numberOfCols) + 1;
+            
+            let slotsNumber = (to.valueOf() - from.valueOf()) / (minutesOneSlot * 60 * 1000); // общее количество слотов
+            let numberOfCols = slotsNumber < 4 ? slotsNumber : 4; // количество колонок
+            let numberOfRows = Math.trunc(slotsNumber / numberOfCols) == slotsNumber / numberOfCols ? slotsNumber / numberOfCols : Math.trunc(slotsNumber / numberOfCols) + 1; // количество строк
 
-            let slots = timeSlotsForSimpleCollects(slotsNumber, 60 / minutesOneSlot, from.getHours()); // получили общее время работы с разбивкой по диапазонам (обычно по 30 минут)
+            let slots = timeSlotsForSimpleCollects(slotsNumber, 60 / minutesOneSlot, from.getHours()); // получили общее время работы с разбивкой по диапазонам (обычно по 30 минут на каждую ячейку)
 
-            // получаем перерывы и дизейблим их в массиве
+
+            // модификаторы. (вносим перерывы, аренды, выделенные ячейки в массив slots)
             if (worktimeSlot.Breaks && worktimeSlot.Breaks.length > 0) {
-                slots = slots.map(slot => {
-                    /*
-                    workout slot =
-                    {
-                        Hours: Math.trunc(i / slotsInHour) + startHour, 
-                        Minutes: Math.round((i / slotsInHour - Math.trunc(i / slotsInHour)) * 60), 
-                        SlotMinutes: oneSlotMinutes,
-                        Enabled: true,
-                    }
-                    */
+                slots = slots.map((slot, slotCurrentIndex) => {
 
                     // расставляем перерывы
                     worktimeSlot.Breaks.forEach(brek => {
@@ -112,7 +147,6 @@ const SimpleCollectItem = (props) => {
                             slot.Enabled = false;
                         }
                     });
-
                     
                     // расставляем аренды
                     props.rent.selectedDayRents.forEach(rnt => {
@@ -133,8 +167,31 @@ const SimpleCollectItem = (props) => {
                                 slot.Rented = true;
                         }
                     });
+                    
+                    // расставляем выбранные слоты
+                    if (selectedSlots && Array.isArray(selectedSlots) && selectedSlots.length > 0)
+                    {
+                        
+                        selectedSlots.forEach(slt => {
+                            
+                            let from = new Date(`01.01.2000 ${slt.Hours}:${slt.Minutes}`);
+                            let to = addToTime(from, 0, minutesOneSlot);
 
+                            let slotFromTime = new Date(from.getFullYear(), from.getMonth(), from.getDate(), slot.Hours, slot.Minutes);
+                            let slotToTime = new Date(from.getFullYear(),
+                                from.getMonth(),
+                                from.getDate(),
+                                slot.Hours,
+                                slot.Minutes);
 
+                            if (from <= slotFromTime && (to > slotToTime)) {
+                                
+                                
+                                slot.Selected = true;
+                            }
+                        });
+                    }
+                    
                     
                     return slot;
                 }
@@ -142,20 +199,28 @@ const SimpleCollectItem = (props) => {
 
             }
 
-
-            // маркируем доступное и недоступное время
+            // маркируем доступное и недоступное время и создаем результирующий массив кнопок
             let iButtons = slots.map(x => {
                 if (x.Enabled) {
                     if (x.Rented){
                         return  <Div>
-                                <Button mode="destructive">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
+                                <Button onClick={() => gotoCollect(x)} mode="destructive">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
                             </Div>
                     }
                     else
                     {
-                        return  <Div>
-                                <Button mode="commerce">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
-                            </Div>
+                        if (x.Selected)
+                        {
+                            return  <Div>
+                                    <Button onClick={() => selectSlot(x)} mode="primary">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
+                                </Div>
+                        }
+                        else
+                        {
+                            return  <Div>
+                                    <Button onClick={() => selectSlot(x)} mode="commerce">{`${x.Hours <= 9 ? "0" + x.Hours.toString() : x.Hours.toString()}:${x.Minutes <= 9 ? "0" + x.Minutes.toString() : x.Minutes.toString()}`}</Button>
+                                </Div>
+                        }
                     }
                     
                 }
@@ -173,8 +238,53 @@ const SimpleCollectItem = (props) => {
                     }
                 }
             })
+
+            //selectedTimeRanges = new Array()
+            // вычисляем выбранные временные промежутки и выводим их в список
+            for (let i = 0; i < selectedSlots.length; i ++)
+            {
+                if(selectedSlots[i - 1] != null && selectedSlots[i - 1] != undefined)
+                {
+                    let i1 = selectedSlots[i].Hours * (60 / minutesOneSlot * minutesOneSlot) +  selectedSlots[i].Minutes;
+                    let i2 = selectedSlots[i - 1].Hours * (60 / minutesOneSlot * minutesOneSlot) +  selectedSlots[i - 1].Minutes;
+
+                    if ((i1 - i2) <= minutesOneSlot)
+                    {
+                        selectedTimeRanges[selectedTimeRanges.length-1].SlotMinutes += selectedSlots[i].SlotMinutes;
+                    }
+                    else
+                    {
+                        selectedTimeRanges.push(
+                            {
+                                Hours: selectedSlots[i].Hours,
+                                Minutes: selectedSlots[i].Minutes,
+                                SlotMinutes: selectedSlots[i].SlotMinutes,
+                                Enabled: selectedSlots[i].Enabled,
+                                Selected: selectedSlots[i].Selected,
+                                Rented: selectedSlots[i].Rented,
+                            }
+                        )
+                    }
+                }
+                else
+                {
+                    selectedTimeRanges.push(
+                        {
+                            Hours: selectedSlots[i].Hours,
+                            Minutes: selectedSlots[i].Minutes,
+                            SlotMinutes: selectedSlots[i].SlotMinutes,
+                            Enabled: selectedSlots[i].Enabled,
+                            Selected: selectedSlots[i].Selected,
+                            Rented: selectedSlots[i].Rented,
+                        }
+                    )
+                }
+                
+            }
+
             let splitCols = []
 
+            // разбиваем кнопки по колонкам для наиболее удобного отображения 
             for (let i = 0; i < numberOfCols; i++)//4
             {
                 let sCol = []
@@ -185,6 +295,7 @@ const SimpleCollectItem = (props) => {
                 splitCols.push(<SplitCol width="25%">{sCol}</SplitCol>)
             }
 
+            // записываем полученную иерархию контролов в единый селектор
             workoutSelector =
                 <SplitLayout>
                     {splitCols}
@@ -364,6 +475,26 @@ const SimpleCollectItem = (props) => {
                     <FormItem>
                         {workoutSelector}
 
+                    </FormItem>
+                    <FormItem top="Вы выбрали время">
+                        <Group>
+                            {selectedTimeRanges.map(tr => {
+                                let until = addToTime(new Date(`01.01.2000 ${tr.Hours}:${tr.Minutes}`), 0, tr.SlotMinutes);
+                                return <InfoRow>с {timeToString(tr.Hours, tr.Minutes)} по {timeToString(until.getHours(), until.getMinutes())}</InfoRow>
+
+
+                            })
+                        }
+                        
+                        {/* //     Hours: selectedSlots[i].Hours,
+                        //     Minutes: selectedSlots[i].Minutes,
+                        //     SlotMinutes: selectedSlots[i].SlotMinutes,
+                        //     Enabled: selectedSlots[i].Enabled,
+                        //     Selected: selectedSlots[i].Selected,
+                        //     Rented: selectedSlots[i].Rented, */}
+                        
+                    
+                        </Group>
                     </FormItem>
                     <FormItem top="Информация">
                         <Textarea defaultValue={details} value={details} onChange={e => setDetails(e.currentTarget.value)} placeholder="Сделать чтобы можно было покупать аренду без сбора. сбор опционально делается" />
