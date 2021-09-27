@@ -24,6 +24,7 @@ const SimpleCollectItem = (props) => {
     let currentDate = new Date();
     let maxCollectDate = new Date();
     let workoutSelector = "";
+    let totalCost = 0;
 
     let minutesOneSlot = 30; // количество минут в таймслоте
     let minTimeSlotToRent = 2; // минимальный таймслот для аренды (в таймслотах, а не в минутах меряем)
@@ -91,6 +92,39 @@ const SimpleCollectItem = (props) => {
     let gotoCollect = (value) => {
         
 
+    }
+
+
+    const CancelMember = () => {
+        props.DeleteMemberFromCollect(props.myProfile.UserProfileId, props.collect.selected.Id, cancelReason);
+        setAcceptBeMember(false);
+        setShowPanelBeMember(false);
+        setShowCancelMemberForm(false);
+        setCancelReason("");
+        setYouAreMember(false);
+    }
+
+    const AcceptRights = () => {
+        setAcceptBeMember(!acceptBeMember);
+    }
+
+    const calculateCostAll = (costall) => {
+        setCostAll(costall);
+        let costMem = Math.round(costall / needMembers);
+        setCostMembers(costMem);
+
+        setPlus((costMem * needMembers) - costall);
+    }
+
+    const calculateNeedMembers = (need) => {
+        setNeedMembers(need);
+        setCostMembers(Math.round(costAll / need));
+        setPlus((Math.round(costAll / need) * need) - costAll);
+    }
+
+    const calculateCostMembers = (membercost) => {
+        setCostMembers(membercost);
+        setPlus((membercost * needMembers) - costAll);
     }
 
     // строим контрол выбора времени
@@ -186,7 +220,8 @@ const SimpleCollectItem = (props) => {
 
                             if (from <= slotFromTime && (to > slotToTime)) {
                                 
-                                
+                                slt.PricePerSlot = worktimeSlot.CostPerHour / (60 / minutesOneSlot);
+                                slot.PricePerSlot = worktimeSlot.CostPerHour / (60 / minutesOneSlot);
                                 slot.Selected = true;
                             }
                         });
@@ -245,12 +280,14 @@ const SimpleCollectItem = (props) => {
             {
                 if(selectedSlots[i - 1] != null && selectedSlots[i - 1] != undefined)
                 {
+                    
                     let i1 = selectedSlots[i].Hours * (60 / minutesOneSlot * minutesOneSlot) +  selectedSlots[i].Minutes;
                     let i2 = selectedSlots[i - 1].Hours * (60 / minutesOneSlot * minutesOneSlot) +  selectedSlots[i - 1].Minutes;
 
                     if ((i1 - i2) <= minutesOneSlot)
                     {
                         selectedTimeRanges[selectedTimeRanges.length-1].SlotMinutes += selectedSlots[i].SlotMinutes;
+                        selectedTimeRanges[selectedTimeRanges.length-1].PricePerSlot += selectedSlots[i].PricePerSlot;
                     }
                     else
                     {
@@ -262,12 +299,14 @@ const SimpleCollectItem = (props) => {
                                 Enabled: selectedSlots[i].Enabled,
                                 Selected: selectedSlots[i].Selected,
                                 Rented: selectedSlots[i].Rented,
+                                PricePerSlot: selectedSlots[i].PricePerSlot,
                             }
                         )
                     }
                 }
                 else
                 {
+                    
                     selectedTimeRanges.push(
                         {
                             Hours: selectedSlots[i].Hours,
@@ -276,11 +315,17 @@ const SimpleCollectItem = (props) => {
                             Enabled: selectedSlots[i].Enabled,
                             Selected: selectedSlots[i].Selected,
                             Rented: selectedSlots[i].Rented,
+                            PricePerSlot: selectedSlots[i].PricePerSlot,
                         }
                     )
                 }
                 
             }
+
+            // если изменилась цена, перезапишем ее в состоянии
+            totalCost = selectedTimeRanges.reduce((acc, cur) => acc += cur.PricePerSlot, 0);
+            if (totalCost != costAll)
+                calculateCostAll(selectedTimeRanges.reduce((acc, cur) => acc += cur.PricePerSlot, 0))
 
             let splitCols = []
 
@@ -312,37 +357,6 @@ const SimpleCollectItem = (props) => {
 
 
 
-    const CancelMember = () => {
-        props.DeleteMemberFromCollect(props.myProfile.UserProfileId, props.collect.selected.Id, cancelReason);
-        setAcceptBeMember(false);
-        setShowPanelBeMember(false);
-        setShowCancelMemberForm(false);
-        setCancelReason("");
-        setYouAreMember(false);
-    }
-
-    const AcceptRights = () => {
-        setAcceptBeMember(!acceptBeMember);
-    }
-
-    const calculateCostAll = (costall) => {
-        setCostAll(costall);
-        let costMem = Math.round(costall / needMembers);
-        setCostMembers(costMem);
-
-        setPlus((costMem * needMembers) - costall);
-    }
-
-    const calculateNeedMembers = (need) => {
-        setNeedMembers(need);
-        setCostMembers(Math.round(costAll / need));
-        setPlus((Math.round(costAll / need) * need) - costAll);
-    }
-
-    const calculateCostMembers = (membercost) => {
-        setCostMembers(membercost);
-        setPlus((membercost * needMembers) - costAll);
-    }
 
 
     switch (props.collect.mode) {
@@ -480,23 +494,24 @@ const SimpleCollectItem = (props) => {
                         <Group>
                             {selectedTimeRanges.map(tr => {
                                 let until = addToTime(new Date(`01.01.2000 ${tr.Hours}:${tr.Minutes}`), 0, tr.SlotMinutes);
-                                return <InfoRow>с {timeToString(tr.Hours, tr.Minutes)} по {timeToString(until.getHours(), until.getMinutes())}</InfoRow>
+                                return <InfoRow>с {timeToString(tr.Hours, tr.Minutes)} до {timeToString(until.getHours(), until.getMinutes())}  ({tr.PricePerSlot} руб.) </InfoRow>
 
 
                             })
                         }
-                        
-                        {/* //     Hours: selectedSlots[i].Hours,
-                        //     Minutes: selectedSlots[i].Minutes,
-                        //     SlotMinutes: selectedSlots[i].SlotMinutes,
-                        //     Enabled: selectedSlots[i].Enabled,
-                        //     Selected: selectedSlots[i].Selected,
-                        //     Rented: selectedSlots[i].Rented, */}
-                        
-                    
+                        <InfoRow>
+                            <br/>
+Вы можете сначала собрать людей и после оплатить. <br/> 
+Либо вы можете сначала оплатить, а потом собирать людей. <br/> 
+Аренда площадки гарантируется только после её оплаты.
+                        </InfoRow>
+                        <RichCell 
+                        text=""
+                        actions={<Button>Оплатить выбранное время сразу</Button>}>
+                        </RichCell>
                         </Group>
                     </FormItem>
-                    <FormItem top="Информация">
+                    <FormItem top="Информация по сбору">
                         <Textarea defaultValue={details} value={details} onChange={e => setDetails(e.currentTarget.value)} placeholder="Сделать чтобы можно было покупать аренду без сбора. сбор опционально делается" />
                     </FormItem>
                     <FormItem top="Сколько человек нужно">
@@ -508,13 +523,14 @@ const SimpleCollectItem = (props) => {
                         ></Input>
 
                     </FormItem>
-                    <FormItem top="Стоимость аренды (не видно участникам)">
-                        <Input type="Number"
+                    <FormItem top="Стоимость выбранного времени (не видно участникам)">
+                        <InfoRow>{costAll}</InfoRow>
+                        {/* <Input type="Number"
                             defaultValue={costAll}
                             value={costAll}
                             placeholder="2000"
                             onChange={e => calculateCostAll(e.currentTarget.value)}
-                        ></Input>
+                        ></Input> */}
                     </FormItem>
                     <FormItem top="Стоимость на 1 человека (эту цену увидят участники)">
                         <Input type="Number"
