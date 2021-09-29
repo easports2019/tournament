@@ -11,10 +11,11 @@ import {
     dateToString, dateTimeToTimeString, datesWithoutTimeIsSame, timeSlotsForSimpleCollects, timeToString,
     dateSelectorValueToJSDateValue, jSDateValueToDateSelectorValue, timeSlotsForCollects, addToTime
 } from './../../../../../utils/convertors/dateUtils';
-import { DeleteMemberFromCollect } from './../../../../../store/collectReducer';
+import { DeleteMemberFromCollect, AddSimpleCollect, registerMemberToSimpleCollect } from './../../../../../store/collectReducer';
 import { setSelectedRent } from './../../../../../store/rentReducer';
 import { setSelectedSimplePlace } from './../../../../../store/simplePlaceReducer';
 import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
+import { myProfile } from '../../../../../store/constants/commonConstants';
 
 
 
@@ -44,16 +45,18 @@ const SimpleCollectItem = (props) => {
     let [selectedSlots, setSelectedSlots] = useState(new Array()) //  тут отдельные выбранные ячейки
     let selectedTimeRanges = new Array() // тут сгруппированные выбранные ячейки отдельными диапазонами
 
-    let [youAreMember, setYouAreMember] = useState((props.collect.selected.Members && props.collect.selected.Members.length > 0)
-        ?
-        props.collect.selected.Members.filter(m => m.UserProfileId == props.myProfile.UserProfileId).length > 0
-        :
-        false);
+    debugger
+    let youAreMember = (props.collect.selected.Members && props.collect.selected.Members.length > 0)
+    ?
+    (props.collect.selected.Members.filter(m => m.UserProfileId == props.myProfile.UserProfileId).length > 0 ? true : false)
+    :
+    false;
+
+    //let [youAreMember, setYouAreMember] = useState(yam);
 
     let simplePlaces = props.simplePlace.places;
 
     let changePlace = (e) => {
-
         props.setSelectedSimplePlace(+e.currentTarget.value);
         props.setSelectedRent(+e.currentTarget.value, dateSelectorValueToJSDateValue(selectedDate));
         setSelectedSlots([])
@@ -102,12 +105,17 @@ const SimpleCollectItem = (props) => {
 
 
     const CancelMember = () => {
-        props.DeleteMemberFromCollect(props.myProfile.UserProfileId, props.collect.selected.Id, cancelReason);
+        let member = {
+            UserProfileId: props.myProfile.UserProfileId,
+            SimpleCollectId: props.collect.selected.Id,
+        }
+        props.DeleteMemberFromCollect(props.myProfile.UserProfileId, props.collect.selected, member, cancelReason);
         setAcceptBeMember(false);
         setShowPanelBeMember(false);
         setShowCancelMemberForm(false);
         setCancelReason("");
-        setYouAreMember(false);
+        youAreMember = false;
+        //setYouAreMember(false);
     }
 
     const AcceptRights = () => {
@@ -131,6 +139,33 @@ const SimpleCollectItem = (props) => {
     const calculateCostMembers = (membercost) => {
         setCostMembers(membercost);
         setPlus((membercost * needMembers) - costAll);
+    }
+
+    const registerToCollect = () => {
+        
+        props.registerMemberToSimpleCollect(props.myProfile.UserProfileId, props.collect.selected);
+    }
+
+    const createCollect = () => {
+
+        let collect = {
+            Name: props.selectedPlace.Name,
+            // +"_"+selectedDate.year.toString()+"."+selectedDate.month.toString()+"."+selectedDate.day.toString()+"_"+props.myProfile.UserProfileId+"_"+ new Date().getMinutes().toString()+"-"+ new Date().getSeconds().toString(),
+            When: new Date(
+                selectedDate.year, 
+                selectedDate.month-1, 
+                selectedDate.day, 
+                selectedTimeRanges[0].Hours+3, // прибавил 3 часа (разница от UTC)
+                selectedTimeRanges[0].Minutes),
+            DurationMinutes: selectedTimeRanges[0].SlotMinutes,
+            Details: details,
+            Comment: "",
+            Cost: costMembers /*selectedTimeRanges[0].PricePerSlot*/,
+            NeedMembers: +needMembers,
+            SimplePlaceId: props.selectedPlace.Id,
+            CreatorId: props.myProfile.UserProfileId,
+        }
+        props.AddSimpleCollect(props.myProfile.UserProfileId, collect)
     }
 
     // строим контрол выбора времени
@@ -416,7 +451,7 @@ const SimpleCollectItem = (props) => {
                                             :
                                             <FormItem top="Стать участником">
                                                 {(acceptBeMember) &&
-                                                    <CellButton>Зарегистрироваться на сбор</CellButton>
+                                                    <CellButton onClick={registerToCollect}>Зарегистрироваться на сбор</CellButton>
                                                 }
                                                 <Checkbox checked={acceptBeMember} onChange={AcceptRights}>
                                                     {`Подтверждаю, что готов прибыть на сбор в ${props.collect.selected.Place.Name} в 
@@ -469,6 +504,7 @@ const SimpleCollectItem = (props) => {
                     <FormItem top="Место">
                         <Select
                             placeholder="Не выбрано"
+                            value={(props.selectedPlace && props.selectedPlace.Id) ? props.selectedPlace.Id : null}
                             onChange={e => changePlace(e)}
                             options={simplePlaces.map(place => ({
                                 label: place.Name, value: place.Id
@@ -530,8 +566,8 @@ const SimpleCollectItem = (props) => {
                                     </Group>
                                     :
                                     <Group>
-                                        <Radio name="collect" value="1" checked={collectType == 1 ? true : false} onChange={() => changeCollectType(1)} >Оплатить потом создать сбор</Radio>
-                                        <Radio name="collect" value="2" checked={collectType == 2  ? true : false} onChange={() => changeCollectType(2)} >Создать сбор потом оплатить</Radio>
+                                        <Radio name="collect" value="1" checked={collectType == 1 ? true : false} onChange={() => changeCollectType(1)} description="После оплаты аренда закреплена за вами">Оплатить потом создать сбор</Radio>
+                                        <Radio name="collect" value="2" checked={collectType == 2  ? true : false} onChange={() => changeCollectType(2)} description="Закрепление аренды будет только после оплаты">Создать сбор потом оплатить</Radio>
                                         <Radio name="collect" value="3" checked={collectType == 3 ? true : false} onChange={() => changeCollectType(3)} description="Без создания сбора">Просто оплатить выбранное время</Radio>
                                     </Group>
 
@@ -585,7 +621,7 @@ const SimpleCollectItem = (props) => {
                             (collectType == 2 ? 
                             <RichCell
                                 caption="Создать сбор и оплатить"
-                                actions={<Button>Создать сбор</Button>}
+                                actions={<Button onClick={createCollect}>Создать сбор</Button>}
                                 >
                             </RichCell> :
                             <RichCell
@@ -631,5 +667,5 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    DeleteMemberFromCollect, setSelectedSimplePlace, setSelectedRent,
+    DeleteMemberFromCollect, setSelectedSimplePlace, setSelectedRent, AddSimpleCollect, registerMemberToSimpleCollect
 })(SimpleCollectItem)

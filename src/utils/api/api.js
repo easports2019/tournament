@@ -210,76 +210,58 @@ export const CollectAPI = {
     },
     
     
-    
+    addSimpleCollect(userProfileId, simpleCollect) {
+        debugger
+        //simpleCollectUserProfile
 
-    add(collect_source) {
-        ////debugger
-
-        let collect = {
-            'Id': collect_source.id,
-            'Place': collect_source.place,
-            'WhenDate': collect_source.date,
-            'Hour': collect_source.hour,
-            'Minute': collect_source.minute,
-            'DurationMinutes': collect_source.durationMinutes,
-            'Price': collect_source.price, // цена за весь период
-            'Options': [...collect_source.options],
-            'FixedByMemberPrice': collect_source.fixedByMemberPrice,
-            /*
-            описание доступа. выкладывается список доступных ролей на сборе. они описаны в usersGroups
- 
-            */
-            'UsersGroups': [...collect_source.usersGroups.map(uGroup => {
-                return {
-                    'Id': uGroup.id,
-                    'Amplua': { ...uGroup.amplua },
-                    'NumberOf': uGroup.numberOf,  // количество участников 
-                    'Access': { ...uGroup.access }, // доступ на 
-                    'Players': [...(uGroup.players && uGroup.players.length ? uGroup.players.map(user => {
-                        return { 'User': { ...user.user }, payment: {} }
-                    }) :
-                        [{}])],
-                    'Price': uGroup.price,
-                    'OrganizatorIsMember': uGroup.organizatorIsMember,
-                }
-            })],
-            'UsersInvited': [
-                ...collect_source.usersInvited.map(uInvited => {
-
-                    return {
-                        'Id': uInvited.id,
-                        'ToBe': { ...uInvited.toBe },
-                        'User': { ...uInvited.user },
-                    }
-                })
-            ],
-            'UsersWantsToParticipate': [
-                ...collect_source.usersWantsToParticipate.map(uWP => {
-
-                    return {
-
-                        'Id': uWP.id,
-                        'ToBe': { ...uWP.toBe },
-                        'User': { ...uWP.user },
-                    }
-                })
-            ],
-            'Access': collect_source.access.id,
-            'Permanent': collect_source.permanent,
-            'OrganizatorIsMember': collect_source.organizatorIsMember,
-            // 'AcceptedByPlaceOwner': collect_source.acceptedByPlaceOwner, // сбор подтвержден арендодателем и занесен в расписание. на это время больше нельзя бронировать. 
-            'Organizer': { ...collect_source.organizer }
+        let userProfile = {
+            UserProfileId: userProfileId
         }
-        return PostJsonInstance.post("Collects/Add2" + authQueryString, JSON.stringify({ ...collect }))
-        //return PostJsonInstance.post("Collects/Add" + authQueryString, JSON.stringify({...collect}))
-        //.then(x => 
-        //     {
-        //     	console.log(collect);
-        //     	console.log("Collects/Add: " + x);
-        //     }).catch(y => {
-        //     	console.log(collect);
-        //     	console.log("error Collects/Add: " + y);
-        //     })
+        //matchInfo.When = new Date(matchInfo.When.year, matchInfo.When.month - 1, matchInfo.When.day, hours, minutes );
+        return PostJsonInstance.post("SimpleCollect/AddCollect" + authQueryString, JSON.stringify({ simpleCollect: { ...simpleCollect }, userProfile: { ...userProfile } })).then(data => {
+            
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
+    
+    registerSimpleMemberToSimpleCollect(userProfileId, simpleCollect) {
+        //simpleCollectUserProfile
+
+        let userProfile = {
+            UserProfileId: userProfileId
+        }
+        //matchInfo.When = new Date(matchInfo.When.year, matchInfo.When.month - 1, matchInfo.When.day, hours, minutes );
+        return PostJsonInstance.post("SimpleCollect/RegisterMember" + authQueryString, JSON.stringify({ simpleCollect: { ...simpleCollect }, userProfile: { ...userProfile } })).then(data => {
+            
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
+    
+    deleteMemberFromSimpleCollect(userProfileId, simpleCollect, simpleMember, reason="") {
+        debugger
+        //simpleCollectUserProfile
+        simpleMember.Comment=reason;
+
+        let userProfile = {
+            UserProfileId: userProfileId
+        }
+        //matchInfo.When = new Date(matchInfo.When.year, matchInfo.When.month - 1, matchInfo.When.day, hours, minutes );
+        return PostJsonInstance.post("SimpleCollect/DeleteMember" + authQueryString, JSON.stringify({ simpleCollect: { ...simpleCollect }, userProfile: { ...userProfile }, simpleMember: {...simpleMember} })).then(data => {
+            
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
     },
 
 
@@ -302,6 +284,7 @@ export const CollectAPI = {
             })
     },
 }
+
 
 export const TeamAPI = {
 
