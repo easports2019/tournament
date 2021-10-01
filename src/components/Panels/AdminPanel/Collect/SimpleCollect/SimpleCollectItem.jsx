@@ -11,14 +11,15 @@ import {
     dateToString, dateTimeToTimeString, datesWithoutTimeIsSame, timeSlotsForSimpleCollects, timeToString,
     dateSelectorValueToJSDateValue, jSDateValueToDateSelectorValue, timeSlotsForCollects, addToTime
 } from './../../../../../utils/convertors/dateUtils';
-import { DeleteMemberFromCollect, AddSimpleCollect, registerMemberToSimpleCollect } from './../../../../../store/collectReducer';
+import { DeleteMemberFromCollect, AddSimpleCollect, 
+    registerMemberToSimpleCollect, DelSimpleCollect } from './../../../../../store/collectReducer';
 import { setSelectedRent } from './../../../../../store/rentReducer';
 import { setSelectedSimplePlace } from './../../../../../store/simplePlaceReducer';
 import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
 import { myProfile } from '../../../../../store/constants/commonConstants';
 
 
-
+// включить защиту от создания сбора на прошедшее время! 
 
 
 const SimpleCollectItem = (props) => {
@@ -45,11 +46,14 @@ const SimpleCollectItem = (props) => {
     let [selectedSlots, setSelectedSlots] = useState(new Array()) //  тут отдельные выбранные ячейки
     let selectedTimeRanges = new Array() // тут сгруппированные выбранные ячейки отдельными диапазонами
 
-    debugger
+    //debugger
     let youAreMember = (props.collect.selected.Members && props.collect.selected.Members.length > 0)
     ?
     (props.collect.selected.Members.filter(m => m.UserProfileId == props.myProfile.UserProfileId).length > 0 ? true : false)
     :
+    false;
+    let youAreOrganizer = (props.collect.selected && props.collect.selected != undefined && props.myProfile && props.myProfile != undefined) ? 
+    props.collect.selected.CreatorId == props.myProfile.UserProfileId :
     false;
 
     //let [youAreMember, setYouAreMember] = useState(yam);
@@ -166,6 +170,10 @@ const SimpleCollectItem = (props) => {
             CreatorId: props.myProfile.UserProfileId,
         }
         props.AddSimpleCollect(props.myProfile.UserProfileId, collect)
+    }
+
+    const cancelCollect = () => {
+        props.DelSimpleCollect(props.myProfile.UserProfileId, props.collect.selected);
     }
 
     // строим контрол выбора времени
@@ -401,105 +409,138 @@ const SimpleCollectItem = (props) => {
 
     switch (props.collect.mode) {
         case "view": {
-            return (
-                <>
-                    <FormItem top="Ваш город">
-                        <InfoRow>{(props.myProfile && props.myProfile.CityUmbracoName) ? props.myProfile.CityUmbracoName : ""}</InfoRow>
-                    </FormItem>
-                    <FormItem top="Дата и время">
-                        <InfoRow>{dateToString(props.collect.selected.When)} в {dateTimeToTimeString(props.collect.selected.When)}</InfoRow>
-                    </FormItem>
-                    <FormItem top="Место">
-                        <RichCell caption={props.collect.selected.Place.Address}>{props.collect.selected.Place.Name}</RichCell>
-                    </FormItem>
-                    <FormItem top="Информация">
-                        <InfoRow>{props.collect.selected.Details}</InfoRow>
-                    </FormItem>
-                    <FormItem top="Сколько человек нужно">
-                        <InfoRow>{props.collect.selected.NeedMembers}
-                            {(props.collect.selected.Members && props.collect.selected.Members.length > 0) &&
-                                ` (нужно еще ${props.collect.selected.NeedMembers - props.collect.selected.Members.length} чел.)`
-                            }
-                        </InfoRow>
-
-                    </FormItem>
-                    <FormItem top="Стоимость на 1 человека">
-                        <InfoRow>{props.collect.selected.Cost}</InfoRow>
-                    </FormItem>
-                    <Group header={<Header mode="secondary">Участники</Header>}>
-                        {(props.collect.selected.Members && props.collect.selected.Members.length > 0) ?
-                            <FormItem>
-                                <List>
-                                    {props.collect.selected.Members.map((item) => <InfoRow>{item.UserProfile.Name} {item.UserProfile.Surname} {item.UserProfileId == props.collect.selected.Creator.UserProfileId && " (Организатор)"}</InfoRow>)}
-                                </List>
-                            </FormItem>
-                            :
-                            <FormItem>
-                                <InfoRow>Пока нет участников. Стань первым.</InfoRow>
-                            </FormItem>
-                        }
-                    </Group>
-                    {
-                        (!youAreMember) ?
-                            (
-                                (new Date(props.collect.selected.When) > new Date()) ?
-                                    (
-                                        (!showPanelBeMember) ?
-                                            <FormItem top="Участие">
-                                                <CellButton onClick={() => setShowPanelBeMember(!showPanelBeMember)}>Стать участником</CellButton>
-                                            </FormItem>
-                                            :
-                                            <FormItem top="Стать участником">
-                                                {(acceptBeMember) &&
-                                                    <CellButton onClick={registerToCollect}>Зарегистрироваться на сбор</CellButton>
-                                                }
-                                                <Checkbox checked={acceptBeMember} onChange={AcceptRights}>
-                                                    {`Подтверждаю, что готов прибыть на сбор в ${props.collect.selected.Place.Name} в 
-                                ${dateToString(props.collect.selected.When)} к ${dateTimeToTimeString(props.collect.selected.When)}
-                                и оплатить взнос в размере ${props.collect.selected.Cost} рублей`}
-                                                </Checkbox>
-                                            </FormItem>
-                                    )
-                                    :
-                                    <FormItem top="Участие">
-                                        <InfoRow>Регистрация закончена</InfoRow>
-                                    </FormItem>
-                            )
-                            :
-                            <FormItem top="Участие">
-                                {(new Date(props.collect.selected.When) > new Date()) ?
-                                    <>
-                                        <InfoRow>Вы подтвердили участвуете в сборе</InfoRow>
-                                        {(!showCancelMemberForm) ?
-                                            <RichCell actions={<Button mode="destructive" onClick={() => setShowCancelMemberForm(true)}>Отказаться от участия</Button>}></RichCell>
-                                            :
-                                            <Group>
-                                                <FormItem>
-                                                    <b>Вы хотите отказаться от участия? Укажите причину отказа</b>
-                                                </FormItem>
-                                                <FormItem>
-                                                    <Input type="text" value={cancelReason} onChange={(e) => setCancelReason(e.currentTarget.value)} defaultValue="" />
-                                                </FormItem>
-                                                <FormItem>
-                                                    <Button onClick={() => setShowCancelMemberForm(false)}>Не отказываться</Button>
-                                                    {cancelReason.length > 4 && <Button onClick={CancelMember} mode="destructive">Отказаться</Button>}
-                                                </FormItem>
-                                            </Group>
-                                        }
-                                    </>
-                                    :
-                                    <InfoRow>Вы участвовали в сборе</InfoRow>
+            if (props.collect.selected.Deleted != undefined && props.collect.selected.Deleted == true){
+                return (
+                    <>
+                        <FormItem>
+                            <InfoRow><strong>Этот сбор был отменен</strong></InfoRow>
+                        </FormItem>
+                        <FormItem top="Дата и время" disabled>
+                            <InfoRow>{dateToString(props.collect.selected.When)} в {dateTimeToTimeString(props.collect.selected.When)}</InfoRow>
+                        </FormItem>
+                        <FormItem top="Место" disabled>
+                            <RichCell caption={props.collect.selected.Place.Address}>{props.collect.selected.Place.Name}</RichCell>
+                        </FormItem>
+                        <FormItem top="Информация" disabled>
+                            <InfoRow>{props.collect.selected.Details}</InfoRow>
+                        </FormItem>
+                    </>
+                )
+            }
+            else{
+                return (
+                    <>
+                        <FormItem top="Ваш город">
+                            <InfoRow>{(props.myProfile && props.myProfile.CityUmbracoName) ? props.myProfile.CityUmbracoName : ""}</InfoRow>
+                        </FormItem>
+                        <FormItem top="Дата и время">
+                            <InfoRow>{dateToString(props.collect.selected.When)} в {dateTimeToTimeString(props.collect.selected.When)}</InfoRow>
+                        </FormItem>
+                        <FormItem top="Место">
+                            <RichCell caption={props.collect.selected.Place.Address}>{props.collect.selected.Place.Name}</RichCell>
+                        </FormItem>
+                        <FormItem top="Информация">
+                            <InfoRow>{props.collect.selected.Details}</InfoRow>
+                        </FormItem>
+                        <FormItem top="Сколько человек нужно">
+                            <InfoRow>{props.collect.selected.NeedMembers}
+                                {(props.collect.selected.Members && props.collect.selected.Members.length > 0) &&
+                                    ` (нужно еще ${props.collect.selected.NeedMembers - props.collect.selected.Members.length} чел.)`
                                 }
-                            </FormItem>
-                    }
-                </>
-            )
+                            </InfoRow>
+
+                        </FormItem>
+                        <FormItem top="Стоимость на 1 человека">
+                            <InfoRow>{props.collect.selected.Cost}</InfoRow>
+                        </FormItem>
+                        <Group header={<Header mode="secondary">Участники</Header>}>
+                            {(props.collect.selected.Members && props.collect.selected.Members.length > 0) ?
+                                <FormItem>
+                                    <List>
+                                        {props.collect.selected.Members.map((item) => <InfoRow>{item.UserProfile.Name} {item.UserProfile.Surname} {item.UserProfileId == props.collect.selected.Creator.UserProfileId && " (Организатор)"}</InfoRow>)}
+                                    </List>
+                                </FormItem>
+                                :
+                                <FormItem>
+                                    <InfoRow>Пока нет участников. Стань первым.</InfoRow>
+                                </FormItem>
+                            }
+                        </Group>
+                        {
+                            (!youAreMember) ?
+                                (
+                                    (new Date(props.collect.selected.When) > new Date()) ?
+                                        (
+                                            (!showPanelBeMember) ?
+                                                <FormItem top="Участие">
+                                                    <CellButton onClick={() => setShowPanelBeMember(!showPanelBeMember)}>Стать участником</CellButton>
+                                                </FormItem>
+                                                :
+                                                <FormItem top="Стать участником">
+                                                    {(acceptBeMember) &&
+                                                        <CellButton onClick={registerToCollect}>Зарегистрироваться на сбор</CellButton>
+                                                    }
+                                                    <Checkbox checked={acceptBeMember} onChange={AcceptRights}>
+                                                        {`Подтверждаю, что готов прибыть на сбор в ${props.collect.selected.Place.Name} в 
+                                    ${dateToString(props.collect.selected.When)} к ${dateTimeToTimeString(props.collect.selected.When)}
+                                    и оплатить взнос в размере ${props.collect.selected.Cost} рублей`}
+                                                    </Checkbox>
+                                                </FormItem>
+                                        )
+                                        :
+                                        <FormItem top="Участие">
+                                            <InfoRow>Регистрация закончена</InfoRow>
+                                        </FormItem>
+                                )
+                                :
+                                <FormItem top="Участие">
+                                    {(new Date(props.collect.selected.When) > new Date()) ?
+                                        <>
+                                            <InfoRow>{(!youAreOrganizer) ? `Вы подтвердили участие в сборе` : `Вы организатор сбора`}</InfoRow>
+                                            {(!showCancelMemberForm) ?
+                                                ((!youAreOrganizer) ?
+                                                <RichCell actions={<Button mode="destructive" onClick={() => setShowCancelMemberForm(true)}>Отказаться от участия</Button>}></RichCell> :
+                                                <RichCell actions={
+                                                    <>
+                                                <Button mode="primary" 
+                                                    //onClick={() => cancelCollect(true)}
+                                                >Изменить сбор</Button>
+                                                <Button mode="destructive" 
+                                                    onClick={cancelCollect}
+                                                >Отменить сбор</Button>
+                                                </>
+                                                }></RichCell>
+                                                
+                                                )
+                                                :
+                                                <Group>
+                                                    <FormItem>
+                                                        <b>Вы хотите отказаться от участия? Укажите причину отказа</b>
+                                                    </FormItem>
+                                                    <FormItem>
+                                                        <Input type="text" value={cancelReason} onChange={(e) => setCancelReason(e.currentTarget.value)} defaultValue="" />
+                                                    </FormItem>
+                                                    <FormItem>
+                                                        <Button onClick={() => setShowCancelMemberForm(false)}>Не отказываться</Button>
+                                                        {cancelReason.length > 4 && <Button onClick={CancelMember} mode="destructive">Отказаться</Button>}
+                                                    </FormItem>
+                                                </Group>
+                                            }
+                                        </>
+                                        :
+                                        <InfoRow>Вы участвовали в сборе</InfoRow>
+                                    }
+                                </FormItem>
+                        }
+                    </>
+                )
+                }
         }; break;
         case "add": {
             return (
                 <>
                     <FormItem top="Ваш город">
-                        <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
+                        <InfoRow>{(props.myProfile && props.myProfile.CityUmbracoName) ? props.myProfile.CityUmbracoName : ""}</InfoRow>
                     </FormItem>
                     <FormItem top="Место">
                         <Select
@@ -578,7 +619,8 @@ const SimpleCollectItem = (props) => {
                     {collectType != 3 &&
                         <>
                             <FormItem top="Информация по сбору">
-                                <Textarea defaultValue={details} value={details} onChange={e => setDetails(e.currentTarget.value)} placeholder="Сделать чтобы можно было покупать аренду без сбора. сбор опционально делается" />
+                                <Textarea defaultValue={details} value={details} onChange={e => setDetails(e.currentTarget.value)} 
+                                placeholder="Укажите здесь важную информацию для участников сбора" />
                             </FormItem>
                             <FormItem top="Сколько человек нужно">
                                 <Input type="Number"
@@ -641,9 +683,96 @@ const SimpleCollectItem = (props) => {
                 </>
             )
         }; break;
-        // case "edit": {
+        case "edit": {
+            return (
+                <>
+                    <FormItem top="Ваш город">
+                        <InfoRow>{(props.myProfile && props.myProfile.CityUmbracoName) ? props.myProfile.CityUmbracoName : ""}</InfoRow>
+                    </FormItem>
+                    <FormItem top="Дата и время">
+                        <InfoRow>{dateToString(props.collect.selected.When)} в {dateTimeToTimeString(props.collect.selected.When)}</InfoRow>
+                    </FormItem>
+                    <FormItem top="Место">
+                        <RichCell caption={props.collect.selected.Place.Address}>{props.collect.selected.Place.Name}</RichCell>
+                    </FormItem>
 
-        // };break;
+                    {selectedTimeRanges && selectedTimeRanges.length > 0 ? 
+                    <Group>
+
+                    
+                        <FormItem>
+                            <InfoRow>
+                                <br />
+                                Вы можете сначала собрать людей и после оплатить. <br />
+                                Либо вы можете сначала оплатить, а потом собирать людей. <br />
+                                Аренда площадки гарантируется только после её оплаты.
+                            </InfoRow>
+                        </FormItem>
+
+                        
+                        <FormItem top="Информация по сбору">
+                            <Textarea defaultValue={details} value={details} onChange={e => setDetails(e.currentTarget.value)} placeholder="Сделать чтобы можно было покупать аренду без сбора. сбор опционально делается" />
+                        </FormItem>
+                        <FormItem top="Сколько человек нужно">
+                            <Input type="Number"
+                                defaultValue={needMembers}
+                                value={needMembers}
+                                placeholder="10"
+                                onChange={e => calculateNeedMembers(e.currentTarget.value)}
+                            ></Input>
+
+                        </FormItem>
+                        <FormItem top="Стоимость выбранного времени (не видно участникам)">
+                            <InfoRow>{costAll}</InfoRow>
+                            {/* <Input type="Number"
+                                defaultValue={costAll}
+                                value={costAll}
+                                placeholder="2000"
+                                onChange={e => calculateCostAll(e.currentTarget.value)}
+                            ></Input> */}
+                        </FormItem>
+                        <FormItem top="Стоимость на 1 человека (эту цену увидят участники)">
+                            <Input type="Number"
+                                defaultValue={costMembers}
+                                value={costMembers}
+                                placeholder="200"
+                                onChange={e => calculateCostMembers(e.currentTarget.value)}
+                            ></Input>
+                        </FormItem>
+                        <FormItem top="Остаток после оплаты">
+                            <InfoRow>{plus} руб</InfoRow>
+                        </FormItem>
+                    
+                        <FormItem top="Публикация">
+                            {selectedTimeRanges && selectedTimeRanges.length > 0 ? (
+                            collectType == 1 ? <RichCell
+                                caption="Оплатить и создать сбор"
+                                actions={<Button>Оплатить и создать сбор</Button>}
+                                >
+                            </RichCell> :
+                            (collectType == 2 ? 
+                            <RichCell
+                                caption="Создать сбор и оплатить"
+                                actions={<Button onClick={createCollect}>Создать сбор</Button>}
+                                >
+                            </RichCell> :
+                            <RichCell
+                                caption="Оплатить выбранное время без создания сбора"
+                                actions={<Button>Оплатить</Button>}
+                                >
+                            </RichCell>)
+                            ): 
+                            <RichCell
+                                caption="Выберите место, дату и время занятий">
+                            </RichCell>}
+                        </FormItem>
+                    </Group>
+                    :
+                    <></>    
+    }
+                </>
+            )
+        };break;
         default: {
             <Group>
                 Не выбран режим отображения компонента (view, add, edit)
@@ -667,5 +796,6 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    DeleteMemberFromCollect, setSelectedSimplePlace, setSelectedRent, AddSimpleCollect, registerMemberToSimpleCollect
+    DeleteMemberFromCollect, setSelectedSimplePlace, setSelectedRent, AddSimpleCollect, registerMemberToSimpleCollect,
+    DelSimpleCollect, 
 })(SimpleCollectItem)

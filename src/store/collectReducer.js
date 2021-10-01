@@ -9,6 +9,8 @@ import { authQueryString } from './../utils/api/server';
 const COLLECTS_SET_ALL_SIMPLE_COLLECTS = "COLLECTS_SET_ALL_SIMPLE_COLLECTS";
 const COLLECTS_SELECT_SIMPLE_COLLECT = "COLLECTS_SELECT_SIMPLE_COLLECT";
 const COLLECTS_SET_COLLECT_ITEM_MODE = "COLLECTS_SET_COLLECT_ITEM_MODE";
+const COLLECTS_DEL_SIMPLE_COLLECT = "COLLECTS_DEL_SIMPLE_COLLECT";
+const COLLECTS_ADD_SIMPLE_COLLECT = "COLLECTS_ADD_SIMPLE_COLLECT";
 const COLLECTS_DELETE_MEMBER_FROM_SIMPLE_COLLECTS = "COLLECTS_DELETE_MEMBER_FROM_SIMPLE_COLLECTS";
 const COLLECTS_ADD_MEMBER_TO_SELECTED_SIMPLE_COLLECT = "COLLECTS_ADD_MEMBER_TO_SELECTED_SIMPLE_COLLECT";
 
@@ -47,8 +49,25 @@ let collectReducer = (state = initState, action) => {
                 mode: action.mode,
             }
         }
+        case COLLECTS_ADD_SIMPLE_COLLECT: {
+            return{
+                ...state,
+                collects: [...state.collects, action.collect],
+            }
+        }
+        case COLLECTS_DEL_SIMPLE_COLLECT: {
+            let res = {
+                ...state,
+                collects: [...state.collects.filter(col => col.Id != action.collect.Id) ],
+                selected: {...state.selected,
+                    Published: false,
+                    Deleted: true,
+            }
+            }
+            return res;
+        }
         case COLLECTS_DELETE_MEMBER_FROM_SIMPLE_COLLECTS: {
-            debugger
+            
             return{
                 ...state,
                 collects: [...state.collects.filter(m => m.Id != state.selected.Id),
@@ -115,6 +134,20 @@ export const setCollectItemMode = (mode) => {
     return {
         type: COLLECTS_SET_COLLECT_ITEM_MODE,
         mode
+    }
+}
+
+export const delSimpleCollect = (collect) => {
+    return {
+        type: COLLECTS_DEL_SIMPLE_COLLECT,
+        collect
+    }
+}
+
+export const addSimpleCollect = (collect) => {
+    return {
+        type: COLLECTS_ADD_SIMPLE_COLLECT,
+        collect
     }
 }
 
@@ -205,13 +238,50 @@ export const AddSimpleCollect = (userProfileId = -1, collect = null) => {
                         CollectAPI.addSimpleCollect(userProfileId, collect)
                             .then(pl => {
                                 //debugger
-                                if (pl && pl.data.length > 0) {
-                                    dispatch(setSimpleCollect(pl.data));
+                                if (pl && pl.data) {
+                                    dispatch(addSimpleCollect(pl.data));
                                     dispatch((pl.data));
                                     dispatch(setGlobalPopout(false))
                                 }
                                 else {
                                     dispatch(setErrorMessage("Не получены данные CollectAPI.addSimpleCollect"))
+                                    dispatch(setGlobalPopout(false))
+                                }
+                            })
+                            .catch(error => {
+
+                                dispatch(setErrorMessage(error))
+                                dispatch(setGlobalPopout(false))
+                            })
+                }
+                else {
+
+                    //dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                    dispatch(setGlobalPopout(false))
+
+                }
+            }
+        
+    }
+}
+
+// отмена сбора
+export const DelSimpleCollect = (userProfileId = -1, collect = null) => {
+    return dispatch => {
+        if ((userProfileId != -1) && (collect != null))
+            {
+                if (authQueryString && authQueryString.length > 0)
+                {
+                        CollectAPI.delSimpleCollect(userProfileId, collect)
+                            .then(pl => {
+                                //debugger
+                                if (pl && pl.data) {
+                                    dispatch(delSimpleCollect(pl.data));
+                                    dispatch((pl.data));
+                                    dispatch(setGlobalPopout(false))
+                                }
+                                else {
+                                    dispatch(setErrorMessage("Не получены данные CollectAPI.delSimpleCollect"))
                                     dispatch(setGlobalPopout(false))
                                 }
                             })

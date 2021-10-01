@@ -457,6 +457,7 @@ const App = (props) => {
 													)
 													}
 												onClick={() => CollectSelect(t)} 
+												after={`${t.Cost} руб.`}
 											>
 												{t.Name}
 											</RichCell>

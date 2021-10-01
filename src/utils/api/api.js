@@ -228,6 +228,24 @@ export const CollectAPI = {
             })
     },
     
+    delSimpleCollect(userProfileId, simpleCollect) {
+        debugger
+        //simpleCollectUserProfile
+
+        let userProfile = {
+            UserProfileId: userProfileId
+        }
+        //matchInfo.When = new Date(matchInfo.When.year, matchInfo.When.month - 1, matchInfo.When.day, hours, minutes );
+        return PostJsonInstance.post("SimpleCollect/DelCollect" + authQueryString, JSON.stringify({ simpleCollect: { ...simpleCollect }, userProfile: { ...userProfile } })).then(data => {
+            
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+                debugger
+                return errorObj(error)
+            })
+    },
+    
     registerSimpleMemberToSimpleCollect(userProfileId, simpleCollect) {
         //simpleCollectUserProfile
 
