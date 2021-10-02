@@ -11,6 +11,7 @@ const COLLECTS_SELECT_SIMPLE_COLLECT = "COLLECTS_SELECT_SIMPLE_COLLECT";
 const COLLECTS_SET_COLLECT_ITEM_MODE = "COLLECTS_SET_COLLECT_ITEM_MODE";
 const COLLECTS_DEL_SIMPLE_COLLECT = "COLLECTS_DEL_SIMPLE_COLLECT";
 const COLLECTS_ADD_SIMPLE_COLLECT = "COLLECTS_ADD_SIMPLE_COLLECT";
+const COLLECTS_SET_SIMPLE_COLLECT = "COLLECTS_SET_SIMPLE_COLLECT";
 const COLLECTS_DELETE_MEMBER_FROM_SIMPLE_COLLECTS = "COLLECTS_DELETE_MEMBER_FROM_SIMPLE_COLLECTS";
 const COLLECTS_ADD_MEMBER_TO_SELECTED_SIMPLE_COLLECT = "COLLECTS_ADD_MEMBER_TO_SELECTED_SIMPLE_COLLECT";
 
@@ -53,6 +54,21 @@ let collectReducer = (state = initState, action) => {
             return{
                 ...state,
                 collects: [...state.collects, action.collect],
+            }
+        }
+        case COLLECTS_SET_SIMPLE_COLLECT: {
+            
+            return{
+                ...state,
+                collects: [...state.collects.map(col => {
+                    
+                    if (col.Id == action.collect.Id)
+                    {
+                        col = {...action.collect}
+                    }
+                    return col
+                })],
+                selected: {...action.collect},
             }
         }
         case COLLECTS_DEL_SIMPLE_COLLECT: {
@@ -151,6 +167,13 @@ export const addSimpleCollect = (collect) => {
     }
 }
 
+export const setSimpleCollect = (collect) => {
+    return {
+        type: COLLECTS_SET_SIMPLE_COLLECT,
+        collect
+    }
+}
+
 
 
 
@@ -240,6 +263,44 @@ export const AddSimpleCollect = (userProfileId = -1, collect = null) => {
                                 //debugger
                                 if (pl && pl.data) {
                                     dispatch(addSimpleCollect(pl.data));
+                                    dispatch((pl.data));
+                                    dispatch(setGlobalPopout(false))
+                                }
+                                else {
+                                    dispatch(setErrorMessage("Не получены данные CollectAPI.addSimpleCollect"))
+                                    dispatch(setGlobalPopout(false))
+                                }
+                            })
+                            .catch(error => {
+
+                                dispatch(setErrorMessage(error))
+                                dispatch(setGlobalPopout(false))
+                            })
+                }
+                else {
+
+                    //dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                    dispatch(setGlobalPopout(false))
+
+                }
+            }
+        
+    }
+}
+
+// изменение сбора
+export const EditSimpleCollect = (userProfileId = -1, collect = null) => {
+    return dispatch => {
+        if ((userProfileId != -1) && (collect != null))
+            {
+                if (authQueryString && authQueryString.length > 0)
+                {
+                        CollectAPI.editSimpleCollect(userProfileId, collect)
+                            .then(pl => {
+                                
+                                if (pl && pl.data) {
+                                    
+                                    dispatch(setSimpleCollect(pl.data));
                                     dispatch((pl.data));
                                     dispatch(setGlobalPopout(false))
                                 }

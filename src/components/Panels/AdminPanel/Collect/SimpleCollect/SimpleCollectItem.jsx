@@ -11,7 +11,7 @@ import {
     dateToString, dateTimeToTimeString, datesWithoutTimeIsSame, timeSlotsForSimpleCollects, timeToString,
     dateSelectorValueToJSDateValue, jSDateValueToDateSelectorValue, timeSlotsForCollects, addToTime
 } from './../../../../../utils/convertors/dateUtils';
-import { DeleteMemberFromCollect, AddSimpleCollect, 
+import { DeleteMemberFromCollect, AddSimpleCollect, setCollectItemMode, EditSimpleCollect,
     registerMemberToSimpleCollect, DelSimpleCollect } from './../../../../../store/collectReducer';
 import { setSelectedRent } from './../../../../../store/rentReducer';
 import { setSelectedSimplePlace } from './../../../../../store/simplePlaceReducer';
@@ -163,6 +163,7 @@ const SimpleCollectItem = (props) => {
                 selectedTimeRanges[0].Minutes),
             DurationMinutes: selectedTimeRanges[0].SlotMinutes,
             Details: details,
+            FullPrice: costAll,
             Comment: "",
             Cost: costMembers /*selectedTimeRanges[0].PricePerSlot*/,
             NeedMembers: +needMembers,
@@ -170,10 +171,55 @@ const SimpleCollectItem = (props) => {
             CreatorId: props.myProfile.UserProfileId,
         }
         props.AddSimpleCollect(props.myProfile.UserProfileId, collect)
+        props.setCollectItemMode("view");
+    }
+
+    const saveChanges = () => {
+
+        let collect = {
+            Id: props.collect.selected.Id,
+            Name: props.selectedPlace.Name,
+            // +"_"+selectedDate.year.toString()+"."+selectedDate.month.toString()+"."+selectedDate.day.toString()+"_"+props.myProfile.UserProfileId+"_"+ new Date().getMinutes().toString()+"-"+ new Date().getSeconds().toString(),
+            When: props.collect.selected.When,
+            DurationMinutes: props.collect.selected.DurationMinutes,
+            Details: details,
+            FullPrice: props.collect.selected.FullPrice,
+            Comment: props.collect.selected.Comment,
+            Cost: costMembers /*selectedTimeRanges[0].PricePerSlot*/,
+            NeedMembers: +needMembers,
+            SimplePlaceId: props.collect.selected.SimplePlaceId,
+            CreatorId: props.collect.selected.CreatorId,
+        }
+        props.EditSimpleCollect(props.myProfile.UserProfileId, collect)
+        props.setCollectItemMode("view");
     }
 
     const cancelCollect = () => {
         props.DelSimpleCollect(props.myProfile.UserProfileId, props.collect.selected);
+    }
+
+    const changeCollect = () => {
+
+        setDetails(props.collect.selected.Details);
+        setCostAll(props.collect.selected.FullPrice);
+        setNeedMembers(props.collect.selected.NeedMembers);
+        setCostMembers(props.collect.selected.Cost);
+
+        setPlus((props.collect.selected.Cost * props.collect.selected.NeedMembers) - props.collect.selected.FullPrice);
+
+        props.setCollectItemMode("edit");
+    }
+
+    const cancelSave = () => {
+
+        setDetails(props.collect.selected.Details ? props.collect.selected.Details : "");
+        setCostAll(props.collect.selected.FullPrice);
+        setNeedMembers(props.collect.selected.NeedMembers);
+        setCostMembers(props.collect.selected.Cost);
+
+        setPlus((props.collect.selected.Cost * props.collect.selected.NeedMembers) - props.collect.selected.FullPrice);
+
+        props.setCollectItemMode("view");
     }
 
     // строим контрол выбора времени
@@ -503,7 +549,7 @@ const SimpleCollectItem = (props) => {
                                                 <RichCell actions={
                                                     <>
                                                 <Button mode="primary" 
-                                                    //onClick={() => cancelCollect(true)}
+                                                    onClick={changeCollect}
                                                 >Изменить сбор</Button>
                                                 <Button mode="destructive" 
                                                     onClick={cancelCollect}
@@ -696,20 +742,7 @@ const SimpleCollectItem = (props) => {
                         <RichCell caption={props.collect.selected.Place.Address}>{props.collect.selected.Place.Name}</RichCell>
                     </FormItem>
 
-                    {selectedTimeRanges && selectedTimeRanges.length > 0 ? 
-                    <Group>
-
-                    
-                        <FormItem>
-                            <InfoRow>
-                                <br />
-                                Вы можете сначала собрать людей и после оплатить. <br />
-                                Либо вы можете сначала оплатить, а потом собирать людей. <br />
-                                Аренда площадки гарантируется только после её оплаты.
-                            </InfoRow>
-                        </FormItem>
-
-                        
+                
                         <FormItem top="Информация по сбору">
                             <Textarea defaultValue={details} value={details} onChange={e => setDetails(e.currentTarget.value)} placeholder="Сделать чтобы можно было покупать аренду без сбора. сбор опционально делается" />
                         </FormItem>
@@ -743,33 +776,23 @@ const SimpleCollectItem = (props) => {
                             <InfoRow>{plus} руб</InfoRow>
                         </FormItem>
                     
-                        <FormItem top="Публикация">
-                            {selectedTimeRanges && selectedTimeRanges.length > 0 ? (
-                            collectType == 1 ? <RichCell
-                                caption="Оплатить и создать сбор"
-                                actions={<Button>Оплатить и создать сбор</Button>}
-                                >
-                            </RichCell> :
-                            (collectType == 2 ? 
+                        <FormItem top="Сохранение">
                             <RichCell
-                                caption="Создать сбор и оплатить"
-                                actions={<Button onClick={createCollect}>Создать сбор</Button>}
+                            actions={
+                                <Group>
+                                    <Button 
+                                        onClick={cancelSave}
+                                    >Отменить изменения</Button>
+                                    <Button
+                                        onClick={saveChanges}
+                                    >Сохранить изменения</Button>
+                                </Group>
+                            }
                                 >
-                            </RichCell> :
-                            <RichCell
-                                caption="Оплатить выбранное время без создания сбора"
-                                actions={<Button>Оплатить</Button>}
-                                >
-                            </RichCell>)
-                            ): 
-                            <RichCell
-                                caption="Выберите место, дату и время занятий">
-                            </RichCell>}
+                            </RichCell>
                         </FormItem>
-                    </Group>
-                    :
-                    <></>    
-    }
+                      
+    
                 </>
             )
         };break;
@@ -797,5 +820,5 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
     DeleteMemberFromCollect, setSelectedSimplePlace, setSelectedRent, AddSimpleCollect, registerMemberToSimpleCollect,
-    DelSimpleCollect, 
+    DelSimpleCollect, setCollectItemMode, EditSimpleCollect,
 })(SimpleCollectItem)
