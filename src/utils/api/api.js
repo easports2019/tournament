@@ -43,6 +43,21 @@ export let okObj = (dat) => {
 
 //export const ApiTimer = setInterval(ApiSendInfo.check, 1000);
 
+export const VKAPI = {
+    getUser(id) {
+        debugger
+        return PostJsonInstance.get("https://api.vk.com/method/users.get?user_id=" + id + "&v=5.52").then(data => {
+debugger
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
+        
+    }
+}
+
 export const CityAPI = {
     // запрос всех мест
     // startindex - индекс, с которого начинать ответ

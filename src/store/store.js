@@ -15,6 +15,7 @@ import mainMenuReducer from './mainMenuReducer.js'
 import systemReducer from './systemReducer.js'
 import cityReducer from './cityReducer.js'
 import matchReducer from './matchReducer.js'
+import vkReducer from './vkReducer.js'
 import {composeWithDevTools} from 'redux-devtools-extension'
 import thunkMiddleware from 'redux-thunk'
 
@@ -40,6 +41,7 @@ let reducers = combineReducers({
     ampluaEntity: ampluaReducer,
     placeEntity: placeReducer,
     rentEntity: rentReducer,
+    vkcom: vkReducer,
     simplePlaceEntity: simplePlaceReducer,
     paymentEntity: paymentReducer,
     mainMenu: mainMenuReducer,

@@ -51,9 +51,11 @@ let collectReducer = (state = initState, action) => {
             }
         }
         case COLLECTS_ADD_SIMPLE_COLLECT: {
+            
             return{
                 ...state,
                 collects: [...state.collects, action.collect],
+                selected: {...action.collect},
             }
         }
         case COLLECTS_SET_SIMPLE_COLLECT: {

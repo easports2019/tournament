@@ -43,6 +43,7 @@ export const dateTimeToTimeString = (datetime) => {
 }
 
 export const dateToString = (date, ...args) => {
+    
     if (typeof date == "string")
         date = new Date(date);
 

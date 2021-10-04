@@ -15,6 +15,7 @@ import { getMatchesInCurrentCity, setHotPanel } from './store/matchReducer';
 import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity  } from './store/bidTeamsReducer';
 import { getAllCitiesFromServer } from './store/cityReducer';
 import { setShowAdminTourneyTab } from './store/systemReducer';
+import { getUser, setSelectedUser } from './store/vkReducer';
 import {addToTime} from './utils/convertors/dateUtils'
 
 
@@ -51,7 +52,24 @@ const App = (props) => {
 			
 		const user = await bridge.send('VKWebAppGetUserInfo');
 
+		
+		// const params = bridge.send("VKWebAppGetAuthToken", {"app_id": 7161115, "scope": ""}).then(res => {
+			
+		// 	bridge.send("VKWebAppCallAPIMethod", 
+		// 	{"method": "users.get", 
+		// 	"request_id": "32test", 
+		// 	"params": {"user_ids": "19757699", "fields": "sex,photo_100,bdate", "v":"5.131", 
+		// 	"access_token":res.access_token}})
+		// 	.then(us => {
+				
+		// 		props.setSelectedUser(us);
+		// 	})
+		// });
+		// https://vk.com/dev/users.get
 
+		 
+
+		
 		setUser(user);
 		props.setVkProfileInfo(user);
 		props.getAllCitiesFromServer();
@@ -238,6 +256,9 @@ const App = (props) => {
 						setPopout(null);
 						setModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => setModalWindow(null)}></ModalCommon>)
 					}
+
+					
+					//props.getUser(19757699);
 
 				}
 
@@ -437,7 +458,9 @@ const App = (props) => {
 									<List>
 
 										{
-										props.collect.collects.map(t => {
+											
+											props.collect.collects.sort((a, b) => new Date(a.When).getTime() - new Date(b.When).getTime())
+										.map(t => {
 											let timeEnding = addToTime(new Date(t.When), 0, t.DurationMinutes);
 											
 											return <RichCell
@@ -628,7 +651,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId,
+	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId, getUser, setSelectedUser,
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode, setCollectItemMode,
 	setActiveMenuItem, getAllPlaces, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError, selectSimpleCollect,
 	getAllCitiesFromServer, setUserProfileCity, getAllPlacesInCityByCityId, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab, getMatchesInCurrentCity,

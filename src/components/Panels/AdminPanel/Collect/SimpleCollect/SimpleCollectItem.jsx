@@ -461,11 +461,13 @@ const SimpleCollectItem = (props) => {
                         <FormItem>
                             <InfoRow><strong>Этот сбор был отменен</strong></InfoRow>
                         </FormItem>
-                        <FormItem top="Дата и время" disabled>
-                            <InfoRow>{dateToString(props.collect.selected.When)} в {dateTimeToTimeString(props.collect.selected.When)}</InfoRow>
+                        <FormItem top="Дата и время">
+                            <InfoRow>{props.collect.selected.When && props.collect.selected.When != undefined ? dateToString(props.collect.selected.When) + " в " : " "} 
+                            {props.collect.selected.When && props.collect.selected.When != undefined ? dateTimeToTimeString(props.collect.selected.When) : " "}</InfoRow>
                         </FormItem>
-                        <FormItem top="Место" disabled>
-                            <RichCell caption={props.collect.selected.Place.Address}>{props.collect.selected.Place.Name}</RichCell>
+                        <FormItem top="Место">
+                            <RichCell caption={props.collect.selected.Place && props.collect.selected.Place.Address != undefined ? props.collect.selected.Place.Address : ""}>
+                                {props.collect.selected.Place && props.collect.selected.Place.Name != undefined ? props.collect.selected.Place.Name : ""}</RichCell>
                         </FormItem>
                         <FormItem top="Информация" disabled>
                             <InfoRow>{props.collect.selected.Details}</InfoRow>
@@ -476,14 +478,19 @@ const SimpleCollectItem = (props) => {
             else{
                 return (
                     <>
+                    {props.collect.selected && props.collect.selected != undefined ? 
+                    <>
+                        
                         <FormItem top="Ваш город">
                             <InfoRow>{(props.myProfile && props.myProfile.CityUmbracoName) ? props.myProfile.CityUmbracoName : ""}</InfoRow>
                         </FormItem>
                         <FormItem top="Дата и время">
-                            <InfoRow>{dateToString(props.collect.selected.When)} в {dateTimeToTimeString(props.collect.selected.When)}</InfoRow>
+                            <InfoRow>{props.collect.selected.When && props.collect.selected.When != undefined ? dateToString(props.collect.selected.When) + " в " : " "} 
+                            {props.collect.selected.When && props.collect.selected.When != undefined ? dateTimeToTimeString(props.collect.selected.When) : " "}</InfoRow>
                         </FormItem>
                         <FormItem top="Место">
-                            <RichCell caption={props.collect.selected.Place.Address}>{props.collect.selected.Place.Name}</RichCell>
+                            <RichCell caption={props.collect.selected.Place && props.collect.selected.Place.Address != undefined ? props.collect.selected.Place.Address : ""}>
+                                {props.collect.selected.Place && props.collect.selected.Place.Name != undefined ? props.collect.selected.Place.Name : ""}</RichCell>
                         </FormItem>
                         <FormItem top="Информация">
                             <InfoRow>{props.collect.selected.Details}</InfoRow>
@@ -578,6 +585,11 @@ const SimpleCollectItem = (props) => {
                                     }
                                 </FormItem>
                         }
+                        
+                    </>
+                    :
+                    <></>
+                    }
                     </>
                 )
                 }
