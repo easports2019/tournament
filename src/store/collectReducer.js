@@ -12,6 +12,7 @@ const COLLECTS_SET_COLLECT_ITEM_MODE = "COLLECTS_SET_COLLECT_ITEM_MODE";
 const COLLECTS_DEL_SIMPLE_COLLECT = "COLLECTS_DEL_SIMPLE_COLLECT";
 const COLLECTS_ADD_SIMPLE_COLLECT = "COLLECTS_ADD_SIMPLE_COLLECT";
 const COLLECTS_SET_SIMPLE_COLLECT = "COLLECTS_SET_SIMPLE_COLLECT";
+const COLLECTS_SET_SELECTED_COLLECT_MEMBERS = "COLLECTS_SET_SELECTED_COLLECT_MEMBERS";
 const COLLECTS_DELETE_MEMBER_FROM_SIMPLE_COLLECTS = "COLLECTS_DELETE_MEMBER_FROM_SIMPLE_COLLECTS";
 const COLLECTS_ADD_MEMBER_TO_SELECTED_SIMPLE_COLLECT = "COLLECTS_ADD_MEMBER_TO_SELECTED_SIMPLE_COLLECT";
 
@@ -48,6 +49,15 @@ let collectReducer = (state = initState, action) => {
             return{
                 ...state,
                 mode: action.mode,
+            }
+        }
+        case COLLECTS_SET_SELECTED_COLLECT_MEMBERS: {
+            return{
+                ...state,
+                selected: {
+                    ...state.selected,
+                    Members: [...action.members],
+                },
             }
         }
         case COLLECTS_ADD_SIMPLE_COLLECT: {
@@ -173,6 +183,13 @@ export const setSimpleCollect = (collect) => {
     return {
         type: COLLECTS_SET_SIMPLE_COLLECT,
         collect
+    }
+}
+
+export const setSelectedMembers = (members) => {
+    return {
+        type: COLLECTS_SET_SELECTED_COLLECT_MEMBERS,
+        members
     }
 }
 

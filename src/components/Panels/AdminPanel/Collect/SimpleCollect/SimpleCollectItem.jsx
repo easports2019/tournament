@@ -7,12 +7,13 @@ import {
 import { defaultPhotoPath } from './../../../../../store/dataTypes/common'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
+import bridge from '@vkontakte/vk-bridge';
 import {
     dateToString, dateTimeToTimeString, datesWithoutTimeIsSame, timeSlotsForSimpleCollects, timeToString,
     dateSelectorValueToJSDateValue, jSDateValueToDateSelectorValue, timeSlotsForCollects, addToTime
 } from './../../../../../utils/convertors/dateUtils';
 import { DeleteMemberFromCollect, AddSimpleCollect, setCollectItemMode, EditSimpleCollect,
-    registerMemberToSimpleCollect, DelSimpleCollect } from './../../../../../store/collectReducer';
+    registerMemberToSimpleCollect, DelSimpleCollect, setSelectedMembers } from './../../../../../store/collectReducer';
 import { setSelectedRent } from './../../../../../store/rentReducer';
 import { setSelectedSimplePlace } from './../../../../../store/simplePlaceReducer';
 import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
@@ -45,6 +46,50 @@ const SimpleCollectItem = (props) => {
     let [plus, setPlus] = useState(costAll - (costMembers * needMembers))
     let [selectedSlots, setSelectedSlots] = useState(new Array()) //  тут отдельные выбранные ячейки
     let selectedTimeRanges = new Array() // тут сгруппированные выбранные ячейки отдельными диапазонами
+
+    
+    useEffect(() => {
+        if (props.collect.selected && props.collect.selected.Members && props.collect.selected.Members != undefined && props.collect.selected.Members.length > 0){
+
+            let vkids = "";
+            let memberPhotos = props.collect.selected.Members.map(m => {
+                vkids += m.UserProfile.UserVkId.slice(2) + ","
+                return {id: m.UserProfile.UserVkId.slice(2), photo: ""}
+            });
+
+            //
+                const params = bridge.send("VKWebAppGetAuthToken", {"app_id": 7161115, "scope": ""}).then(res => {
+                	bridge.send("VKWebAppCallAPIMethod", 
+                	{"method": "users.get", 
+                	"request_id": "userphotorequest", 
+                	"params": {
+                        "user_ids": vkids, 
+                        "fields": "photo_100", 
+                        "v":"5.131", 
+                	    "access_token":res.access_token
+                    }})
+                	.then(us => {
+
+                        
+
+                        let members = props.collect.selected.Members.map(m => {
+                            let photo = us.response.filter(p => (("id"+p.id) == m.UserProfile.UserVkId));
+                            if (photo && photo[0] != undefined)
+                            {
+                                m.UserProfile.PhotoPath = photo[0].photo_100;
+                            }
+                            return m;
+
+                        })
+
+                        props.setSelectedMembers(members);
+                        //m.UserProfile.PhotoPath = us.photo_100;
+                		//props.setSelectedUser(us);
+                	})
+            })
+        }
+
+    }, props.collect.selected.Id)
 
     //debugger
     let youAreMember = (props.collect.selected.Members && props.collect.selected.Members.length > 0)
@@ -105,6 +150,10 @@ const SimpleCollectItem = (props) => {
     let gotoCollect = (value) => {
 
 
+    }
+
+    let gotoProfile = (profileId) => {
+        window.open("https://vk.com/" + profileId, '_blank');
     }
 
 
@@ -510,7 +559,21 @@ const SimpleCollectItem = (props) => {
                             {(props.collect.selected.Members && props.collect.selected.Members.length > 0) ?
                                 <FormItem>
                                     <List>
-                                        {props.collect.selected.Members.map((item) => <InfoRow>{item.UserProfile.Name} {item.UserProfile.Surname} {item.UserProfileId == props.collect.selected.Creator.UserProfileId && " (Организатор)"}</InfoRow>)}
+                                        {props.collect.selected.Members.map((item) => {
+                                            
+                                        return <RichCell
+                                        before={item.UserProfile.PhotoPath && item.UserProfile.PhotoPath != undefined ? 
+                                            <Avatar size={72} src={item.UserProfile.PhotoPath} />
+                                            :
+                                            null
+                                        }
+                                        after={<Button onClick={() => gotoProfile(item.UserProfile.UserVkId)}>Смотреть профиль ВК</Button> }
+                                        >{item.UserProfile.Name} {item.UserProfile.Surname} {item.UserProfileId == props.collect.selected.Creator.UserProfileId && " (Организатор)"}
+                                        </RichCell>}
+                                        
+                                        )
+                
+                                    }
                                     </List>
                                 </FormItem>
                                 :
@@ -832,5 +895,5 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
     DeleteMemberFromCollect, setSelectedSimplePlace, setSelectedRent, AddSimpleCollect, registerMemberToSimpleCollect,
-    DelSimpleCollect, setCollectItemMode, EditSimpleCollect,
+    DelSimpleCollect, setCollectItemMode, EditSimpleCollect, setSelectedMembers,
 })(SimpleCollectItem)
