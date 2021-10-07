@@ -482,7 +482,7 @@ const App = (props) => {
 												onClick={() => CollectSelect(t)} 
 												after={`${t.Cost} руб.`}
 											>
-												{t.Name}
+												({t.Members.length}/{t.NeedMembers}) - {t.Name}
 											</RichCell>
 										})}
 									</List>
