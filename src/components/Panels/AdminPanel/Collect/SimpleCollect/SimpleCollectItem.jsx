@@ -89,7 +89,29 @@ const SimpleCollectItem = (props) => {
                         //m.UserProfile.PhotoPath = us.photo_100;
                         //props.setSelectedUser(us);
                     })
+
+                    // bridge.send("VKWebAppOpenPayForm", {
+                    //     "app_id": 7161115, 
+                    //     "action": "pay-to-service", 
+                    //     "params": {
+                    //         "amount": 1.5,
+                    //         "data": {
+                    //                 "currency": "RUB",
+                    //                 "merchant_data": "eyJvcmRlcl9pZCI6IjI1NTMxIiwidHMiOiIxNTM5MzI5NzcwIiwiYW1vdW50IjoxLjUsImN1cnJlbmN5IjoiUlVCIn0=",
+                    //                 "merchant_sign": "63d5dce9d2c9d29198ba12ba3f8e270e6606a221",
+                    //                 "order_id": "25531",
+                    //                 "ts": "1539329770"
+                    //                 },
+                    //         "description": "Test Payment",
+                    //         "action": "pay-to-service",
+                    //         "merchant_id": 617001,
+                    //                 "version": 2,
+                    //         "sign": res.access_token
+                    //     }
+                    // });
             })
+
+            
         }
 
     }, props.collect.selected.Id)
@@ -175,7 +197,7 @@ const SimpleCollectItem = (props) => {
     }
 
     const deleteMember = (memberUserProfile) => {
-        debugger
+        
         let member = {
             UserProfileId: memberUserProfile.UserProfileId,
             SimpleCollectId: props.collect.selected.Id,
