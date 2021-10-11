@@ -43,7 +43,7 @@ const Shedule = (props) => {
     let places = props.places
         .map(p => p.Name.length ? p : null)
         .filter(p => p)
-        .map(p => { return { value: p.PlaceId, label: p.Name, title: p.Name } });
+        .map(p => { return { value: p.UmbracoId, label: p.Name, title: p.Name } });
     let teams = [{ value: 0, label: "Не выбрано" }]
     let hours = [...optMaker(24)];
     let minutes = [...optMaker(60)];
@@ -143,7 +143,7 @@ const Shedule = (props) => {
         places = props.places
             .map(p => p.Name.length ? p : null)
             .filter(p => p)
-            .map(p => { return { value: p.PlaceId, label: p.Name, title: p.Name } });
+            .map(p => { return { value: p.UmbracoId, label: p.Name, title: p.Name } });
         teams = [{ value: 0, label: "Не выбрано" }]
         hours = [...optMaker(24)];
         minutes = [...optMaker(60)];
@@ -168,7 +168,7 @@ const Shedule = (props) => {
         props.setMode("edit")
     }
 
-
+//debugger
     // выводим список существующего расписания с кнопками редактирования, удаления, переноса
     // группируем список по датам, сортируем от последних к первым (последние выше)
     // сделать кнопку сортировки\
@@ -188,7 +188,7 @@ const Shedule = (props) => {
                                             <List>
                                                 {groupAndMatchesItem.Matches.map(match => {
                                                     
-                                                    let place = props.places.find(p => p.PlaceId == match.PlaceId)
+                                                    let place = props.places.find(p => p.UmbracoId == match.PlaceId)
                                                     let date = new Date(match.When);
                                                     return <RichCell
                                                         caption={place.Name}
@@ -551,7 +551,7 @@ const Shedule = (props) => {
                                                     ?
                                                     <List>
                                                         {groupAndMatchesItem.Matches.map(match => {
-                                                            let place = props.places.find(p => p.PlaceId == match.PlaceId)
+                                                            let place = props.places.find(p => p.UmbracoId == match.PlaceId)
                                                             let date = new Date(match.When);
                                                             return <RichCell
                                                                 caption={place.Name}
@@ -594,7 +594,8 @@ let mapStateToProps = (state) => {
         tournaments: state.tournamentsEntity,
         mode: state.matches.mode,
         matches: state.matches.matches,
-        places: state.placeEntity.places,
+        //places: state.placeEntity.places,
+        places: state.simplePlaceEntity.places,
         myProfile: state.profileEntity.myProfile,
         // пожалуй, нужно места загрузить сразу при запуске приложения и использовать их без изменения из хранилища, а не запрашивать каждый раз с сревера. они редко меняются.
         //access: state.matches.access,

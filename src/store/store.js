@@ -7,7 +7,7 @@ import tournaments from './tournamentsReducer.js'
 import teams from './teamsReducer.js'
 import bidTeams from './bidTeamsReducer.js'
 import ampluaReducer from './ampluaReducer.js'
-import placeReducer from './placeReducer.js'
+//import placeReducer from './placeReducer.js'
 import rentReducer from './rentReducer.js'
 import simplePlaceReducer from './simplePlaceReducer.js'
 import paymentReducer from './paymentReducer.js'
@@ -39,7 +39,7 @@ let reducers = combineReducers({
     userEntity: userReducer,
     cityEntity: cityReducer,
     ampluaEntity: ampluaReducer,
-    placeEntity: placeReducer,
+    //placeEntity: placeReducer,
     rentEntity: rentReducer,
     vkcom: vkReducer,
     simplePlaceEntity: simplePlaceReducer,

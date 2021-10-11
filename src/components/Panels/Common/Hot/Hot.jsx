@@ -54,7 +54,8 @@ let mapStateToProps = (state) => {
         tournaments: state.tournamentsEntity,
         mode: state.matches.mode,
         matches: state.matches.matches,
-        places: state.placeEntity.places,
+        //places: state.placeEntity.places,
+        places: state.simplePlaceEntity.places,
         myProfile: state.profileEntity.myProfile,
         // пожалуй, нужно места загрузить сразу при запуске приложения и использовать их без изменения из хранилища, а не запрашивать каждый раз с сревера. они редко меняются.
         //access: state.matches.access,
