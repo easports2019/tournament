@@ -39,11 +39,37 @@ import CellButtonWithHistory from './components/Panels/Common/WithHistory/CellBu
 import RichCellWithHistory from './components/Panels/Common/WithHistory/RichCellWithHistory';
 
 
+  
+
+
+
 const App = (props) => {
 	const [fetchedUser, setUser] = useState(null);
 	const [popout, setPopout] = useState(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 	const [modalWindow, setModalWindow] = useState(null);
 	const [viewCollectTab, setCollectViewTab] = useState("main");
+	const [timerStarts, setTimerStarts] = useState(false);
+
+	
+
+	const checkMovings = () => {
+		//alert('Привет');
+		if (props.cities && props.cities.length > 0 && props.myProfile && props.myProfile.CityUmbracoId != null &&
+			props.myProfile.CityUmbracoId != -1 && new Date(props.myProfile.Birth).getFullYear() >= 1920 && props.places.length == 0) {
+			// загружаем места этого города
+			{
+				// получаем список простых мест по umbId города
+				props.getAllSimplePlacesInCityByCityId(props.myProfile.CityUmbracoId);
+
+				// получаем список простых сборов
+				props.getAllSimpleCollectsInCityByCityUmbracoId(props.myProfile.CityUmbracoId);
+	
+				// получаем список аренд
+				props.getAllRentsInCityByCityId(props.myProfile.CityUmbracoId);
+			}
+		}
+	}
+
 
 	const CloseModal = () => {
 		props.resetError()
@@ -158,6 +184,12 @@ const App = (props) => {
 
 			// получаем список аренд
 			props.getAllRentsInCityByCityId(props.myProfile.CityUmbracoId);
+
+			if (!timerStarts)
+			{
+				setTimerStarts(true);
+				setTimeout(() => setInterval(() => checkMovings(), 30000), 5000)
+			}
 		}
 
 		// это пока не прогрузился город профиля (не выбран)

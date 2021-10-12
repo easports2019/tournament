@@ -224,9 +224,12 @@ const SimpleCollectItem = (props) => {
     }
 
     const calculateNeedMembers = (need) => {
-        setNeedMembers(need);
-        setCostMembers(Math.round(costAll / need));
-        setPlus((Math.round(costAll / need) * need) - costAll);
+
+        
+            setNeedMembers(need);
+            setCostMembers(Math.round(costAll / need));
+            setPlus((Math.round(costAll / need) * need) - costAll);
+        
     }
 
     const calculateCostMembers = (membercost) => {
@@ -606,27 +609,28 @@ const SimpleCollectItem = (props) => {
                                                 {props.collect.selected.Members.map((item) => {
 
                                                     return <RichCell
+                                                    text={`${item.UserProfile.Name} ${item.UserProfile.Surname} ${item.UserProfileId == props.collect.selected.Creator.UserProfileId ? " (Организатор)" : ""}`}
                                                         before={item.UserProfile.PhotoPath && item.UserProfile.PhotoPath != undefined ?
                                                             <Avatar size={72} src={item.UserProfile.PhotoPath} />
                                                             :
                                                             null
                                                         }
-                                                        after={
+                                                        actions={
                                                         props.myProfile.UserProfileId == props.collect.selected.Creator.UserProfileId ? 
                                                             <Group>
                                                                 {item.UserProfile.UserProfileId != props.collect.selected.Creator.UserProfileId && 
-                                                                    <Button mode="destructive" onClick={() => deleteMember(item.UserProfile)}>Удалить участника</Button>}
+                                                                    <Button mode="destructive" onClick={() => deleteMember(item.UserProfile)}>Исключить</Button>}
                                                                 {item.UserProfile.UserProfileId != props.myProfile.UserProfileId && 
-                                                                    <Button onClick={() => gotoProfile(item.UserProfile.UserVkId)}>Смотреть профиль ВК</Button>}
+                                                                    <Button onClick={() => gotoProfile(item.UserProfile.UserVkId)}>Профиль ВК</Button>}
                                                             </Group>
                                                             :
                                                             <>
                                                                 {item.UserProfile.UserProfileId != props.myProfile.UserProfileId && 
-                                                                    <Button onClick={() => gotoProfile(item.UserProfile.UserVkId)}>Смотреть профиль ВК</Button>}
+                                                                    <Button onClick={() => gotoProfile(item.UserProfile.UserVkId)}>Профиль ВК</Button>}
                                                             </>
 
                                                     }
-                                                    >{item.UserProfile.Name} {item.UserProfile.Surname} {item.UserProfileId == props.collect.selected.Creator.UserProfileId && " (Организатор)"}
+                                                    >
                                                     </RichCell>
                                                 }
 
@@ -885,7 +889,17 @@ const SimpleCollectItem = (props) => {
                     <FormItem top="Информация по сбору">
                         <Textarea defaultValue={details} value={details} onChange={e => setDetails(e.currentTarget.value)} placeholder="Сделать чтобы можно было покупать аренду без сбора. сбор опционально делается" />
                     </FormItem>
-                    <FormItem top="Сколько человек нужно">
+                    <FormItem top="Сколько человек нужно"
+                    bottom={
+                        props.collect.mode == "edit" 
+                    && props.collect.selected.Members 
+                    && props.collect.selected.Members != undefined 
+                    && props.collect.selected.Members.length > 0 
+                    && (needMembers < props.collect.selected.Members.length) ?
+                    <CellButton mode="danger">Нельзя указывать меньше, чем зарегистрированных участников</CellButton>
+                    : ""
+                    }
+                    >
                         <Input type="Number"
                             defaultValue={needMembers}
                             value={needMembers}
@@ -922,9 +936,18 @@ const SimpleCollectItem = (props) => {
                                     <Button
                                         onClick={cancelSave}
                                     >Отменить изменения</Button>
-                                    <Button
+                                    {
+                                        props.collect.mode == "edit" 
+                                        && props.collect.selected.Members 
+                                        && props.collect.selected.Members != undefined 
+                                        && props.collect.selected.Members.length > 0 
+                                        && (needMembers >= props.collect.selected.Members.length) ?
+                                        <Button
                                         onClick={saveChanges}
                                     >Сохранить изменения</Button>
+                                        :
+                                        <Button disabled>Исправьте ошибки...</Button>
+                                }
                                 </Group>
                             }
                         >
