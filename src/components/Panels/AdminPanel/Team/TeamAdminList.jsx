@@ -4,6 +4,7 @@ import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import RichCellWithHistory from '../../Common/WithHistory/RichCellWithHistory'
 import { dateToString } from '../../../../utils/convertors/dateUtils'
 import Icon24ChevronRightWithHistory from '../../Common/WithHistory/Icon24ChevronRightWithHistory'
+import ButtonWithNotify from '../../Common/WithNotify/ButtonWithNotify'
 
 
 
@@ -31,7 +32,7 @@ const TeamAdminList = (props) => {
                                     <Button onClick={() => props.Button1Handle(item, true)}>Опубликовать</Button>
                                     : 
                                     <Button onClick={() => props.Button1Handle(item, false)} mode="secondary">Снять с публикации</Button>} */}
-                                    <Button onClick={() => props.Button2Handle(item)} mode="destructive">Удалить</Button>
+                                    <ButtonWithNotify Yes={() => props.Button2Handle(item)} mode="destructive">Удалить</ButtonWithNotify>
                                     </>
                                     }
                                 // caption={date && `Основана: ${dateToString(date)}`}

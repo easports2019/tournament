@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import {pushToHistory, popFromHistory, goToPanel} from '../../../../store/systemReducer'
+import {pushToHistory, popFromHistory, goToPanel, setCurrentModalWindow} from '../../../../store/systemReducer'
+import ModalCommon from '../../../Modals/ModalCommon/ModalCommon'
 
 
 /*
@@ -19,14 +20,20 @@ export const withNotify = (WrappedComponent) => {
     })
     
     const mapDispatchToProps = {
-        goToPanel
+        goToPanel, setCurrentModalWindow
     }
 
     class hocComponent extends React.Component{
         constructor(props){
             super(props);
             this.clickEvent = this.clickEvent.bind(this);
+            this.AcceptAndClose = this.AcceptAndClose.bind(this);
 
+        }
+
+        AcceptAndClose(){
+            this.props.Yes();
+            this.props.setCurrentModalWindow(null);
         }
 
         clickEvent(evt){
@@ -35,7 +42,15 @@ export const withNotify = (WrappedComponent) => {
                 this.props.handleClick(this.props.item);
             else if (this.props.handleClick != undefined && this.props.item == undefined)
                 this.props.handleClick();
-            this.props.goToPanel(this.props.toMenuName, this.props.isBack);
+                
+            this.props.setCurrentModalWindow(<ModalCommon 
+                modalName="AreYouSure" 
+                //Message={this.props.Message} 
+                data={{ message: this.props.Message }}
+                Close={() => this.props.setCurrentModalWindow(null)}
+                Accept={this.AcceptAndClose}
+                ></ModalCommon>);
+            //this.props.goToPanel(this.props.toMenuName, this.props.isBack);
         }
 
         componentDidUpdate(prevProps, prevState){

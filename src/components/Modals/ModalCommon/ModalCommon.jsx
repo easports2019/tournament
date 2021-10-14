@@ -14,7 +14,7 @@ let ModalCommon = (props) => {
 		
     }, [])
     
-    
+
 
     return (
         <ModalRoot activeModal={props.modalName}>
@@ -46,6 +46,20 @@ let ModalCommon = (props) => {
             </ModalCard>
 
             <ModalCard
+                id="AreYouSure"
+                onClose={props.Close}
+                header={props.data.message ? props.data.message : "Текст вопроса не передан"}
+                actions={
+                    <>
+                    <Button size="l" mode="destructive" onClick={props.Accept}>Да</Button>
+                    <Button size="l" mode="secondary" onClick={props.Close}>Нет</Button>
+                </>
+            }
+                >
+                    {/* <Textarea defaultValue="" /> */}
+            </ModalCard>
+
+            <ModalCard
                 id="MyProfile"
                 onClose={props.Close}
                 header={props.data.Name ? props.data.Name : "Имя не прогрузилось"}
@@ -61,6 +75,7 @@ let ModalCommon = (props) => {
                         ` : ""
                     }
             </ModalCard>
+            
             <ModalCard
                 id="SelectBirth"
                 // onClose={props.Close}
@@ -95,6 +110,7 @@ let ModalCommon = (props) => {
                         </FormLayoutGroup>
                     </FormLayout>
             </ModalCard>
+            
             <ModalCard
                 id="SelectCity"
                 // onClose={props.Close}

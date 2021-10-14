@@ -3,6 +3,7 @@ import { setActiveMenuItem } from "./mainMenuReducer";
 
 const ANY_ACTION_TYPE = "ANY_ACTION_TYPE";
 const SYSTEM_PUSH_TO_HISTORY = "SYSTEM_PUSH_TO_HISTORY";
+const SYSTEM_SET_CURRENT_MODAL_WINDOW = "SYSTEM_SET_CURRENT_MODAL_WINDOW";
 const SYSTEM_POP_FROM_HISTORY = "SYSTEM_POP_FROM_HISTORY";
 const SYSTEM_SET_GLOBAL_POPOUT = "SYSTEM_SET_GLOBAL_POPOUT";
 const SYSTEM_SET_ERROR_MESSAGE = "SYSTEM_SET_ERROR_MESSAGE";
@@ -14,6 +15,7 @@ const initState = {
     currentMenu: {},
     history: ["hot"],
     GlobalPopout: false,
+    CurrentModalWindow: null,
     //ErrorObject: {resultcode: 0, result: "Ok", data: null, message: ""},
     ErrorObject: "",
     ShowAdminTourneyTab: false,
@@ -39,6 +41,11 @@ export let systemReducer = (state = initState, action) =>
         case SYSTEM_SET_GLOBAL_POPOUT: {
             return {...state,
                 GlobalPopout: action.on,
+            };
+        }
+        case SYSTEM_SET_CURRENT_MODAL_WINDOW: {
+            return {...state,
+                CurrentModalWindow: action.modal,
             };
         }
         case SYSTEM_SET_ERROR_MESSAGE: {
@@ -110,6 +117,13 @@ export const setGlobalPopout = (on) => {
     return {
         type: SYSTEM_SET_GLOBAL_POPOUT,
         on
+    }
+}
+
+export const setCurrentModalWindow = (modal) => {
+    return {
+        type: SYSTEM_SET_CURRENT_MODAL_WINDOW,
+        modal
     }
 }
 

@@ -554,7 +554,7 @@ const Shedule = (props) => {
                                                             let place = props.places.find(p => p.UmbracoId == match.PlaceId)
                                                             let date = new Date(match.When);
                                                             return <RichCell
-                                                                caption={place.Name}
+                                                                caption={place ? place.Name : "Ошибка загрузки данных о месте"}
                                                                 text={
                                                                     match.Played ?
                                                                         <span style={{ "color": "green" }}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :
