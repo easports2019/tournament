@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, InfoRow, Group, List, Cell, Button } from '@vkontakte/vkui'
+import { RichCell, Avatar, InfoRow, Group, List } from '@vkontakte/vkui'
 import RichCellWithHistory from '../../Common/WithHistory/RichCellWithHistory'
 
 

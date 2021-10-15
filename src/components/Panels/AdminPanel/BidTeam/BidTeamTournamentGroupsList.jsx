@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, InfoRow, Group, List, Cell, Button, FormItem, Input } from '@vkontakte/vkui'
+import { RichCell, Avatar, InfoRow, Group, List, Button, FormItem, Input } from '@vkontakte/vkui'
+import ButtonWithNotify from '../../Common/WithNotify/ButtonWithNotify'
 
 
 const BidTeamTournamentGroupsList = (props) => {
@@ -31,7 +32,7 @@ const BidTeamTournamentGroupsList = (props) => {
                             return (
                                 <RichCell
                                 after={
-                                    <Button onClick={() => props.Button2Handle(item)} mode="destructive" >Отменить заявку</Button>
+                                    <ButtonWithNotify Message="Уверены, что хотите отменить заявку?" Yes={() => props.Button2Handle(item)} mode="destructive" >Отменить заявку</ButtonWithNotify>
                                 }
                                 >
                                     {item.Name}
@@ -42,7 +43,7 @@ const BidTeamTournamentGroupsList = (props) => {
                             return (
                                 <RichCell
                                 after={
-                                    <Button onClick={() => props.Button1Handle(item)}>Заявиться сюда</Button>
+                                    <ButtonWithNotify Message="Заявляем команду в эту группу?" Yes={() => props.Button1Handle(item)}>Заявиться сюда</ButtonWithNotify>
                                 }
                                 >
                                     {item.Name}

@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import  ButtonWithNotify  from './../../Common/WithNotify/ButtonWithNotify'
 import { Button, CellButton, Input, RichCell } from '@vkontakte/vkui'
 
 
@@ -13,9 +14,9 @@ const BidListItem = (props) => {
             <RichCell key={props.KeyId != -1 ? props.KeyId : null} 
             actions={
                 <>
-                    <Button mode="primary" onClick={() => props.Accept(props.Item)}>Принять</Button>
+                    <ButtonWithNotify mode="primary" Messsage="Принять заявку команды?" Yes={() => props.Accept(props.Item)}>Принять</ButtonWithNotify>
                     <Input value={adminText} onChange={(e) => setAdminText(e.currentTarget.value)} placeholder="Причина отклонения заявки"></Input>
-                    <Button mode="destructive" onClick={() => props.Decline(props.Item, adminText)}>Отклонить</Button>
+                    <ButtonWithNotify mode="destructive" Message="Отклонить заявку команды?" Yes={() => props.Decline(props.Item, adminText)}>Отклонить</ButtonWithNotify>
                 </>
             }
             text={`Хотят выступать под именем ${props.Item.TeamName} в ${props.Item.TournamentGroup.Name} группе/лиге`}

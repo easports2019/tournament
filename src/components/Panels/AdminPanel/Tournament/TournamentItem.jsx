@@ -19,6 +19,7 @@ import ListItem from '../ListItem/ListItem';
 import BidListItem from '../ListItem/BidListItem';
 import Icon24ChevronRightWithHistory from '../../Common/WithHistory/Icon24ChevronRightWithHistory';
 import Shedule from '../../Common/Shedule/Shedule';
+import ButtonWithNotify from '../../Common/WithNotify/ButtonWithNotify'
 
 
 
@@ -328,8 +329,8 @@ const TournamentItem = (props) => {
                             <CellButton onClick={addToTournament} before={<Icon28AddOutline />}>Добавить группу/лигу</CellButton>
                         </FormItem> */}
                         <FormItem top="Подверждение">
-                            <Button onClick={() => props.saveSelectedTournament(props.tournaments.selected, props.myProfile)}>Сохранить</Button>
-                            <Button onClick={props.resetTournament} mode="secondary">Отмена</Button>
+                            <ButtonWithNotify Message="Создать новый турнир?" Yes={() => props.saveSelectedTournament(props.tournaments.selected, props.myProfile)}>Сохранить</ButtonWithNotify>
+                            <ButtonWithNotify Message="Не создавать турнир?" Yes={props.resetTournament} mode="secondary">Отмена</ButtonWithNotify>
                         </FormItem>
                     </FormLayout>
                 </Group>
@@ -407,7 +408,7 @@ const TournamentItem = (props) => {
                                     <CellButton onClick={addToTournament} before={<Icon28AddOutline />}>Добавить группу</CellButton>
                                 </FormItem>
                                 <FormItem top="Подверждение">
-                                    <Button onClick={() => props.saveSelectedTournament(props.tournaments.selected, props.myProfile)}>Внести изменения</Button>
+                                    <ButtonWithNotify Message="Внести изменения в турнир?" Yes={() => props.saveSelectedTournament(props.tournaments.selected, props.myProfile)}>Внести изменения</ButtonWithNotify>
                                     {/* <Button onClick={props.resetTournament} mode="secondary">Отмена</Button> */}
                                 </FormItem>
                             </FormLayout>
@@ -479,7 +480,7 @@ const TournamentItem = (props) => {
                                                                 actions={
                                                                     <>
                                                                         <Button onClick={() => SetPopup(team, tg)} mode="primary">Переместить</Button>
-                                                                        <Button onClick={() => DeleteTeam(team, tg)} mode="destructive">Удалить</Button>
+                                                                        <ButtonWithNotify  Message="Удалить команду из турнира?" Yes={() => DeleteTeam(team, tg)} mode="destructive">Удалить</ButtonWithNotify>
                                                                     </>
                                                                 }
                                                             >{team.Name}</RichCell>

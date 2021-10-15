@@ -5,6 +5,7 @@ import TournamentListItem from './TournamentListItem'
 import RichCellWithHistory from '../../Common/WithHistory/RichCellWithHistory'
 import Icon24ChevronRightWithHistory from '../../Common/WithHistory/Icon24ChevronRightWithHistory'
 import { dateToString } from '../../../../utils/convertors/dateUtils'
+import ButtonWithNotify from '../../Common/WithNotify/ButtonWithNotify'
 
 
 
@@ -30,10 +31,10 @@ const TournamentAdminList = (props) => {
                                 actions={
                                     <>
                                     {!item.Published ? 
-                                    <Button onClick={() => props.Button1Handle(item, true)}>Опубликовать</Button>
+                                    <ButtonWithNotify Message="Опубликовать турнир?" Yes={() => props.Button1Handle(item, true)}>Опубликовать</ButtonWithNotify>
                                     : 
-                                    <Button onClick={() => props.Button1Handle(item, false)} mode="secondary">Снять с публикации</Button>}
-                                    <Button onClick={() => props.Button2Handle(item)} mode="destructive">Удалить</Button>
+                                    <ButtonWithNotify Message="Снять с публикации турнир?" Yes={() => props.Button1Handle(item, false)} mode="secondary">Снять с публикации</ButtonWithNotify>}
+                                    <ButtonWithNotify Message="Удалить турнир?" Yes={() => props.Button2Handle(item)} mode="destructive">Удалить</ButtonWithNotify>
                                     </>
                                     }
                                 caption={date && `Начало: ${dateToString(date)}`}

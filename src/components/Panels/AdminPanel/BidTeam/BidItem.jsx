@@ -1,6 +1,7 @@
 import React, { useState , useEffect } from 'react'
 import { RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea, File, CellButton, Button, Header, List, Cell } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
+import { ButtonWithNotify } from "./../../Common/WithNotify/ButtonWithNotify"
 import {
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId,
     editGroupInTournament, addGroupToTournament, resetTournament, saveSelectedTournament
@@ -74,7 +75,7 @@ const BidItem = (props) => {
                         </FormItem>
                         
                         <FormItem top="Подверждение">
-                            <Button onClick={() => props.saveSelectedTeam(props.teams.selected, props.myProfile)}>Создать</Button>
+                            <ButtonWithNotify Message="Создать сбор?" Yes={() => props.saveSelectedTeam(props.teams.selected, props.myProfile)}>Создать</ButtonWithNotify>
                             <Button onClick={props.resetTeam} mode="secondary">Отмена</Button>
                         </FormItem>
                     </FormLayout>
@@ -94,7 +95,7 @@ const BidItem = (props) => {
                         </FormItem>
                         
                         <FormItem top="Подверждение">
-                            <Button onClick={() => props.saveSelectedTeam(props.teams.selected, props.myProfile)}>Внести изменения</Button>
+                            <ButtonWithNotify Message="Внести изменения?" Yes={() => props.saveSelectedTeam(props.teams.selected, props.myProfile)}>Внести изменения</ButtonWithNotify>
                         </FormItem>
                     </FormLayout>
                 </Group>

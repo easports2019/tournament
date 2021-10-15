@@ -18,6 +18,7 @@ import { dateToString } from '../../../../utils/convertors/dateUtils';
 import BidTeamTournamentList from '../BidTeam/BidTeamTournamentList';
 import BidTeamTournamentGroupsList from '../BidTeam/BidTeamTournamentGroupsList';
 import BidTeamAdminPanel from '../BidTeam/BidTeamAdminPanel'
+import ButtonWithNotify from '../../Common/WithNotify/ButtonWithNotify'
 
 
 
@@ -140,8 +141,8 @@ const TeamItem = (props) => {
                             <CellButton onClick={() => addToTournament(props.tournaments.selected.Id, tempGroupName)} before={<Icon28AddOutline />}>Добавить группу/лигу</CellButton>
                         </FormItem> */}
                         <FormItem top="Подверждение">
-                            <Button onClick={() => props.saveSelectedTeam(props.teams.selected, props.myProfile)}>Создать</Button>
-                            <Button onClick={props.resetTeam} mode="secondary">Отмена</Button>
+                            <ButtonWithNotify Message="Создать новую команду?" Yes={() => props.saveSelectedTeam(props.teams.selected, props.myProfile)}>Создать</ButtonWithNotify>
+                            <ButtonWithNotify Message="Отменить создание команды?" YYes={props.resetTeam} mode="secondary">Отмена</ButtonWithNotify>
                         </FormItem>
                     </FormLayout>
                 </Group>

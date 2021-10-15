@@ -20,6 +20,7 @@ import { setSelectedRent } from './../../../../../store/rentReducer';
 import { setSelectedSimplePlace } from './../../../../../store/simplePlaceReducer';
 import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
 import { myProfile } from '../../../../../store/constants/commonConstants';
+import ButtonWithNotify from '../../../Common/WithNotify/ButtonWithNotify';
 
 
 // включить защиту от создания сбора на прошедшее время! 
@@ -619,7 +620,7 @@ const SimpleCollectItem = (props) => {
                                                         props.myProfile.UserProfileId == props.collect.selected.Creator.UserProfileId ? 
                                                             <Group>
                                                                 {item.UserProfile.UserProfileId != props.collect.selected.Creator.UserProfileId && 
-                                                                    <Button mode="destructive" onClick={() => deleteMember(item.UserProfile)}>Исключить</Button>}
+                                                                    <ButtonWithNotify mode="destructive" Message={`Уверены, что хотите исключить ${item.UserProfile.Name} ${item.UserProfile.Surname}?`} Yes={() => deleteMember(item.UserProfile)}>Исключить</ButtonWithNotify>}
                                                                 {item.UserProfile.UserProfileId != props.myProfile.UserProfileId && 
                                                                     <Button onClick={() => gotoProfile(item.UserProfile.UserVkId)}>Профиль ВК</Button>}
                                                             </Group>
@@ -683,15 +684,16 @@ const SimpleCollectItem = (props) => {
                                                     <InfoRow>{(!youAreOrganizer) ? `Вы подтвердили участие в сборе` : `Вы организатор сбора`}</InfoRow>
                                                     {(!showCancelMemberForm) ?
                                                         ((!youAreOrganizer) ?
-                                                            <RichCell actions={<Button mode="destructive" onClick={() => setShowCancelMemberForm(true)}>Отказаться от участия</Button>}></RichCell> :
+                                                            <RichCell actions={<ButtonWithNotify mode="destructive" Message="Отказаться от участия?" Yes={() => setShowCancelMemberForm(true)}>Отказаться от участия</ButtonWithNotify>}></RichCell> :
                                                             <RichCell actions={
                                                                 <>
                                                                     <Button mode="primary"
                                                                         onClick={changeCollect}
                                                                     >Изменить сбор</Button>
-                                                                    <Button mode="destructive"
-                                                                        onClick={cancelCollect}
-                                                                    >Отменить сбор</Button>
+                                                                    <ButtonWithNotify mode="destructive"
+                                                                        Message="Желаете отменить сбор?"
+                                                                        Yes={cancelCollect}
+                                                                    >Отменить сбор</ButtonWithNotify>
                                                                 </>
                                                             }></RichCell>
 
@@ -943,7 +945,8 @@ const SimpleCollectItem = (props) => {
                                         && props.collect.selected.Members.length > 0 
                                         && (needMembers >= props.collect.selected.Members.length) ?
                                         <Button
-                                        onClick={saveChanges}
+                                        Message = "Сохранить внесенные изменения?"
+                                        Yes={saveChanges}
                                     >Сохранить изменения</Button>
                                         :
                                         <Button disabled>Исправьте ошибки...</Button>

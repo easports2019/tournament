@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { RichCell, Avatar, InfoRow, Group, List, Cell, Button } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
+import ButtonWithNotify from '../../Common/WithNotify/ButtonWithNotify'
 
 
 const BidList = (props) => {
@@ -43,7 +44,7 @@ const BidList = (props) => {
                                 <RichCell
                                     onClick={() => props.CellClick(item)}
                                     caption={item.AdminTournamentComment.trim() && `Комментарий организатора: ${item.AdminTournamentComment.trim()}`}
-                                    actions={<Button mode="destructive" onClick={() => props.Button1Handle(item)}>Отменить заявку</Button>}
+                                    actions={<ButtonWithNotify mode="destructive" Message="Уверены, что хотите отменить заявку?" Yes={() => props.Button1Handle(item)}>Отменить заявку</ButtonWithNotify>}
                                 >
                                     { `${item.TeamName} - ${item.TournamentGroup.Name} - ${item.TournamentGroup.Tournament.Name} (${item.TournamentGroup.Tournament.Founder.Surname} ${item.TournamentGroup.Tournament.Founder.Name[0]}.)`}
                                     

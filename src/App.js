@@ -77,6 +77,7 @@ const App = (props) => {
 		props.setCurrentModalWindow(null)
 	}
 
+	// загрузка информации о пользователе ВК
 	async function fetchData() {
 
 		const user = await bridge.send('VKWebAppGetUserInfo');
@@ -206,12 +207,14 @@ const App = (props) => {
 
 	}, [props.myProfile, props.vkProfile, props.cities])
 
+
 	useEffect(() => {
 		if (props.places && props.places.length > 0) {
 
 			props.getMatchesInCurrentCity(props.myProfile);
 		}
 	}, [props.places])
+
 
 	// при смене глобального Popout и возникновении ошибки
 	useEffect(() => {
@@ -413,7 +416,6 @@ const App = (props) => {
 						{/* <CellButton onClick={() => UpdateFromServer()}>Обновить информацию</CellButton> */}
 						<CellButtonWithNotify 
 						Message="Уверены, что хотите обновить?"
-						No={() => props.setCurrentModalWindow(null)}
 						Yes={() => UpdateFromServer()}
 						//onClick={() => UpdateFromServer()}
 						>Обновить информацию</CellButtonWithNotify>

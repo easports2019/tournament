@@ -32,7 +32,7 @@ const TeamAdminList = (props) => {
                                     <Button onClick={() => props.Button1Handle(item, true)}>Опубликовать</Button>
                                     : 
                                     <Button onClick={() => props.Button1Handle(item, false)} mode="secondary">Снять с публикации</Button>} */}
-                                    <ButtonWithNotify Yes={() => props.Button2Handle(item)} mode="destructive">Удалить</ButtonWithNotify>
+                                    <ButtonWithNotify Yes={() => props.Button2Handle(item)} Message="Удалить команду?" mode="destructive">Удалить</ButtonWithNotify>
                                     </>
                                     }
                                 // caption={date && `Основана: ${dateToString(date)}`}
