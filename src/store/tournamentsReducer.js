@@ -1,4 +1,4 @@
-import { setGlobalPopout, setErrorMessage } from "./systemReducer";
+import { setErrorMessage } from "./systemReducer";
 import { CityTournamentAdminAPI, BidTeamAPI, TournamentAPI } from './../utils/api/api.js'
 import { cityTournamentAdmins } from './constants/commonConstants'
 import { EmptyTournament } from './constants/commonConstants'
@@ -520,30 +520,30 @@ export const deleteTeam = (team, tGoup) => {
 export const getAllCityTournamentAdmins = (startindex = 0) => {
     return dispatch => {
 
-        dispatch(setGlobalPopout(true))
+        
         if (authQueryString && authQueryString.length > 0)
             CityTournamentAdminAPI.getAll(startindex)
                 .then(pl => {
                     if (pl && pl.data.length > 0) {
                         
                         dispatch(setCityTournamentAdmins(pl.data));
-                        dispatch(setGlobalPopout(false))
+                        
                     }
                     else {
                         
                         dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                        dispatch(setGlobalPopout(false))
+                        
                     }
                 })
                 .catch(error => {
                     
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
+                    
                 })
         else {
             
             dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -559,21 +559,21 @@ export const getAllCityTournamentAdminsByCityId = (cityTournamentId, startindex 
                     if (pl && pl.data.length > 0) {
                         
                         dispatch(setCityTournamentAdmins(pl.data));
-                        dispatch(setGlobalPopout(false))
+                        
                     }
                     else {
                         dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                        dispatch(setGlobalPopout(false))
+                        
 
                     }
                 })
                 .catch(error => {
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
+                    
                 })
         else {
             dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -589,26 +589,26 @@ export const saveSelectedTournament = (tournament = null, userprofile = null) =>
                         if (pl && pl.data.length > 0) {
                             
                             dispatch(resetTournament());
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось сохранить турнир"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось сохранить турнир: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             else {
                 dispatch(setErrorMessage("Не удалось сохранить турнир"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось сохранить турнир, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -626,26 +626,26 @@ export const publishTournament = (tournament = null, userprofile = null, publish
                         if (pl) {
                             // изменить полученный турнир в списке
                             dispatch(setMyTournament(pl.data))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось опубликовать турнир"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось опубликовать турнир: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             else {
                 dispatch(setErrorMessage("Не удалось опубликовать турнир"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось опубликовать турнир, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -662,26 +662,26 @@ export const deleteTournament = (tournament = null, userprofile = null) => {
                         if (pl) {
                             // изменить полученный турнир в списке
                             dispatch(deleteMyTournament(pl.data))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось удалить турнир"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось удалить турнир: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             else {
                 dispatch(setErrorMessage("Не удалось удалить турнир"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось удалить турнир, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -698,26 +698,26 @@ export const getTournamentNewBids = (tournament = null, userprofile = null) => {
                         if (pl) {
                             // изменить полученный турнир в списке
                             dispatch(setTournamentNewBids(pl.data))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось загрузить заявки турнира"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось загрузить заявки турнира: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             else {
                 dispatch(setErrorMessage("Не удалось загрузить заявки турнира"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось загрузить заявки турнира, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -734,26 +734,26 @@ export const getTournamentTeams = (tournament = null, userprofile = null) => {
                         if (pl) {
                             
                             dispatch(setTournamentTeams(pl.data))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось загрузить группы и команды турнира"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось загрузить группы и команды турнира: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             else {
                 dispatch(setErrorMessage("Не удалось загрузить группы и команды турнира"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось загрузить группы и команды турнира, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -772,26 +772,26 @@ export const changeTournamentTeamBidTournamentGroup = (team = null, newgroup = n
                         if (pl) {
                             
                             dispatch(setTournamentTeams(pl.data))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось сменить группу"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось сменить группу: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             else {
                 dispatch(setErrorMessage("Не удалось сменить группу"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось сменить группу, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -809,26 +809,26 @@ export const getTournamentGroups = (tournament = null) => {
                         if (pl) {
                            // debugger
                             dispatch(setSelectedTournamentGroups(pl.data))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось получить список групп турнира"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось получить список групп турнира: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             else {
                 dispatch(setErrorMessage("Не удалось получить список групп турнира"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось получить список групп турнира, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -846,26 +846,26 @@ export const acceptTeamToTournamentBid = (bid = null, tournament = null, userpro
                             // изменить полученный турнир в списке
                             debugger
                             dispatch(deleteTournamentBid(pl.data))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             else {
                 dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -883,26 +883,26 @@ export const declineTeamToTournamentBid = (bid = null, tournament = null, userpr
                             // изменить полученный турнир в списке
                             debugger
                             dispatch(deleteTournamentBid(pl.data))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             else {
                 dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось подтвердить заявку от команды в турнир, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -920,26 +920,26 @@ export const deleteTeamFromTournament = (team = null, tournamentGroup = null, us
                             // изменить полученный турнир в списке
                             debugger
                             dispatch(setTournamentTeams(pl.data))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось удалить команду из турнира"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось удалить команду из турнира: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             else {
                 dispatch(setErrorMessage("Не удалось удалить команду из турнира"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось удалить команду из турнира, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -955,7 +955,7 @@ export const deleteTournamentGroup = (tournament = null, userprofile = null, tou
                 {
                     debugger
                     dispatch(delGroupFromTournamentById(tournament.Id, tournamentGroupId));
-                    dispatch(setGlobalPopout(false))
+                    
                 }
                 else
                 {
@@ -964,28 +964,28 @@ export const deleteTournamentGroup = (tournament = null, userprofile = null, tou
                         if (pl) {
                             debugger
                             dispatch(delGroupFromTournamentById(tournament.Id, pl.data.Id))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось удалить группу турнира"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось удалить группу турнира: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
                 }
             }
             else {
                 dispatch(setErrorMessage("Не удалось удалить группу турнира"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось удалить группу турнира, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -1001,7 +1001,7 @@ export const addTournamentGroup = (tournament = null, userprofile = null, tourna
                 {
                     debugger
                     dispatch(addGroupToTournament(tournamentGroup));
-                    dispatch(setGlobalPopout(false))
+                    
                 }
                 else
                 {
@@ -1010,28 +1010,28 @@ export const addTournamentGroup = (tournament = null, userprofile = null, tourna
                         if (pl) {
                             debugger
                             dispatch(addGroupToTournament(pl.data))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось удалить группу турнира"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось удалить группу турнира: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
                 }
             }
             else {
                 dispatch(setErrorMessage("Не удалось удалить группу турнира"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось удалить группу турнира, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -1050,27 +1050,27 @@ export const getMyTournaments = (userProfileId = -1) => {
                         if (pl && pl.data.length > 0) {
                             
                             dispatch(setMyTournaments(pl.data));
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось загрузить турниры"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось загрузить турниры: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             
             else {
                 dispatch(setErrorMessage("Не удалось загрузить турниры"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось загрузить турниры, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -1088,28 +1088,28 @@ export const getTournamentsByCityId = (cityUmbId = -1) => {
                         if (pl && pl.data.length > 0) {
                             
                             dispatch(setTournaments(pl.data));
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось загрузить турниры"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         debugger
                         dispatch(setErrorMessage("Не удалось загрузить турниры: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             
             else {
                 dispatch(setErrorMessage("Не удалось загрузить турниры"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось загрузить турниры, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -1127,27 +1127,27 @@ export const getTournamentTablesByTournamentId = (tournamentId = -1) => {
                         if (pl && pl.data.length > 0) {
                             
                             dispatch(setTournamentTables(pl.data));
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось загрузить турнирные таблицы"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось загрузить турнирные таблицы: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             
             else {
                 dispatch(setErrorMessage("Не удалось загрузить турнирные таблицы"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось загрузить турнирные таблицы, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }

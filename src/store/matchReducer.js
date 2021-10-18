@@ -1,4 +1,4 @@
-import { setGlobalPopout, setErrorMessage } from "./systemReducer";
+import {  setErrorMessage } from "./systemReducer";
 import { CityTournamentAdminAPI, MatchAPI } from './../utils/api/api.js'
 import { Match } from './constants/commonConstants'
 import { EmptyTournament } from './constants/commonConstants'
@@ -160,23 +160,23 @@ export const getAllMatchesByTournament = (tournament = null, userProfile = null,
                             if (pl && pl.data && pl.data.length > 0) {
                                 
                                 dispatch(setAllMatches(pl.data));
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                             else {
 
                                 dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                         })
                         .catch(error => {
 
                             dispatch(setErrorMessage(error))
-                            dispatch(setGlobalPopout(false))
+                            
                         })
                 else {
 
                     dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                    dispatch(setGlobalPopout(false))
+                    
 
                 }
             }
@@ -196,24 +196,24 @@ export const addMatchToShedule = (match = null, userProfile = null, hours = 0, m
                             if (pl && pl.data.length > 0) {
                                 dispatch(setAllMatches(pl.data));
                                 dispatch((pl.data));
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                             else {
 
                                 dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                         })
                         .catch(error => {
 
                             dispatch(setErrorMessage(error))
-                            dispatch(setGlobalPopout(false))
+                            
                         })
                     }
                 else {
 
                     dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                    dispatch(setGlobalPopout(false))
+                    
 
                 }
             }
@@ -234,24 +234,24 @@ export const delMatchFromShedule = (match = null, userProfile = null, hours = 0,
                             if (pl && pl.data.length > 0) {
                                 dispatch(setAllMatches(pl.data));
                                 dispatch((pl.data));
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                             else {
 
                                 dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                         })
                         .catch(error => {
 
                             dispatch(setErrorMessage(error))
-                            dispatch(setGlobalPopout(false))
+                            
                         })
                     }
                 else {
 
                     dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                    dispatch(setGlobalPopout(false))
+                    
 
                 }
             }
@@ -272,23 +272,23 @@ export const getMatchesInCurrentCity = (userProfile = null) => {
                             if (pl && pl.data.length > 0) {
                                 dispatch(setHotMatches(pl.data));
                                 dispatch((pl.data));
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                             else {
                                 dispatch(setErrorMessage("Не получены данные MatchAPI.getCurrentMatchesByCity"))
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                         })
                         .catch(error => {
 
                             dispatch(setErrorMessage(error))
-                            dispatch(setGlobalPopout(false))
+                            
                         })
                     }
                 else {
 
                     dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                    dispatch(setGlobalPopout(false))
+                    
 
                 }
             }

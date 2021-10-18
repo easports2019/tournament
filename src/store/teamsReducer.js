@@ -1,4 +1,4 @@
-import { setGlobalPopout, setErrorMessage } from "./systemReducer";
+import { setErrorMessage } from "./systemReducer";
 import { TeamAdminAPI, TeamAPI, CityTournamentAdminAPI } from './../utils/api/api.js'
 import { TeamAdmins } from './constants/commonConstants'
 
@@ -411,30 +411,30 @@ export const editGroupInTeam = (teamId, groupId, groupName) => {
 export const getAllCityTeamAdmins = (startindex = 0) => {
     return dispatch => {
 
-        dispatch(setGlobalPopout(true))
+        
         if (authQueryString && authQueryString.length > 0)
             TeamAdminAPI.getAll(startindex)
                 .then(pl => {
                     if (pl && pl.data.length > 0) {
 
                         dispatch(setCityTeamAdmins(pl.data));
-                        dispatch(setGlobalPopout(false))
+                        
                     }
                     else {
 
                         dispatch(setCityTeamAdmins(demoCityTeamAdmins))
-                        dispatch(setGlobalPopout(false))
+                        
                     }
                 })
                 .catch(error => {
 
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
+                    
                 })
         else {
 
             dispatch(setCityTeamAdmins(demoCityTeamAdmins))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -450,21 +450,17 @@ export const getAllCityTeamAdminsByCityId = (cityTeamId, startindex = 0) => {
                     if (pl && pl.data.length > 0) {
 
                         dispatch(setCityTeamAdmins(pl.data));
-                        dispatch(setGlobalPopout(false))
                     }
                     else {
                         dispatch(setCityTeamAdmins(demoCityTeamAdmins))
-                        dispatch(setGlobalPopout(false))
 
                     }
                 })
                 .catch(error => {
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
                 })
         else {
             dispatch(setCityTeamAdmins(demoCityTeamAdmins))
-            dispatch(setGlobalPopout(false))
 
         }
     }
@@ -483,16 +479,15 @@ export const saveSelectedTeam = (team = null, userprofile = null) => {
                             if (pl && pl.data.length > 0) {
                                 dispatch(addMyTeam(pl.data));
                                 dispatch(resetTeam());
-                                dispatch(setGlobalPopout(false))
                             }
                             else {
                                 dispatch(setErrorMessage("Не удалось сохранить команду"))
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                         })
                         .catch(error => {
                             dispatch(setErrorMessage("Не удалось сохранить команду: " + error))
-                            dispatch(setGlobalPopout(false))
+                            
                         })
                 }
                 else{ // изменение
@@ -501,28 +496,28 @@ export const saveSelectedTeam = (team = null, userprofile = null) => {
                             if (pl && pl.data.length > 0) {
                                 dispatch(setMyTeam(pl.data));
                                 dispatch(resetTeam());
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                             else {
                                 dispatch(setErrorMessage("Не удалось сохранить команду"))
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                         })
                         .catch(error => {
                             dispatch(setErrorMessage("Не удалось сохранить команду: " + error))
-                            dispatch(setGlobalPopout(false))
+                            
                         })
                 }
             }
             else {
                 dispatch(setErrorMessage("Не удалось сохранить команду: не удалось авторизоваться"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось сохранить команду, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -540,26 +535,26 @@ export const publishTeam = (team = null, userprofile = null, publish = false) =>
                         if (pl) {
                             // изменить полученный турнир в списке
                             dispatch(setMyTeam(pl.data))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось опубликовать турнир"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось опубликовать турнир: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             else {
                 dispatch(setErrorMessage("Не удалось опубликовать турнир"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось опубликовать турнир, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -576,26 +571,26 @@ export const deleteTeam = (team = null, userprofile = null) => {
                         if (pl) {
                             // изменить полученный турнир в списке
                             dispatch(deleteMyTeam(pl.data))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось удалить команду"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось удалить команду: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
             else {
                 dispatch(setErrorMessage("Не удалось удалить команду"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось удалить команду, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -613,27 +608,27 @@ export const getMyTeams = (userProfileId = -1) => {
                         if (pl && pl.data.length > 0) {
 
                             dispatch(setMyTeams(pl.data));
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось загрузить команды"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось загрузить команды: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
 
             else {
                 dispatch(setErrorMessage("Не удалось загрузить команды"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось загрузить команды, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -652,27 +647,27 @@ export const getTeamInfo = (team = null) => {
                         if (pl && pl.data) {
                             debugger
                             dispatch(setSelectedTeam(pl.data));
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                         else {
                             dispatch(setErrorMessage("Не удалось загрузить команду"))
-                            dispatch(setGlobalPopout(false))
+                            
                         }
                     })
                     .catch(error => {
                         dispatch(setErrorMessage("Не удалось загрузить команду: " + error))
-                        dispatch(setGlobalPopout(false))
+                        
                     })
 
             else {
                 dispatch(setErrorMessage("Не удалось загрузить команду"))
-                dispatch(setGlobalPopout(false))
+                
 
             }
         }
         else {
             dispatch(setErrorMessage("Не удалось загрузить команду, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }

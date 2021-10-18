@@ -14,7 +14,7 @@ ReactDOM.render(
     <ConfigProvider>
       <AdaptivityProvider>
         <AppRoot>
-          <App />
+            <App />
         </AppRoot>
       </AdaptivityProvider>
     </ConfigProvider>

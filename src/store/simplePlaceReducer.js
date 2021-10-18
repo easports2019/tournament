@@ -1,7 +1,7 @@
-import { setGlobalPopout, setErrorMessage, resetError } from "./systemReducer";
 import { simplePlaces } from './constants/commonConstants'
 import { SimplePlaceAPI } from './../utils/api/api.js'
 import { authQueryString } from './../utils/api/server';
+import { setErrorMessage, resetError, setGlobalPopout } from "./systemReducer";
 
 const demoPlaces = simplePlaces;
 
@@ -70,8 +70,6 @@ export const setPlace = (placeId, placeData) => {
 // все места с сервера по UmbracoId города
 export const getAllSimplePlacesInCityByCityId = (cityId, startindex = 0) => {
     return dispatch => {
-        dispatch(setGlobalPopout(true))
-        dispatch(resetError())
 
         if (authQueryString && authQueryString.length > 0)
             SimplePlaceAPI.getAllInCityByCityUmbracoId(cityId, startindex)
@@ -79,21 +77,17 @@ export const getAllSimplePlacesInCityByCityId = (cityId, startindex = 0) => {
                     if (pl && pl.data.length > 0) {
                         
                         dispatch(setPlaces(pl.data));
-                        dispatch(setGlobalPopout(false))
                     }
                     else {
                         dispatch(setPlaces(demoPlaces))
-                        dispatch(setGlobalPopout(false))
 
                     }
                 })
                 .catch(error => {
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
                 })
         else {
             dispatch(setPlaces(demoPlaces))
-            dispatch(setGlobalPopout(false))
 
         }
     }

@@ -1,6 +1,6 @@
 import { ProfileAPI, CityAPI, errorObj, VKAPI } from './../utils/api/api.js'
 import { authQueryString } from './../utils/api/server';
-import { setGlobalPopout, setErrorMessage, resetError } from "./systemReducer";
+import {  setErrorMessage, resetError } from "./systemReducer";
 import { setUserProfile } from "./profileReducer";
 
 const CITY_GET_ALL_FROM_SERVER = "CITY_GET_ALL_FROM_SERVER";
@@ -56,22 +56,22 @@ export const getUser = (id) => {
                     debugger
                     if (pl && pl.data) {
                         dispatch(setCities(pl.data));
-                        dispatch(setGlobalPopout(false))
+                        
                     }
                     else {
                         dispatch(setErrorMessage(errorObj("Не получен ответ от сервера")))
-                        dispatch(setGlobalPopout(false))
+                        
                     }
                 })
                 .catch(error => {
                     
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
+                    
                 })
         else {
             
             dispatch(setErrorMessage(errorObj("Вы не авторизованы")))
-            dispatch(setGlobalPopout(false))
+            
         }
     }
 }

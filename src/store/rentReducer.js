@@ -1,4 +1,4 @@
-import { setGlobalPopout, setErrorMessage } from "./systemReducer";
+import { setErrorMessage, resetError, globalPopoutOn, globalPopoutOff } from "./systemReducer";
 import { rents } from './constants/commonConstants'
 import { RentAPI } from './../utils/api/api.js'
 import { authQueryString } from './../utils/api/server';
@@ -65,21 +65,17 @@ export const getAllRentsInCityByCityId = (cityId, startindex = 0) => {
                     if (pl && pl.data.length > 0) {
                         
                         dispatch(setRents(pl.data));
-                        dispatch(setGlobalPopout(false))
                     }
                     else {
                         dispatch(setRents(demoRents))
-                        dispatch(setGlobalPopout(false))
 
                     }
                 })
                 .catch(error => {
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
                 })
         else {
             dispatch(setRents(demoRents))
-            dispatch(setGlobalPopout(false))
 
         }
     }

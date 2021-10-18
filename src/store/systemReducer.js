@@ -1,3 +1,4 @@
+import { ScreenSpinner } from '@vkontakte/vkui';
 import {ampluaTypes, users} from './constants/commonConstants'
 import { setActiveMenuItem } from "./mainMenuReducer";
 
@@ -5,7 +6,9 @@ const ANY_ACTION_TYPE = "ANY_ACTION_TYPE";
 const SYSTEM_PUSH_TO_HISTORY = "SYSTEM_PUSH_TO_HISTORY";
 const SYSTEM_SET_CURRENT_MODAL_WINDOW = "SYSTEM_SET_CURRENT_MODAL_WINDOW";
 const SYSTEM_POP_FROM_HISTORY = "SYSTEM_POP_FROM_HISTORY";
-const SYSTEM_SET_GLOBAL_POPOUT = "SYSTEM_SET_GLOBAL_POPOUT";
+//const SYSTEM_SET_GLOBAL_POPOUT = "SYSTEM_SET_GLOBAL_POPOUT";
+const SYSTEM_GLOBAL_POPOUT_ON = "SYSTEM_GLOBAL_POPOUT_ON";
+const SYSTEM_GLOBAL_POPOUT_OFF = "SYSTEM_GLOBAL_POPOUT_OFF";
 const SYSTEM_SET_ERROR_MESSAGE = "SYSTEM_SET_ERROR_MESSAGE";
 const SYSTEM_RESET_ERROR = "SYSTEM_RESET_ERROR";
 const SYSTEM_SET_SHOW_ADMIN_TOURNEY_TAB = "SYSTEM_SET_SHOW_ADMIN_TOURNEY_TAB";
@@ -14,7 +17,7 @@ const SYSTEM_SET_SHOW_ADMIN_TOURNEY_TAB = "SYSTEM_SET_SHOW_ADMIN_TOURNEY_TAB";
 const initState = {
     currentMenu: {},
     history: ["hot"],
-    GlobalPopout: false,
+    GlobalPopout: null,
     CurrentModalWindow: null,
     //ErrorObject: {resultcode: 0, result: "Ok", data: null, message: ""},
     ErrorObject: "",
@@ -38,9 +41,16 @@ export let systemReducer = (state = initState, action) =>
                 history: [...state.history, action.item]
             };
         }
-        case SYSTEM_SET_GLOBAL_POPOUT: {
+        
+        case SYSTEM_GLOBAL_POPOUT_ON: {
+            
             return {...state,
-                GlobalPopout: action.on,
+                GlobalPopout: <ScreenSpinner></ScreenSpinner>,
+            };
+        }
+        case SYSTEM_GLOBAL_POPOUT_OFF: {
+            return {...state,
+                GlobalPopout: null,
             };
         }
         case SYSTEM_SET_CURRENT_MODAL_WINDOW: {
@@ -113,10 +123,24 @@ export const popFromHistory = (val) => {
     }
 }
 
-export const setGlobalPopout = (on) => {
+// export const setGlobalPopout = (on) => {
+//     return {
+//         type: SYSTEM_SET_GLOBAL_POPOUT,
+//         on
+//     }
+// }
+
+// включить глобальное ожидание (анимация крутящегося круга)
+export const globalPopoutOn = () => {
     return {
-        type: SYSTEM_SET_GLOBAL_POPOUT,
-        on
+        type: SYSTEM_GLOBAL_POPOUT_ON,
+    }
+}
+
+// выключить глобальное ожидание (анимация крутящегося круга)
+export const globalPopoutOff = () => {
+    return {
+        type: SYSTEM_GLOBAL_POPOUT_OFF,
     }
 }
 

@@ -1,7 +1,7 @@
 import {ampluaTypes, users} from './constants/commonConstants'
 import { ProfileAPI, errorObj } from './../utils/api/api.js'
 import { authQueryString } from './../utils/api/server';
-import { setGlobalPopout, setErrorMessage, resetError } from "./systemReducer";
+import { setErrorMessage, resetError, globalPopoutOn, globalPopoutOff } from "./systemReducer";
 
 
 const ANY_ACTION_TYPE = "ANY_ACTION_TYPE";
@@ -72,7 +72,8 @@ export const setTriedToGetProfile = (tried) => {
 // получение данных профиля (без авторегистрации)
 export const getUserProfile = (vkUserData) => {
     return dispatch => {
-        dispatch(setGlobalPopout(true))
+        debugger
+        dispatch(globalPopoutOn())
         dispatch(resetError())
 
         if (authQueryString && authQueryString.length > 0)
@@ -82,7 +83,7 @@ export const getUserProfile = (vkUserData) => {
                     if (pl && pl.data) {
                         dispatch(setUserProfile(pl.data));
                         dispatch(setTriedToGetProfile(false));
-                        dispatch(setGlobalPopout(false))
+                        dispatch(globalPopoutOff())
                     }
                     else {
                         dispatch(setTriedToGetProfile(true))
@@ -90,11 +91,11 @@ export const getUserProfile = (vkUserData) => {
                 })
                 .catch(error => {
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
+                    //dispatch(globalPopoutOff())
                 })
         else {
             dispatch(setErrorMessage(errorObj("Вы не авторизованы")))
-            dispatch(setGlobalPopout(false))
+            //dispatch(globalPopoutOff())
             //dispatch(setUserProfile(demoUser))
             //dispatch(setTriedToGetProfile(true))
 
@@ -105,7 +106,7 @@ export const getUserProfile = (vkUserData) => {
 // установка нового города пользователю
 export const setUserProfileCity = (userProfile) => {
     return dispatch => {
-        dispatch(setGlobalPopout(true))
+        dispatch(globalPopoutOn())
         dispatch(resetError())
         debugger
         if (authQueryString && authQueryString.length > 0)
@@ -114,20 +115,20 @@ export const setUserProfileCity = (userProfile) => {
                     debugger
                     if (pl && pl.data) {
                         dispatch(setUserProfile(pl.data));
-                        dispatch(setGlobalPopout(false))
+                        dispatch(globalPopoutOff())
                     }
                     else {
                         dispatch(setErrorMessage(errorObj("Не получен ответ от сервера")))
-                        //dispatch(setGlobalPopout(false))
+                        //dispatch(globalPopoutOff())
                     }
                 })
                 .catch(error => {
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
+                    dispatch(globalPopoutOff())
                 })
         else {
             dispatch(setErrorMessage(errorObj("Вы не авторизованы")))
-            dispatch(setGlobalPopout(false))
+            dispatch(globalPopoutOff())
         }
     }
 }
@@ -136,7 +137,7 @@ export const setUserProfileCity = (userProfile) => {
 // авторизация (со встроенной регистрацией)
 export const getAuthInfo = (vkProfileInfo) => {
     return dispatch => {
-        dispatch(setGlobalPopout(true))
+        dispatch(globalPopoutOn())
         dispatch(resetError())
 
         if (authQueryString && authQueryString.length > 0)
@@ -145,21 +146,21 @@ export const getAuthInfo = (vkProfileInfo) => {
                     if (pl) {
                         dispatch(setUserProfile(pl.data));
                         dispatch(setTriedToGetProfile(false));
-                        dispatch(setGlobalPopout(false))
+                        dispatch(globalPopoutOff())
                     }
                     else {
                         dispatch(setErrorMessage(errorObj("Ошибка при регистрации")))
-                        dispatch(setGlobalPopout(false))
+                        dispatch(globalPopoutOff())
 
                     }
                 })
                 .catch(error => {
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
+                    dispatch(globalPopoutOff())
                 })
         else {
             dispatch(setErrorMessage(errorObj("Вы не авторизованы")))
-            dispatch(setGlobalPopout(false))
+            dispatch(globalPopoutOff())
 
         }
     }

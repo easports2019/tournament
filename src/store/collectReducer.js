@@ -1,4 +1,4 @@
-import { setGlobalPopout, setErrorMessage } from "./systemReducer";
+import { setErrorMessage } from "./systemReducer";
 import { CollectAPI } from './../utils/api/api.js'
 import { Match } from './constants/commonConstants'
 import { EmptyTournament } from './constants/commonConstants'
@@ -209,23 +209,23 @@ export const getAllSimpleCollectsInCityByCityUmbracoId = (cityId = -1, userProfi
                             if (pl && pl.data.length > 0) {
                                 dispatch(setAllSimpleCollects(pl.data));
                                 dispatch((pl.data));
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                             else {
                                 dispatch(setErrorMessage("Не получены данные CollectAPI.getAllSimpleByCityUmbracoId"))
-                                dispatch(setGlobalPopout(false))
+                                
                             }
                         })
                         .catch(error => {
 
                             dispatch(setErrorMessage(error))
-                            dispatch(setGlobalPopout(false))
+                            
                         })
                     }
                 else {
 
                     //dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                    dispatch(setGlobalPopout(false))
+                    
 
                 }
             }
@@ -246,23 +246,23 @@ export const DeleteMemberFromCollect = (userProfileId = -1, collect = null, simp
                                 if (pl && pl.data) {
                                     dispatch(deleteMemberFromSimpleCollect(pl.data));
                                     dispatch((pl.data));
-                                    dispatch(setGlobalPopout(false))
+                                    
                                 }
                                 else {
                                     dispatch(setErrorMessage("Не получены данные CollectAPI.deleteMemberFromSimpleCollect"))
-                                    dispatch(setGlobalPopout(false))
+                                    
                                 }
                             })
                             .catch(error => {
 
                                 dispatch(setErrorMessage(error))
-                                dispatch(setGlobalPopout(false))
+                                
                             })
                 }
                 else {
 
                     //dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                    dispatch(setGlobalPopout(false))
+                    
 
                 }
             }
@@ -283,23 +283,23 @@ export const AddSimpleCollect = (userProfileId = -1, collect = null) => {
                                 if (pl && pl.data) {
                                     dispatch(addSimpleCollect(pl.data));
                                     dispatch((pl.data));
-                                    dispatch(setGlobalPopout(false))
+                                    
                                 }
                                 else {
                                     dispatch(setErrorMessage("Не получены данные CollectAPI.addSimpleCollect"))
-                                    dispatch(setGlobalPopout(false))
+                                    
                                 }
                             })
                             .catch(error => {
 
                                 dispatch(setErrorMessage(error))
-                                dispatch(setGlobalPopout(false))
+                                
                             })
                 }
                 else {
 
                     //dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                    dispatch(setGlobalPopout(false))
+                    
 
                 }
             }
@@ -321,23 +321,23 @@ export const EditSimpleCollect = (userProfileId = -1, collect = null) => {
                                     
                                     dispatch(setSimpleCollect(pl.data));
                                     dispatch((pl.data));
-                                    dispatch(setGlobalPopout(false))
+                                    
                                 }
                                 else {
                                     dispatch(setErrorMessage("Не получены данные CollectAPI.addSimpleCollect"))
-                                    dispatch(setGlobalPopout(false))
+                                    
                                 }
                             })
                             .catch(error => {
 
                                 dispatch(setErrorMessage(error))
-                                dispatch(setGlobalPopout(false))
+                                
                             })
                 }
                 else {
 
                     //dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                    dispatch(setGlobalPopout(false))
+                    
 
                 }
             }
@@ -358,23 +358,23 @@ export const DelSimpleCollect = (userProfileId = -1, collect = null) => {
                                 if (pl && pl.data) {
                                     dispatch(delSimpleCollect(pl.data));
                                     dispatch((pl.data));
-                                    dispatch(setGlobalPopout(false))
+                                    
                                 }
                                 else {
                                     dispatch(setErrorMessage("Не получены данные CollectAPI.delSimpleCollect"))
-                                    dispatch(setGlobalPopout(false))
+                                    
                                 }
                             })
                             .catch(error => {
 
                                 dispatch(setErrorMessage(error))
-                                dispatch(setGlobalPopout(false))
+                                
                             })
                 }
                 else {
 
                     //dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                    dispatch(setGlobalPopout(false))
+                    
 
                 }
             }
@@ -396,23 +396,23 @@ export const registerMemberToSimpleCollect = (userProfileId = -1, collect = null
 
                                     dispatch(addMemberToSelectedSimpleCollect(pl.data));
                                     dispatch((pl.data));
-                                    dispatch(setGlobalPopout(false))
+                                    
                                 }
                                 else {
                                     dispatch(setErrorMessage("Не получены данные CollectAPI.addSimpleCollect"))
-                                    dispatch(setGlobalPopout(false))
+                                    
                                 }
                             })
                             .catch(error => {
 
                                 dispatch(setErrorMessage(error))
-                                dispatch(setGlobalPopout(false))
+                                
                             })
                 }
                 else {
 
                     //dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                    dispatch(setGlobalPopout(false))
+                    
 
                 }
             }

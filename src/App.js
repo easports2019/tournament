@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import bridge from '@vkontakte/vk-bridge';
-import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider, Badge, Header, List, RichCell, CellButton, FormItem } from '@vkontakte/vkui';
+import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider, Badge, Header, List, RichCell, CellButton, FormItem, SplitLayout, SplitCol, withAdaptivity, usePlatform, useAdaptivity } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 
 import { setActiveMenuItem } from './store/mainMenuReducer';
 import { getAllSimplePlacesInCityByCityId, } from './store/simplePlaceReducer';
 import { getAllRentsInCityByCityId } from './store/rentReducer';
 import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
-import { setGlobalPopout, resetError } from './store/systemReducer';
+import { globalPopoutOn, globalPopoutOff, resetError } from './store/systemReducer';
 import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect, setCollectItemMode } from './store/collectReducer';
 import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
 import { getMatchesInCurrentCity, setHotPanel } from './store/matchReducer';
@@ -46,12 +46,17 @@ import CellButtonWithNotify from './components/Panels/Common/WithNotify/CellButt
 
 const App = (props) => {
 	const [fetchedUser, setUser] = useState(null);
-	const [popout, setPopout] = useState(props.globalPopout ? <ScreenSpinner size='large' /> : null);
+	//const [popout, setPopout] = useState(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 	//const [modalWindow, setModalWindow] = useState(null);
 	const [viewCollectTab, setCollectViewTab] = useState("main");
 	const [timerStarts, setTimerStarts] = useState(false);
 
-	
+
+	const platform = usePlatform();
+	//const adapt = useAdaptivity();
+
+	// const isDesktop = props.viewWidth >= ViewWidth.TABLET;
+	// const hasHeader = platform !== VKCOM;
 
 	const checkMovings = () => {
 		//alert('Привет');
@@ -79,37 +84,14 @@ const App = (props) => {
 
 	// загрузка информации о пользователе ВК
 	async function fetchData() {
-
 		const user = await bridge.send('VKWebAppGetUserInfo');
-
-
-		// const params = bridge.send("VKWebAppGetAuthToken", {"app_id": 7161115, "scope": ""}).then(res => {
-
-		// 	bridge.send("VKWebAppCallAPIMethod", 
-		// 	{"method": "users.get", 
-		// 	"request_id": "32test", 
-		// 	"params": {"user_ids": "19757699", "fields": "sex,photo_100,bdate", "v":"5.131", 
-		// 	"access_token":res.access_token}})
-		// 	.then(us => {
-
-		// 		props.setSelectedUser(us);
-		// 	})
-		// });
-		// https://vk.com/dev/users.get
-
-
-
-
 		setUser(user);
 		props.setVkProfileInfo(user);
 		props.getAllCitiesFromServer();
-
-
-		//Build an object which matches the structure of our view model class
-		//setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 	}
 
-	// это системное, загрузка приложения вк
+
+	// 1. это системное, загрузка приложения вк
 	useEffect(() => {
 		bridge.subscribe(({ detail: { type, data } }) => {
 			if (type === 'VKWebAppUpdateConfig') {
@@ -187,6 +169,7 @@ const App = (props) => {
 			// получаем список аренд
 			props.getAllRentsInCityByCityId(props.myProfile.CityUmbracoId);
 
+			// таймер на обновление сборов и аренд каждые 30 секунд (начианет через 5 секунд после запуска приложения)
 			if (!timerStarts)
 			{
 				setTimerStarts(true);
@@ -200,7 +183,7 @@ const App = (props) => {
 		{
 
 			// предлагаем выбрать город
-			setPopout(null);
+			props.globalPopoutOff();
 			props.setCurrentModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
 		}
 
@@ -220,10 +203,10 @@ const App = (props) => {
 	useEffect(() => {
 		//if (props.errorObject && props.errorObject.resultcode != 0)
 		if (props.errorObject && props.errorObject != "") {
-			//props.setCurrentModalWindow(<ModalCommon modalName="Error" data={props.errorObject} Close={CloseModal}></ModalCommon>)
+			props.setCurrentModalWindow(<ModalCommon modalName="Error" data={props.errorObject} Close={CloseModal}></ModalCommon>)
 		}
 		else {
-			setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
+			props.setCurrentModalWindow(null);
 		}
 		//}, [props.globalPopout, props.errorObject])
 	}, [props.errorObject])
@@ -266,7 +249,7 @@ const App = (props) => {
 				// если не год рождения скрыт настройками приватности и из-за этого при регистрации на бэкэнде дата рождения не определилась, 
 				// выводим окно выбора года рождения и после выбора правим его в профиле ВК
 				if ((props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() < 1920)) {
-					setPopout(null);
+					props.globalPopoutOff();
 					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirth" data={props.vkProfile} action={props.setVkProfileInfo} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
 				}
 				else {
@@ -287,7 +270,7 @@ const App = (props) => {
 					if (props.myProfile.CityUmbracoId != null && props.myProfile.CityUmbracoId == -1) {
 						//debugger
 						// предлагаем выбрать город
-						setPopout(null);
+						props.globalPopoutOff();
 						props.setCurrentModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
 					}
 
@@ -376,302 +359,309 @@ const App = (props) => {
 	).filter(i => i);
 
 	//if ((Array.isArray(props.tournamentsForBids.selectedTournament)) && (props.tournamentsForBids.selectedTournament.length > 0))
-	//debugger
+	
 
 
 	return (
+		//<SplitLayout   
+			//modal={ props.CurrentModalWindow ? props.CurrentModalWindow : null} 
+			//popout={ props.GlobalPopout ? props.GlobalPopout : null }
+			//>
+			//<SplitCol >
+				<Epic
+				activeStory={props.mainMenu.activeItem.name}
+				tabbar={
+					<Tabbar>
+						<TabbarItemWithHistory toMenuName="hot" selected={"hot" === props.mainMenu.activeItem.name} data-story="hot" text="Горячее"></TabbarItemWithHistory>
+						<TabbarItemWithHistory toMenuName="allTournaments" selected={"allTournaments" === props.mainMenu.activeItem.name} data-story="allTournaments" text="Турниры"></TabbarItemWithHistory>
+						<TabbarItemWithHistory toMenuName="collectslist" selected={"collectslist" === props.mainMenu.activeItem.name} data-story="collectslist" text="Сборы"></TabbarItemWithHistory>
+						<TabbarItemWithHistory toMenuName="profile" selected={"profile" === props.mainMenu.activeItem.name} data-story="profile" text="Профиль"></TabbarItemWithHistory>
+						{props.ShowAdminTourneyTab && <TabbarItemWithHistory toMenuName="tournamentadmin" selected={"tournamentadmin" === props.mainMenu.activeItem.name} data-story="tournamentadmin" text="Управление турнирами"></TabbarItemWithHistory>}
+						{props.ShowAdminTeamTab && <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Мои команды"></TabbarItemWithHistory>}
+					</Tabbar>}>
 
-		<Epic
-			activeStory={props.mainMenu.activeItem.name}
-			tabbar={
-				<Tabbar>
-					<TabbarItemWithHistory toMenuName="hot" selected={"hot" === props.mainMenu.activeItem.name} data-story="hot" text="Горячее"></TabbarItemWithHistory>
-					<TabbarItemWithHistory toMenuName="allTournaments" selected={"allTournaments" === props.mainMenu.activeItem.name} data-story="allTournaments" text="Турниры"></TabbarItemWithHistory>
-					<TabbarItemWithHistory toMenuName="collectslist" selected={"collectslist" === props.mainMenu.activeItem.name} data-story="collectslist" text="Сборы"></TabbarItemWithHistory>
-					<TabbarItemWithHistory toMenuName="profile" selected={"profile" === props.mainMenu.activeItem.name} data-story="profile" text="Профиль"></TabbarItemWithHistory>
-					{props.ShowAdminTourneyTab && <TabbarItemWithHistory toMenuName="tournamentadmin" selected={"tournamentadmin" === props.mainMenu.activeItem.name} data-story="tournamentadmin" text="Управление турнирами"></TabbarItemWithHistory>}
-					{props.ShowAdminTeamTab && <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Мои команды"></TabbarItemWithHistory>}
-				</Tabbar>}>
-
-			<View id="hot" activePanel={props.matches.hotPanel} modal={props.CurrentModalWindow} popout={popout}>
-				<Panel id="yesterday">
-					<PanelHeader left={<BackButton isBack={true} />}>Вчера</PanelHeader>
-					<Group>
-						<InfoRow header="Информация">
-							Турниры любительской лиги твоего города
-						</InfoRow>
-					</Group>
-					<Group header={<Header mode="secondary">Матчи</Header>}>
-						<Tabs>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("yesterday")}>Вчера</TabsItem>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("today")}>Сегодня</TabsItem>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("tomorrow")}>Завтра</TabsItem>
-						</Tabs>
-						<Hot Matches={props.matches.hot.yesterday}></Hot>
-					</Group>
-				</Panel>
-				<Panel id="today">
-					<PanelHeader left={<BackButton isBack={true} />}>Сегодня</PanelHeader>
-					<Group>
-						{/* <CellButton onClick={() => UpdateFromServer()}>Обновить информацию</CellButton> */}
-						<CellButtonWithNotify 
-						Message="Уверены, что хотите обновить?"
-						Yes={() => UpdateFromServer()}
-						//onClick={() => UpdateFromServer()}
-						>Обновить информацию</CellButtonWithNotify>
-						<InfoRow header="Информация">
-							Турниры любительской лиги твоего города
-						</InfoRow>
-					</Group>
-					<Group header={<Header mode="secondary">Матчи</Header>}>
-						<Tabs>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("yesterday")}>Вчера</TabsItem>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("today")}>Сегодня</TabsItem>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("tomorrow")}>Завтра</TabsItem>
-						</Tabs>
-						<Hot Matches={props.matches.hot.today}></Hot>
-					</Group>
-				</Panel>
-				<Panel id="tomorrow">
-					<PanelHeader left={<BackButton isBack={true} />}>Завтра</PanelHeader>
-					<Group>
-						<InfoRow header="Информация">
-							Турниры любительской лиги твоего города
-						</InfoRow>
-					</Group>
-					<Group header={<Header mode="secondary">Матчи</Header>}>
-						<Tabs>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("yesterday")}>Вчера</TabsItem>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("today")}>Сегодня</TabsItem>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("tomorrow")}>Завтра</TabsItem>
-						</Tabs>
-						<Hot Matches={props.matches.hot.tomorrow}></Hot>
-					</Group>
-				</Panel>
-			</View>
-			<View id="allTournaments" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
-				<Panel id="main">
-					<PanelHeader
-						left={<BackButton isBack={true} />}
-					//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
-					>
-						Все турниры
-					</PanelHeader>
-					<Group header={<Header>Текущие турниры города</Header>}>
-						<List>
-
-							{
-								props.tournament.tournaments.map(t => {
-
-									return <RichCellWithHistory
-										caption={`Организатор: ${t.Founder.Name} ${t.Founder.Surname}`}
-										text={(new Date(t.WhenBegin) > new Date()) ?
-											`Стартует 
-													${new Date(t.WhenBegin).getDate() <= 9 ? "0" + (new Date(t.WhenBegin).getDate()) : (new Date(t.WhenBegin).getDate())}.${new Date(t.WhenBegin).getMonth() + 1 <= 9 ? "0" + (new Date(t.WhenBegin).getMonth() + 1) : (new Date(t.WhenBegin).getMonth() + 1)}.${new Date(t.WhenBegin).getFullYear()}`
-											:
-											"В процессе"}
-										handleClick={() => TournamentSelect(t)}
-										data-story="tournamentitem"
-										toMenuName="tournamentitem"
-									>{t.Name}</RichCellWithHistory>
-								})}
-						</List>
-
-					</Group>
-					<Group hidden header={<Header>Архивные турниры города</Header>}>
-
-					</Group>
-				</Panel>
-			</View>
-			<View id="collectslist" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
-				<Panel id="main">
-					<PanelHeader
-						left={<BackButton isBack={true} />}
-					//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
-					>
-						Все сборы
-					</PanelHeader>
-					<FormItem>
-						<CellButtonWithHistory
-							data-story="collectadmin"  // необходимо для использования withHistory
-							text="Создать сбор" // необходимо для использования withHistory
-							toMenuName="collectadmin"  // необходимо для использования withHistory
-							handleClick={CollectAdd} // необходимо для использования withHistory
+				<View id="hot" activePanel={props.matches.hotPanel} modal={ props.CurrentModalWindow} popout={ props.GlobalPopout }>
+					<Panel id="yesterday">
+						<PanelHeader left={<BackButton isBack={true} />}>Вчера</PanelHeader>
+						<Group>
+							<InfoRow header="Информация">
+								Турниры любительской лиги твоего города
+							</InfoRow>
+						</Group>
+						<Group header={<Header mode="secondary">Матчи</Header>}>
+							<Tabs>
+								<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("yesterday")}>Вчера</TabsItem>
+								<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("today")}>Сегодня</TabsItem>
+								<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("tomorrow")}>Завтра</TabsItem>
+							</Tabs>
+							<Hot Matches={props.matches.hot.yesterday}></Hot>
+						</Group>
+					</Panel>
+					<Panel id="today">
+						<PanelHeader left={<BackButton isBack={true} />}>Сегодня</PanelHeader>
+						<Group>
+							{/* <CellButton onClick={() => UpdateFromServer()}>Обновить информацию</CellButton> */}
+							<CellButtonWithNotify 
+							Message="Уверены, что хотите обновить?"
+							Yes={() => UpdateFromServer()}
+							//onClick={() => UpdateFromServer()}
+							>Обновить информацию</CellButtonWithNotify>
+							<InfoRow header="Информация">
+								Турниры любительской лиги твоего города
+							</InfoRow>
+						</Group>
+						<Group header={<Header mode="secondary">Матчи</Header>}>
+							<Tabs>
+								<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("yesterday")}>Вчера</TabsItem>
+								<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("today")}>Сегодня</TabsItem>
+								<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("tomorrow")}>Завтра</TabsItem>
+							</Tabs>
+							<Hot Matches={props.matches.hot.today}></Hot>
+						</Group>
+					</Panel>
+					<Panel id="tomorrow">
+						<PanelHeader left={<BackButton isBack={true} />}>Завтра</PanelHeader>
+						<Group>
+							<InfoRow header="Информация">
+								Турниры любительской лиги твоего города
+							</InfoRow>
+						</Group>
+						<Group header={<Header mode="secondary">Матчи</Header>}>
+							<Tabs>
+								<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("yesterday")}>Вчера</TabsItem>
+								<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("today")}>Сегодня</TabsItem>
+								<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("tomorrow")}>Завтра</TabsItem>
+							</Tabs>
+							<Hot Matches={props.matches.hot.tomorrow}></Hot>
+						</Group>
+					</Panel>
+				</View>
+				<View id="allTournaments" activePanel="main" modal={ props.CurrentModalWindow} popout={ props.GlobalPopout }>
+					<Panel id="main">
+						<PanelHeader
+							left={<BackButton isBack={true} />}
+						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
 						>
-							Арендовать площадку и собрать людей</CellButtonWithHistory>
-					</FormItem>
-					<Group header={<Header>Текущие сборы города</Header>}>
-						<List>
+							Все турниры
+						</PanelHeader>
+						<Group header={<Header>Текущие турниры города</Header>}>
+							<List>
 
-							{
-
-								props.collect.collects.sort((a, b) => new Date(a.When).getTime() - new Date(b.When).getTime())
-									.map(t => {
-										let timeEnding = addToTime(new Date(t.When), 0, t.DurationMinutes);
+								{
+									props.tournament.tournaments.map(t => {
 
 										return <RichCellWithHistory
-											caption={`Организатор: ${t.Creator.Name} ${t.Creator.Surname}`}
-											text={(new Date(t.When) > new Date()) ?
-												`Начало 
-													${new Date(t.When).getDate() <= 9 ? "0" + (new Date(t.When).getDate()) : (new Date(t.When).getDate())}.${new Date(t.When).getMonth() + 1 <= 9 ? "0" + (new Date(t.When).getMonth() + 1) : (new Date(t.When).getMonth() + 1)}.${new Date(t.When).getFullYear()}
-													в 
-													${new Date(t.When).getHours() <= 9 ? "0" + (new Date(t.When).getHours()) : (new Date(t.When).getHours())}:${new Date(t.When).getMinutes() <= 9 ? "0" + (new Date(t.When).getMinutes()) : (new Date(t.When).getMinutes())}
-													`
+											caption={`Организатор: ${t.Founder.Name} ${t.Founder.Surname}`}
+											text={(new Date(t.WhenBegin) > new Date()) ?
+												`Стартует 
+														${new Date(t.WhenBegin).getDate() <= 9 ? "0" + (new Date(t.WhenBegin).getDate()) : (new Date(t.WhenBegin).getDate())}.${new Date(t.WhenBegin).getMonth() + 1 <= 9 ? "0" + (new Date(t.WhenBegin).getMonth() + 1) : (new Date(t.WhenBegin).getMonth() + 1)}.${new Date(t.WhenBegin).getFullYear()}`
 												:
-												((timeEnding > new Date())
-													?
-													"В процессе"
-													:
-													"Закончен"
-												)
-											}
-											handleClick={() => CollectSelect(t)}
-											after={`${t.Cost} руб.`}
-											data-story="collectadmin"
-											toMenuName="collectadmin"
-
-										>
-											({t.Members.length}/{t.NeedMembers}) - {t.Name}
-										</RichCellWithHistory>
+												"В процессе"}
+											handleClick={() => TournamentSelect(t)}
+											data-story="tournamentitem"
+											toMenuName="tournamentitem"
+										>{t.Name}</RichCellWithHistory>
 									})}
-						</List>
+							</List>
 
-					</Group>
-					<Group hidden header={<Header>Архивные сборы</Header>}>
+						</Group>
+						<Group hidden header={<Header>Архивные турниры города</Header>}>
 
-					</Group>
-				</Panel>
-			</View>
-			<View id="collectadmin" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
-				<Panel id="main">
-					<PanelHeader
-						left={<BackButton isBack={true} />}
-					//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
-					>
-						Управление сборами
-					</PanelHeader>
-					<SimpleCollectItem></SimpleCollectItem>
-				</Panel>
-			</View>
-			<View id="profile" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
-				<Panel id="main">
-					<PanelHeader
-						left={<BackButton isBack={true} />}
-					//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
-					>
-						Профиль
-					</PanelHeader>
-					<Group>{props.myProfile && props.myProfile.Name && <>
-						<InfoRow header="Имя">{props.myProfile && props.myProfile.Name}</InfoRow>
-						<InfoRow header="Фамилия">{props.myProfile && props.myProfile.Surname}</InfoRow>
-						<InfoRow header="Город">{props.myProfile && props.myProfile.CityName}</InfoRow>
-						<InfoRow header="Год рождения">{props.myProfile && new Date(props.myProfile.Birth).getFullYear()}</InfoRow>
-						<InfoRow header="Id города привязки">{props.myProfile && props.myProfile.CityUmbracoId}</InfoRow>
-						<InfoRow header="Город привязки">{props.myProfile && props.myProfile.CityUmbracoName}</InfoRow>
-					</>
-					}
-					</Group>
-					<ProfilePanel></ProfilePanel>
-				</Panel>
-			</View>
-			<View id="tournamentadmin" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
-				<Panel id="main">
-					<PanelHeader
-						left={<BackButton isBack={true} />}
-					//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
-					>
-						Управление турнирами
-					</PanelHeader>
-					<Group>
-						<TournamentAdminPanel></TournamentAdminPanel>
-					</Group>
-				</Panel>
-			</View>
-			<View id="teamadmin" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
-				<Panel id="main">
-					<PanelHeader
-						left={<BackButton isBack={true} />}
-					//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
-					>
-						Мои команды
-					</PanelHeader>
-					<Group>
-						<TeamAdminPanel></TeamAdminPanel>
-					</Group>
-				</Panel>
-			</View>
-			<View id="tournamentitem" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
-				<Panel id="main">
-					<PanelHeader
-						left={<BackButton isBack={true} />}
-					//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
-					>
-						Турнир
-					</PanelHeader>
-					<Group>
-						<TournamentItem
-							mode={props.tournament.mode}
-						//Tab="shedule"
-						//mode="view"
-						></TournamentItem>
-					</Group>
-				</Panel>
-			</View>
-			<View id="teamitem" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
-				<Panel id="main">
-					<PanelHeader
-						left={<BackButton isBack={true} />}
-					//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
-					>
-						Команда
-					</PanelHeader>
-					<Group>
-						<TeamItem mode={props.team.mode}></TeamItem>
-					</Group>
-				</Panel>
-			</View>
-			<View id="bidlist" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
-				<Panel id="main">
-					<PanelHeader
-						left={<BackButton isBack={true} />}
-					//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
-					>
-						Доступно для заявки
-					</PanelHeader>
-					<Group>
-						{/* <BidTeamTournamentGroupsList
-										Button1Handle = {MakeBid}
-										Button2Handle = {CancelBid}
-										List={(props.tournamentsForBids.selectedTournament  
-											&& Array.isArray(props.tournamentsForBids.selectedTournament) 
-											&& props.tournamentsForBids.selectedTournament.TournamentGroups.length > 0) 
-											? props.tournamentsForBids.selectedTournament.TournamentGroups
+						</Group>
+					</Panel>
+				</View>
+				<View id="collectslist" activePanel="main" modal={ props.CurrentModalWindow} popout={ props.GlobalPopout }>
+					<Panel id="main">
+						<PanelHeader
+							left={<BackButton isBack={true} />}
+						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+						>
+							Все сборы
+						</PanelHeader>
+						<FormItem>
+							<CellButtonWithHistory
+								data-story="collectadmin"  // необходимо для использования withHistory
+								text="Создать сбор" // необходимо для использования withHistory
+								toMenuName="collectadmin"  // необходимо для использования withHistory
+								handleClick={CollectAdd} // необходимо для использования withHistory
+							>
+								Арендовать площадку и собрать людей</CellButtonWithHistory>
+						</FormItem>
+						<Group header={<Header>Текущие сборы города</Header>}>
+							<List>
+
+								{
+
+									props.collect.collects.sort((a, b) => new Date(a.When).getTime() - new Date(b.When).getTime())
+										.map(t => {
+											let timeEnding = addToTime(new Date(t.When), 0, t.DurationMinutes);
+
+											return <RichCellWithHistory
+												caption={`Организатор: ${t.Creator.Name} ${t.Creator.Surname}`}
+												text={(new Date(t.When) > new Date()) ?
+													`Начало 
+														${new Date(t.When).getDate() <= 9 ? "0" + (new Date(t.When).getDate()) : (new Date(t.When).getDate())}.${new Date(t.When).getMonth() + 1 <= 9 ? "0" + (new Date(t.When).getMonth() + 1) : (new Date(t.When).getMonth() + 1)}.${new Date(t.When).getFullYear()}
+														в 
+														${new Date(t.When).getHours() <= 9 ? "0" + (new Date(t.When).getHours()) : (new Date(t.When).getHours())}:${new Date(t.When).getMinutes() <= 9 ? "0" + (new Date(t.When).getMinutes()) : (new Date(t.When).getMinutes())}
+														`
+													:
+													((timeEnding > new Date())
+														?
+														"В процессе"
+														:
+														"Закончен"
+													)
+												}
+												handleClick={() => CollectSelect(t)}
+												after={`${t.Cost} руб.`}
+												data-story="collectadmin"
+												toMenuName="collectadmin"
+
+											>
+												({t.Members.length}/{t.NeedMembers}) - {t.Name}
+											</RichCellWithHistory>
+										})}
+							</List>
+
+						</Group>
+						<Group hidden header={<Header>Архивные сборы</Header>}>
+
+						</Group>
+					</Panel>
+				</View>
+				<View id="collectadmin" activePanel="main" modal={ props.CurrentModalWindow} popout={ props.GlobalPopout }>
+					<Panel id="main">
+						<PanelHeader
+							left={<BackButton isBack={true} />}
+						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+						>
+							Управление сборами
+						</PanelHeader>
+						<SimpleCollectItem></SimpleCollectItem>
+					</Panel>
+				</View>
+				<View id="profile" activePanel="main" modal={ props.CurrentModalWindow} popout={ props.GlobalPopout }>
+					<Panel id="main">
+						<PanelHeader
+							left={<BackButton isBack={true} />}
+						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+						>
+							Профиль
+						</PanelHeader>
+						<Group>{props.myProfile && props.myProfile.Name && <>
+							<InfoRow header="Имя">{props.myProfile && props.myProfile.Name}</InfoRow>
+							<InfoRow header="Фамилия">{props.myProfile && props.myProfile.Surname}</InfoRow>
+							<InfoRow header="Город">{props.myProfile && props.myProfile.CityName}</InfoRow>
+							<InfoRow header="Год рождения">{props.myProfile && new Date(props.myProfile.Birth).getFullYear()}</InfoRow>
+							<InfoRow header="Id города привязки">{props.myProfile && props.myProfile.CityUmbracoId}</InfoRow>
+							<InfoRow header="Город привязки">{props.myProfile && props.myProfile.CityUmbracoName}</InfoRow>
+						</>
+						}
+						</Group>
+						<ProfilePanel></ProfilePanel>
+					</Panel>
+				</View>
+				<View id="tournamentadmin" activePanel="main" modal={ props.CurrentModalWindow} popout={ props.GlobalPopout }>
+					<Panel id="main">
+						<PanelHeader
+							left={<BackButton isBack={true} />}
+						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+						>
+							Управление турнирами
+						</PanelHeader>
+						<Group>
+							<TournamentAdminPanel></TournamentAdminPanel>
+						</Group>
+					</Panel>
+				</View>
+				<View id="teamadmin" activePanel="main" modal={ props.CurrentModalWindow} popout={ props.GlobalPopout }>
+					<Panel id="main">
+						<PanelHeader
+							left={<BackButton isBack={true} />}
+						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+						>
+							Мои команды
+						</PanelHeader>
+						<Group>
+							<TeamAdminPanel></TeamAdminPanel>
+						</Group>
+					</Panel>
+				</View>
+				<View id="tournamentitem" activePanel="main" modal={ props.CurrentModalWindow} popout={ props.GlobalPopout }>
+					<Panel id="main">
+						<PanelHeader
+							left={<BackButton isBack={true} />}
+						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+						>
+							Турнир
+						</PanelHeader>
+						<Group>
+							<TournamentItem
+								mode={props.tournament.mode}
+							//Tab="shedule"
+							//mode="view"
+							></TournamentItem>
+						</Group>
+					</Panel>
+				</View>
+				<View id="teamitem" activePanel="main" modal={ props.CurrentModalWindow} popout={ props.GlobalPopout }>
+					<Panel id="main">
+						<PanelHeader
+							left={<BackButton isBack={true} />}
+						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+						>
+							Команда
+						</PanelHeader>
+						<Group>
+							<TeamItem mode={props.team.mode}></TeamItem>
+						</Group>
+					</Panel>
+				</View>
+				<View id="bidlist" activePanel="main" modal={ props.CurrentModalWindow} popout={ props.GlobalPopout }>
+					<Panel id="main">
+						<PanelHeader
+							left={<BackButton isBack={true} />}
+						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+						>
+							Доступно для заявки
+						</PanelHeader>
+						<Group>
+							{/* <BidTeamTournamentGroupsList
+											Button1Handle = {MakeBid}
+											Button2Handle = {CancelBid}
+											List={(props.tournamentsForBids.selectedTournament  
+												&& Array.isArray(props.tournamentsForBids.selectedTournament) 
+												&& props.tournamentsForBids.selectedTournament.TournamentGroups.length > 0) 
+												? props.tournamentsForBids.selectedTournament.TournamentGroups
+												: null
+											}
+											Bids={(props.tournamentsForBids.myBids 
+												&& Array.isArray(props.tournamentsForBids.myBids)
+												&& props.tournamentsForBids.myBids.length > 0) 
+												? props.tournamentsForBids.myBids
 											: null
-										}
-										Bids={(props.tournamentsForBids.myBids 
-											&& Array.isArray(props.tournamentsForBids.myBids)
-											&& props.tournamentsForBids.myBids.length > 0) 
-											? props.tournamentsForBids.myBids
-										: null
-										}
-									></BidTeamTournamentGroupsList> */}
-					</Group>
-				</Panel>
-			</View>
-			<View id="viewuser" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
-				<Panel id="main">
-					<PanelHeader
-						left={<BackButton isBack={true} />}
-					//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
-					>
+											}
+										></BidTeamTournamentGroupsList> */}
+						</Group>
+					</Panel>
+				</View>
+				<View id="viewuser" activePanel="main" modal={ props.CurrentModalWindow} popout={ props.GlobalPopout }>
+					<Panel id="main">
+						<PanelHeader
+							left={<BackButton isBack={true} />}
+						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+						>
+							Игрок
+						</PanelHeader>
 						Игрок
-					</PanelHeader>
-					Игрок
-				</Panel>
-			</View>
+					</Panel>
+				</View>
 
 
-		</Epic>
+			</Epic>
+			//</SplitCol>
+		
+		//</SplitLayout>
 
 	);
 }
@@ -683,10 +673,10 @@ const mapStateToProps = (state) => {
 		ShowAdminTourneyTab: state.system.ShowAdminTourneyTab,
 		ShowAdminTeamTab: state.system.ShowAdminTeamTab,
 		CurrentModalWindow: state.system.CurrentModalWindow,
+		GlobalPopout: state.system.GlobalPopout,
 		cities: state.cityEntity.cities,
 		//places: state.placeEntity.places,
 		places: state.simplePlaceEntity.places,
-		globalPopout: state.system.GlobalPopout,
 		vkProfile: state.profileEntity.vkProfile,
 		myProfile: state.profileEntity.myProfile,
 		errorObject: state.system.ErrorObject,
@@ -702,10 +692,13 @@ const mapStateToProps = (state) => {
 	}
 }
 
-export default connect(mapStateToProps, { 
+export default 
+//withAdaptivity(
+	connect(mapStateToProps, { 
 	setCurrentModalWindow,
 	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId, getUser, setSelectedUser,
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode, setCollectItemMode,
-	setActiveMenuItem, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError, selectSimpleCollect,
+	setActiveMenuItem, setVkProfileInfo, globalPopoutOn, globalPopoutOff, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError, selectSimpleCollect,
 	getAllCitiesFromServer, setUserProfileCity, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab, getMatchesInCurrentCity,
-})(App);
+})(App)
+//, {viewWidth: true});

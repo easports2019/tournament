@@ -1,4 +1,4 @@
-import { setGlobalPopout, setErrorMessage } from "./systemReducer";
+import {  setErrorMessage } from "./systemReducer";
 import { places } from './constants/commonConstants'
 import { PlaceAPI } from './../utils/api/api.js'
 import { authQueryString } from './../utils/api/server';
@@ -55,30 +55,30 @@ export const setPlace = (placeId, placeData) => {
 export const getAllPlaces = (startindex = 0) => {
     return dispatch => {
 
-        dispatch(setGlobalPopout(true))
+        
         if (authQueryString && authQueryString.length > 0)
             PlaceAPI.getAll(startindex)
                 .then(pl => {
                     if (pl && pl.data.length > 0) {
                         debugger
                         dispatch(setPlaces(pl.data));
-                        dispatch(setGlobalPopout(false))
+                        
                     }
                     else {
                         debugger
                         dispatch(setPlaces(demoPlaces))
-                        dispatch(setGlobalPopout(false))
+                        
                     }
                 })
                 .catch(error => {
                     debugger
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
+                    
                 })
         else {
             debugger
             dispatch(setPlaces(demoPlaces))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -93,21 +93,21 @@ export const getAllPlacesInCityByCityId = (cityId, startindex = 0) => {
                 .then(pl => {
                     if (pl && pl.data.length > 0) {
                         dispatch(setPlaces(pl.data));
-                        dispatch(setGlobalPopout(false))
+                        
                     }
                     else {
                         dispatch(setPlaces(demoPlaces))
-                        dispatch(setGlobalPopout(false))
+                        
 
                     }
                 })
                 .catch(error => {
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
+                    
                 })
         else {
             dispatch(setPlaces(demoPlaces))
-            dispatch(setGlobalPopout(false))
+            
 
         }
     }
@@ -123,15 +123,15 @@ export const getPlaceById = (placeId) => {
                 .then(pl => {
                     if (pl && pl.data.length > 0)
                         dispatch(setPlace(placeId, pl.data));
-                    dispatch(setGlobalPopout(false))
+                    
 
                 })
                 .catch(error => {
                     dispatch(setErrorMessage(error))
-                    dispatch(setGlobalPopout(false))
+                    
                 })
         else {
-            dispatch(setGlobalPopout(false))
+            
         }
     }
 }
