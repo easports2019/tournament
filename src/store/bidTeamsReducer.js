@@ -156,7 +156,7 @@ export const getActualTournamentsInCity = (userprofile = null, team = null) => {
                     }
                     else {
 
-                        dispatch(setCityBidTeamAdmins(demoBidTeam))
+                        //dispatch(setCityBidTeamAdmins(demoBidTeam))
                         dispatch(setGlobalPopout(false))
                     }
                 })
@@ -215,9 +215,9 @@ export const getTournamentGroups = (tournament = null) => {
 
 // запрос заявок команды
 export const getTeamBidsByTeam = (userprofile = null, team = null) => {
-    
+    debugger
     return dispatch => {
-        if ((team != null) && (userprofile != null)){
+        if ((team != null) && (userprofile != null) && (team.Id >= 0)){
             if (authQueryString && authQueryString.length > 0)
             BidTeamAPI.getTeamBidsByTeam(userprofile, team)
                     .then(pl => {

@@ -8,8 +8,9 @@ import {
 import {getActualTournamentsInCity, getTournamentGroups, setBidTeamSelectedMode, getTeamBidsByTeam, 
     addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup,  } from '../../../../store/bidTeamsReducer'
 import {
-    setTeamWhenBorn, setTeamDetails, setTeamName, saveSelectedTeam, 
+    setTeamWhenBorn, setTeamDetails, setTeamName, saveSelectedTeam, setTeamMode,
 } from '../../../../store/teamsReducer'
+import { goToPanel } from '../../../../store/systemReducer'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
 import ListItem from '../ListItem/ListItem';
@@ -34,12 +35,13 @@ const TeamItem = (props) => {
         props.teams.selected.WhenBorn.day
         );
 
-        useEffect(() =>{
-            if (props.teams.selected != null){
-                props.getActualTournamentsInCity(props.myProfile, props.teams.selected);
-                props.getTeamBidsByTeam(props.myProfile, props.teams.selected);
-            }
-        }, props.teams.selected)
+    useEffect(() =>{
+        debugger
+        if ((props.teams.selected != null) && (props.teams.selected.Id >= 0)){
+            props.getActualTournamentsInCity(props.myProfile, props.teams.selected);
+            props.getTeamBidsByTeam(props.myProfile, props.teams.selected);
+        }
+    }, props.teams.selected)
         
     
     const MakeBid = (tournamentgroup) => {
@@ -63,6 +65,19 @@ const TeamItem = (props) => {
     const BackToTournaments = () => {
         props.setBidTeamSelectedMode("tournaments")
     }
+    
+    const CancelTeamCreate = () => {
+        props.goToPanel("teamadmin", false);
+    }
+
+
+    const SaveTeam = () => {
+        props.saveSelectedTeam(props.teams.selected, props.myProfile);
+        props.goToPanel("teamadmin", false);
+        //props.setTeamMode("view");
+    }
+
+    
 
     switch (props.mode) {
         case "view": {
@@ -141,8 +156,8 @@ const TeamItem = (props) => {
                             <CellButton onClick={() => addToTournament(props.tournaments.selected.Id, tempGroupName)} before={<Icon28AddOutline />}>Добавить группу/лигу</CellButton>
                         </FormItem> */}
                         <FormItem top="Подверждение">
-                            <ButtonWithNotify Message="Создать новую команду?" Yes={() => props.saveSelectedTeam(props.teams.selected, props.myProfile)}>Создать</ButtonWithNotify>
-                            <ButtonWithNotify Message="Отменить создание команды?" YYes={props.resetTeam} mode="secondary">Отмена</ButtonWithNotify>
+                            <ButtonWithNotify Message="Создать новую команду?" Yes={SaveTeam}>Создать</ButtonWithNotify>
+                            <ButtonWithNotify Message="Отменить создание команды?" Yes={CancelTeamCreate} mode="secondary">Отмена</ButtonWithNotify>
                         </FormItem>
                     </FormLayout>
                 </Group>
@@ -216,7 +231,7 @@ const TeamItem = (props) => {
                         }
                         </FormItem>
                         <FormItem top="Подверждение">
-                            <Button onClick={() => props.saveSelectedTeam(props.teams.selected, props.myProfile)}>Внести изменения</Button>
+                            <ButtonWithNotify Message="Сохранить изменения?" Yes={SaveTeam}>Внести изменения</ButtonWithNotify>
                         </FormItem>
                     </FormLayout>
                 </Group>
@@ -246,7 +261,7 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, {
+export default connect(mapStateToProps, { setTeamMode, goToPanel,
     getActualTournamentsInCity, getTournamentGroups, setBidTeamSelectedMode, getTeamBidsByTeam, addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup,
     setTeamWhenBorn, setTeamDetails, setTeamName, saveSelectedTeam, 
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails,

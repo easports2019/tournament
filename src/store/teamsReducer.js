@@ -480,7 +480,7 @@ export const saveSelectedTeam = (team = null, userprofile = null) => {
                 {
                     TeamAdminAPI.saveTeam(team, userprofile)
                         .then(pl => {
-                            if (pl && pl.data.length > 0) {
+                            if (pl && pl.data) {
                                 dispatch(addMyTeam(pl.data));
                                 dispatch(resetTeam());
                                 dispatch(setGlobalPopout(false))
@@ -537,7 +537,7 @@ export const publishTeam = (team = null, userprofile = null, publish = false) =>
                 TeamAdminAPI.publishTeam(team, userprofile, publish)
                     .then(pl => {
 
-                        if (pl) {
+                        if (pl && pl.data) {
                             // изменить полученный турнир в списке
                             dispatch(setMyTeam(pl.data))
                             dispatch(setGlobalPopout(false))
@@ -573,7 +573,7 @@ export const deleteTeam = (team = null, userprofile = null) => {
             if (authQueryString && authQueryString.length > 0)
                 TeamAdminAPI.deleteTeam(team, userprofile)
                     .then(pl => {
-                        if (pl) {
+                        if (pl && pl.data) {
                             // изменить полученный турнир в списке
                             dispatch(deleteMyTeam(pl.data))
                             dispatch(setGlobalPopout(false))

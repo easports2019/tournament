@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, Button, InfoRow, Header } from '@vkontakte/vkui'
+import { RichCell, Avatar, Button, InfoRow, Header, FormItem, Group } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
 import TeamAdminList from './TeamAdminList'
 import { setActiveMenuItem } from './../../../../store/mainMenuReducer';
@@ -41,17 +41,23 @@ const TeamAdminPanel = (props) => {
 
         return (
             <>
-                <Header>Мои команды</Header>
-                <InfoRow>При заявке указывается желаемая группа. Организатор в праве взять в другую группу</InfoRow>
-                <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="teamitem" data-story="teamitem">Создать команду</ButtonWithHistory>
-                <TeamAdminList 
+                <FormItem>
+                    <InfoRow>При заявке указывается желаемая группа. Организатор в праве взять в другую группу</InfoRow>
+                </FormItem>
+                <FormItem>
+                    <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="teamitem" data-story="teamitem">Создать команду</ButtonWithHistory>
+                </FormItem>
+                <Group>
+                    <TeamAdminList 
                     CellClick={CellClick}
                     Button1Handle = {PublishTeam}
                     Button2Handle = {DeleteTeam}
                     List={props.team.myTeams}
-                >
-                    
-                </TeamAdminList>
+                    >
+                        
+                    </TeamAdminList>
+                </Group>
+                
             </>
         )
 }

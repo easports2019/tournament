@@ -6,10 +6,14 @@ import {
 } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
-    setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
-    editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, acceptTeamToTournamentBid, declineTeamToTournamentBid,
-    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament, setTournamentMatchLength, getTournamentTablesByTournamentId,
+    setTournamentWhenBegin, setTournamentMode, setTournamentWhenEnd, setTournamentName, setTournamentReglament, 
+    setTournamentDetails, delGroupFromTournamentByKeyId, deleteTournamentGroup,
+    editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, 
+    acceptTeamToTournamentBid, declineTeamToTournamentBid,
+    getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, changeTournamentTeamBidTournamentGroup, 
+    deleteTeamFromTournament, setTournamentMatchLength, getTournamentTablesByTournamentId,
 } from '../../../../store/tournamentsReducer'
+import {goToPanel} from '../../../../store/systemReducer'
 import {
     getTeamInfo, setTeamMode,
 } from '../../../../store/teamsReducer'
@@ -42,6 +46,7 @@ const TournamentItem = (props) => {
 
     }, props.tournaments.selected)
 
+    
     useEffect(() => {
         props.mode == "view" ? setCurrentTab("shedule") : setCurrentTab("info")
     }, props.mode)
@@ -93,6 +98,14 @@ const TournamentItem = (props) => {
 
     const SelectTournamentGroup = (newGroup, oldGroup, team) => {
         props.changeTournamentTeamBidTournamentGroup(team, newGroup, oldGroup, props.myProfile)
+    }
+
+    const SaveTournament = () => {
+        //props.resetTournament();
+//debugger
+        props.saveSelectedTournament(props.tournaments.selected, props.myProfile)
+        //props.goToPanel("tournamentadmin", false); // закрываем текущий турнир и выводим все турниры
+        props.setTournamentMode("view");
     }
 
 
@@ -313,23 +326,9 @@ const TournamentItem = (props) => {
                                 Выбрать фото
                             </File>
                         </FormItem> */}
-                        {/* <Group header={<Header mode="secondary">Группы</Header>}>
-                            {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
-                                <List>
-                                    {props.tournaments.selected.TournamentGroups.map((item) => <ListItem KeyId={-1} Delete={() => DelGroupFromTournament(item.KeyId, item.Id)} Name={item.Name}></ListItem>)}
-                                </List>
-                                :
-                                <FormItem>
-                                    <InfoRow>Нет групп</InfoRow>
-                                </FormItem>
-                            }
-                        </Group>
-                        <FormItem top="Новая группа/лига">
-                            <Input type="text" defaultValue={tempGroupName} value={tempGroupName} onChange={e => setTempGroupName(e.currentTarget.value)} placeholder="Название, например, Лига 1" />
-                            <CellButton onClick={addToTournament} before={<Icon28AddOutline />}>Добавить группу/лигу</CellButton>
-                        </FormItem> */}
+                        
                         <FormItem top="Подверждение">
-                            <ButtonWithNotify Message="Создать новый турнир?" Yes={() => props.saveSelectedTournament(props.tournaments.selected, props.myProfile)}>Сохранить</ButtonWithNotify>
+                            <ButtonWithNotify Message="Создать новый турнир?" Yes={SaveTournament}>Создать</ButtonWithNotify>
                             <ButtonWithNotify Message="Не создавать турнир?" Yes={props.resetTournament} mode="secondary">Отмена</ButtonWithNotify>
                         </FormItem>
                     </FormLayout>
@@ -554,7 +553,7 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, {
+export default connect(mapStateToProps, {setTournamentMode, goToPanel,
     getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament, setTournamentMatchLength,
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, acceptTeamToTournamentBid, declineTeamToTournamentBid,
     delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, getTournamentTablesByTournamentId,

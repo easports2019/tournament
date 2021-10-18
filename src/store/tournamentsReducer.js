@@ -9,6 +9,7 @@ let demoCityTournamentAdmins = cityTournamentAdmins;
 
 const TOURNAMENT_SET_ALL_TOURNAMENTS = "TOURNAMENT_SET_ALL_TOURNAMENTS";
 const TOURNAMENT_SET_SELECTED_TOURNAMENT = "TOURNAMENT_SET_SELECTED_TOURNAMENT";
+const TOURNAMENT_MY_ADD_OR_EDIT = "TOURNAMENT_MY_ADD_OR_EDIT";
 const TOURNAMENT_SET_TOURNAMENTGROUPS = "TOURNAMENT_SET_TOURNAMENTGROUPS";
 const TOURNAMENT_SET_TOURNAMENTTEAMS = "TOURNAMENT_SET_TOURNAMENTTEAMS";
 const TOURNAMENT_SET_MYTOURNAMENT = "TOURNAMENT_SET_MYTOURNAMENT";
@@ -130,6 +131,31 @@ let tournamentReducer = (state = initState, action) => {
                 ...state,
                 selected: {...emptyTournament},
             };
+        }
+        case TOURNAMENT_MY_ADD_OR_EDIT: {
+            debugger
+            let newTourn = state.myTournaments.filter(t => t.Id == action.tournament.Id)
+            if (newTourn){
+                return {
+                    ...state,
+                    myTournaments: [
+                        ...state.myTournaments.map(t => {
+                            if (t.Id == action.tournament.Id){
+                                t = {...t.tournament}
+                            }
+                            return t;
+                        })
+                    ],
+                };
+            }
+            else{
+                return {
+                    ...state,
+                    myTournaments: [
+                        ...state.myTournaments, action.tournament
+                    ],
+                };
+            }
         }
         case TOURNAMENT_MATCH_LENGTH: {
             return {
@@ -347,6 +373,13 @@ export const setMyTournament = (mytournament) => {
     return {
         type: TOURNAMENT_SET_MYTOURNAMENT,
         mytournament
+    }
+}
+
+export const addOrEditTournament = (tournament) => {
+    return {
+        type: TOURNAMENT_MY_ADD_OR_EDIT,
+        tournament
     }
 }
 
@@ -586,29 +619,30 @@ export const saveSelectedTournament = (tournament = null, userprofile = null) =>
             if (authQueryString && authQueryString.length > 0)
                 CityTournamentAdminAPI.saveTournament(tournament, userprofile)
                     .then(pl => {
-                        if (pl && pl.data.length > 0) {
-                            
-                            dispatch(resetTournament());
-                            dispatch(setGlobalPopout(false))
+                        debugger
+                        if (pl && pl.data) {
+                            dispatch(addOrEditTournament(pl.data))
+                            //dispatch(resetTournament());
+                            //dispatch(setGlobalPopout(false))
                         }
                         else {
-                            dispatch(setErrorMessage("Не удалось сохранить турнир"))
-                            dispatch(setGlobalPopout(false))
+                            //dispatch(setErrorMessage("Не удалось сохранить турнир"))
+                            //dispatch(setGlobalPopout(false))
                         }
                     })
                     .catch(error => {
-                        dispatch(setErrorMessage("Не удалось сохранить турнир: " + error))
-                        dispatch(setGlobalPopout(false))
+                        //dispatch(setErrorMessage("Не удалось сохранить турнир: " + error))
+                        //dispatch(setGlobalPopout(false))
                     })
             else {
-                dispatch(setErrorMessage("Не удалось сохранить турнир"))
-                dispatch(setGlobalPopout(false))
+                //dispatch(setErrorMessage("Не удалось сохранить турнир"))
+                //dispatch(setGlobalPopout(false))
 
             }
         }
         else {
-            dispatch(setErrorMessage("Не удалось сохранить турнир, в функцию передан null"))
-            dispatch(setGlobalPopout(false))
+            //dispatch(setErrorMessage("Не удалось сохранить турнир, в функцию передан null"))
+            //dispatch(setGlobalPopout(false))
 
         }
     }

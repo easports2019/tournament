@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, InfoRow, Group, List, Cell, Button } from '@vkontakte/vkui'
+import { RichCell, Avatar, InfoRow, Group, List, Cell, Button, FormItem } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import TournamentListItem from './TournamentListItem'
 import RichCellWithHistory from '../../Common/WithHistory/RichCellWithHistory'
@@ -26,30 +26,32 @@ const TournamentAdminList = (props) => {
                     props.List.map(item => {
                         let date = new Date(item.WhenBegin);
                         return (
-                            <RichCell
-                                multiline
-                                actions={
-                                    <>
-                                    {!item.Published ? 
-                                    <ButtonWithNotify Message="Опубликовать турнир?" Yes={() => props.Button1Handle(item, true)}>Опубликовать</ButtonWithNotify>
-                                    : 
-                                    <ButtonWithNotify Message="Снять с публикации турнир?" Yes={() => props.Button1Handle(item, false)} mode="secondary">Снять с публикации</ButtonWithNotify>}
-                                    <ButtonWithNotify Message="Удалить турнир?" Yes={() => props.Button2Handle(item)} mode="destructive">Удалить</ButtonWithNotify>
-                                    </>
+                            <FormItem>
+                                <RichCell
+                                    multiline
+                                    actions={
+                                        <>
+                                        {!item.Published ? 
+                                        <ButtonWithNotify Message="Опубликовать турнир?" Yes={() => props.Button1Handle(item, true)}>Опубликовать</ButtonWithNotify>
+                                        : 
+                                        <ButtonWithNotify Message="Снять с публикации турнир?" Yes={() => props.Button1Handle(item, false)} mode="secondary">Снять с публикации</ButtonWithNotify>}
+                                        <ButtonWithNotify Message="Удалить турнир?" Yes={() => props.Button2Handle(item)} mode="destructive">Удалить</ButtonWithNotify>
+                                        </>
+                                        }
+                                    caption={date && `Начало: ${dateToString(date)}`}
+                                    after={<Icon24ChevronRightWithHistory
+                                    handleClick={() => props.CellClick(item)} 
+                                        toMenuName="tournamentitem" 
+                                        data-story="tournamentitem"></Icon24ChevronRightWithHistory>
                                     }
-                                caption={date && `Начало: ${dateToString(date)}`}
-                                after={<Icon24ChevronRightWithHistory
-                                handleClick={() => props.CellClick(item)} 
-                                    toMenuName="tournamentitem" 
-                                    data-story="tournamentitem"></Icon24ChevronRightWithHistory>
-                                }
-                                text={item.Published ? "Опубликован" : "Не опубликован"}
-                            >
-                                {item.Name}
-                            </RichCell>
+                                    text={item.Published ? "Опубликован" : "Не опубликован"}
+                                >
+                                    {item.Name}
+                                </RichCell>
+                            </FormItem>
                         )
                     })
-                    : <InfoRow>Нет турниров</InfoRow>
+                    : <FormItem><InfoRow>Нет турниров</InfoRow></FormItem>
                 }
 
             </List>

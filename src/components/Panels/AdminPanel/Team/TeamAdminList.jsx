@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, InfoRow, Group, List, Cell, Button } from '@vkontakte/vkui'
+import { RichCell, Avatar, InfoRow, Group, List, Cell, Button, FormItem } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import RichCellWithHistory from '../../Common/WithHistory/RichCellWithHistory'
 import { dateToString } from '../../../../utils/convertors/dateUtils'
@@ -24,34 +24,37 @@ const TeamAdminList = (props) => {
                     props.List.map(item => {
                         let date = new Date(item.WhenBorn);
                         return (
-                            <RichCell
-                                multiline
-                                actions={
-                                    <>
-                                    {/* {!item.Published ? 
-                                    <Button onClick={() => props.Button1Handle(item, true)}>Опубликовать</Button>
-                                    : 
-                                    <Button onClick={() => props.Button1Handle(item, false)} mode="secondary">Снять с публикации</Button>} */}
-                                    <ButtonWithNotify Yes={() => props.Button2Handle(item)} Message="Удалить команду?" mode="destructive">Удалить</ButtonWithNotify>
-                                    </>
-                                    }
-                                // caption={date && `Основана: ${dateToString(date)}`}
-                                after={
-                                    <Icon24ChevronRightWithHistory
-                                        handleClick={() => props.CellClick(item)} 
-                                        toMenuName="teamitem" 
-                                        data-story="teamitem"
-                                    >
+                            <FormItem>
+                                <RichCell
+                                    multiline
+                                    actions={
+                                        <>
+                                        {/* {!item.Published ? 
+                                        <Button onClick={() => props.Button1Handle(item, true)}>Опубликовать</Button>
+                                        : 
+                                        <Button onClick={() => props.Button1Handle(item, false)} mode="secondary">Снять с публикации</Button>} */}
+                                        <ButtonWithNotify Yes={() => props.Button2Handle(item)} Message="Удалить команду?" mode="destructive">Удалить</ButtonWithNotify>
+                                        </>
+                                        }
+                                    // caption={date && `Основана: ${dateToString(date)}`}
+                                    after={
+                                        <Icon24ChevronRightWithHistory
+                                            handleClick={() => props.CellClick(item)} 
+                                            toMenuName="teamitem" 
+                                            data-story="teamitem"
+                                        >
 
-                                    </Icon24ChevronRightWithHistory>
-                                }
-                                // text={item.Published ? "Опубликован" : "Не опубликован"}
-                            >
-                                {item.Name}
-                            </RichCell>
+                                        </Icon24ChevronRightWithHistory>
+                                    }
+                                    // text={item.Published ? "Опубликован" : "Не опубликован"}
+                                >
+                                    {item.Name}
+                                </RichCell>
+                            </FormItem>
                         )
                     })
-                    : <InfoRow>Нет команд</InfoRow>
+                    : 
+                    <FormItem><InfoRow>Нет команд</InfoRow></FormItem>
                 }
 
             </List>
