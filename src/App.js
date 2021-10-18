@@ -46,7 +46,7 @@ import CellButtonWithNotify from './components/Panels/Common/WithNotify/CellButt
 
 const App = (props) => {
 	const [fetchedUser, setUser] = useState(null);
-	const [popout, setPopout] = useState(props.globalPopout ? <ScreenSpinner size='large' /> : null);
+	//const [popout, setPopout] = useState(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 	//const [modalWindow, setModalWindow] = useState(null);
 	const [viewCollectTab, setCollectViewTab] = useState("main");
 	const [timerStarts, setTimerStarts] = useState(false);
@@ -223,7 +223,7 @@ const App = (props) => {
 			//props.setCurrentModalWindow(<ModalCommon modalName="Error" data={props.errorObject} Close={CloseModal}></ModalCommon>)
 		}
 		else {
-			setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
+			//setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 		}
 		//}, [props.globalPopout, props.errorObject])
 	}, [props.errorObject])
@@ -393,13 +393,15 @@ const App = (props) => {
 					{props.ShowAdminTeamTab && <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Мои команды"></TabbarItemWithHistory>}
 				</Tabbar>}>
 
-			<View id="hot" activePanel={props.matches.hotPanel} modal={props.CurrentModalWindow} popout={popout}>
+			<View id="hot" activePanel={props.matches.hotPanel} modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 				<Panel id="yesterday">
 					<PanelHeader left={<BackButton isBack={true} />}>Вчера</PanelHeader>
 					<Group>
-						<InfoRow header="Информация">
-							Турниры любительской лиги твоего города
-						</InfoRow>
+						<FormItem>
+							<InfoRow header="Информация">
+								Турниры любительской лиги твоего города
+							</InfoRow>
+						</FormItem>
 					</Group>
 					<Group header={<Header mode="secondary">Матчи</Header>}>
 						<Tabs>
@@ -419,9 +421,11 @@ const App = (props) => {
 						Yes={() => UpdateFromServer()}
 						//onClick={() => UpdateFromServer()}
 						>Обновить информацию</CellButtonWithNotify>
+						<FormItem>
 						<InfoRow header="Информация">
 							Турниры любительской лиги твоего города
 						</InfoRow>
+						</FormItem>
 					</Group>
 					<Group header={<Header mode="secondary">Матчи</Header>}>
 						<Tabs>
@@ -435,9 +439,11 @@ const App = (props) => {
 				<Panel id="tomorrow">
 					<PanelHeader left={<BackButton isBack={true} />}>Завтра</PanelHeader>
 					<Group>
+						<FormItem>
 						<InfoRow header="Информация">
 							Турниры любительской лиги твоего города
 						</InfoRow>
+						</FormItem>
 					</Group>
 					<Group header={<Header mode="secondary">Матчи</Header>}>
 						<Tabs>
@@ -449,7 +455,7 @@ const App = (props) => {
 					</Group>
 				</Panel>
 			</View>
-			<View id="allTournaments" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
+			<View id="allTournaments" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 				<Panel id="main">
 					<PanelHeader
 						left={<BackButton isBack={true} />}
@@ -483,7 +489,7 @@ const App = (props) => {
 					</Group>
 				</Panel>
 			</View>
-			<View id="collectslist" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
+			<View id="collectslist" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 				<Panel id="main">
 					<PanelHeader
 						left={<BackButton isBack={true} />}
@@ -542,7 +548,7 @@ const App = (props) => {
 					</Group>
 				</Panel>
 			</View>
-			<View id="collectadmin" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
+			<View id="collectadmin" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 				<Panel id="main">
 					<PanelHeader
 						left={<BackButton isBack={true} />}
@@ -553,7 +559,7 @@ const App = (props) => {
 					<SimpleCollectItem></SimpleCollectItem>
 				</Panel>
 			</View>
-			<View id="profile" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
+			<View id="profile" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 				<Panel id="main">
 					<PanelHeader
 						left={<BackButton isBack={true} />}
@@ -574,7 +580,7 @@ const App = (props) => {
 					<ProfilePanel></ProfilePanel>
 				</Panel>
 			</View>
-			<View id="tournamentadmin" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
+			<View id="tournamentadmin" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 				<Panel id="main">
 					<PanelHeader
 						left={<BackButton isBack={true} />}
@@ -587,7 +593,7 @@ const App = (props) => {
 					</Group>
 				</Panel>
 			</View>
-			<View id="teamadmin" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
+			<View id="teamadmin" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 				<Panel id="main">
 					<PanelHeader
 						left={<BackButton isBack={true} />}
@@ -600,7 +606,7 @@ const App = (props) => {
 					</Group>
 				</Panel>
 			</View>
-			<View id="tournamentitem" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
+			<View id="tournamentitem" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 				<Panel id="main">
 					<PanelHeader
 						left={<BackButton isBack={true} />}
@@ -617,7 +623,7 @@ const App = (props) => {
 					</Group>
 				</Panel>
 			</View>
-			<View id="teamitem" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
+			<View id="teamitem" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 				<Panel id="main">
 					<PanelHeader
 						left={<BackButton isBack={true} />}
@@ -630,7 +636,7 @@ const App = (props) => {
 					</Group>
 				</Panel>
 			</View>
-			<View id="bidlist" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
+			<View id="bidlist" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 				<Panel id="main">
 					<PanelHeader
 						left={<BackButton isBack={true} />}
@@ -658,7 +664,7 @@ const App = (props) => {
 					</Group>
 				</Panel>
 			</View>
-			<View id="viewuser" activePanel="main" modal={props.CurrentModalWindow} popout={popout}>
+			<View id="viewuser" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 				<Panel id="main">
 					<PanelHeader
 						left={<BackButton isBack={true} />}

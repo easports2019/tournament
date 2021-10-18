@@ -14,7 +14,7 @@ const BidListItem = (props) => {
             <RichCell key={props.KeyId != -1 ? props.KeyId : null} 
             actions={
                 <>
-                    <ButtonWithNotify mode="primary" Messsage="Принять заявку команды?" Yes={() => props.Accept(props.Item)}>Принять</ButtonWithNotify>
+                    <ButtonWithNotify mode="primary" Message="Принять заявку команды?" Yes={() => props.Accept(props.Item)}>Принять</ButtonWithNotify>
                     <Input value={adminText} onChange={(e) => setAdminText(e.currentTarget.value)} placeholder="Причина отклонения заявки"></Input>
                     <ButtonWithNotify mode="destructive" Message="Отклонить заявку команды?" Yes={() => props.Decline(props.Item, adminText)}>Отклонить</ButtonWithNotify>
                 </>

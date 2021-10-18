@@ -145,10 +145,11 @@ export const getActualTournamentsInCity = (userprofile = null, team = null) => {
     return dispatch => {
 
         dispatch(setGlobalPopout(true))
+        
         if (authQueryString && authQueryString.length > 0)
             BidTeamAPI.getActualTournaments(userprofile, team)
                 .then(pl => {
-                    //debugger
+                    
                     if (pl && pl.data.length > 0) {
 
                         dispatch(setTournaments(pl.data));
