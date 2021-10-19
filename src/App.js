@@ -200,7 +200,7 @@ const App = (props) => {
 		{
 
 			// предлагаем выбрать город
-			setPopout(null);
+			props.setGlobalPopout(false);
 			props.setCurrentModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
 		}
 
@@ -266,7 +266,8 @@ const App = (props) => {
 				// если не год рождения скрыт настройками приватности и из-за этого при регистрации на бэкэнде дата рождения не определилась, 
 				// выводим окно выбора года рождения и после выбора правим его в профиле ВК
 				if ((props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() < 1920)) {
-					setPopout(null);
+					
+					props.setGlobalPopout(false);
 					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirth" data={props.vkProfile} action={props.setVkProfileInfo} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
 				}
 				else {
@@ -287,7 +288,7 @@ const App = (props) => {
 					if (props.myProfile.CityUmbracoId != null && props.myProfile.CityUmbracoId == -1) {
 						//debugger
 						// предлагаем выбрать город
-						setPopout(null);
+						props.setGlobalPopout(false);
 						props.setCurrentModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
 					}
 
