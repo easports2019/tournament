@@ -2,6 +2,7 @@ import {ampluaTypes, users} from './constants/commonConstants'
 import { setActiveMenuItem } from "./mainMenuReducer";
 
 const ANY_ACTION_TYPE = "ANY_ACTION_TYPE";
+const SYSTEM_SET_LOADING = "SYSTEM_SET_LOADING";
 const SYSTEM_PUSH_TO_HISTORY = "SYSTEM_PUSH_TO_HISTORY";
 const SYSTEM_SET_CURRENT_MODAL_WINDOW = "SYSTEM_SET_CURRENT_MODAL_WINDOW";
 const SYSTEM_POP_FROM_HISTORY = "SYSTEM_POP_FROM_HISTORY";
@@ -20,7 +21,7 @@ const initState = {
     ErrorObject: "",
     ShowAdminTourneyTab: false,
     ShowAdminTeamTab: true,
-
+    Loading: true,
      // level 
 
 }
@@ -46,6 +47,12 @@ export let systemReducer = (state = initState, action) =>
         case SYSTEM_SET_CURRENT_MODAL_WINDOW: {
             return {...state,
                 CurrentModalWindow: action.modal,
+            };
+        }
+        case SYSTEM_SET_LOADING: {
+            return {...state,
+                Loading: action.loading,
+                GlobalPopout: action.loading,
             };
         }
         case SYSTEM_SET_ERROR_MESSAGE: {
@@ -89,6 +96,13 @@ export const anyActionCreator = (val) => {
     return {
         type: ANY_ACTION_TYPE,
         anyVal: val
+    }
+}
+
+export const setLoading = (loading) => {
+    return {
+        type: SYSTEM_SET_LOADING,
+        loading
     }
 }
 

@@ -8,6 +8,8 @@ import { authQueryString } from './../utils/api/server';
 let demoMatch = Match;
 
 const MATCH_SET_ALL_MATCHES = "MATCH_SET_ALL_MATCHES";
+const MATCH_DEL_MATCH = "MATCH_DEL_MATCH";
+const MATCH_ADD_MATCH = "MATCH_ADD_MATCH";
 const MATCH_SET_HOT_MATCHES = "MATCH_SET_HOT_MATCHES";
 const MATCH_SET_ACCESS = "MATCH_SET_ACCESS";
 const MATCH_SET_MODE = "MATCH_SET_MODE";
@@ -43,6 +45,18 @@ let matchReducer = (state = initState, action) => {
             return {
                 ...state,
                 matches: [...action.matches],
+            };
+        }
+        case MATCH_DEL_MATCH: {
+            return {
+                ...state,
+                matches: [...state.matches.filter(m => m.Id != action.match.Id)],
+            };
+        }
+        case MATCH_ADD_MATCH: {
+            return {
+                ...state,
+                matches: [...state.matches, action.match],
             };
         }
         case MATCH_SET_HOT_MATCHES: {
@@ -118,6 +132,20 @@ export const setHotMatches = (matches) => {
     }
 }
 
+export const delMatch = (match) => {
+    return {
+        type: MATCH_DEL_MATCH,
+        match
+    }
+}
+
+export const addMatch = (match) => {
+    return {
+        type: MATCH_ADD_MATCH,
+        match
+    }
+}
+
 export const setAccess = (access) => {
     return {
         type: MATCH_SET_ACCESS,
@@ -164,7 +192,7 @@ export const getAllMatchesByTournament = (tournament = null, userProfile = null,
                             }
                             else {
 
-                                dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                                //dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
                                 dispatch(setGlobalPopout(false))
                             }
                         })
@@ -175,7 +203,7 @@ export const getAllMatchesByTournament = (tournament = null, userProfile = null,
                         })
                 else {
 
-                    dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                    //dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
                     dispatch(setGlobalPopout(false))
 
                 }
@@ -187,20 +215,24 @@ export const getAllMatchesByTournament = (tournament = null, userProfile = null,
 // добавить матч в турнир
 export const addMatchToShedule = (match = null, userProfile = null, hours = 0, minutes = 0) => {
     return dispatch => {
+
+        dispatch(setGlobalPopout(true))
+
         if ((match != null) && (userProfile != null)) 
             {
                 if (authQueryString && authQueryString.length > 0){
                 
                     MatchAPI.addMatch(match, userProfile, Number(hours) > 21 ? 24-Number(hours) : Number(hours)+3 , minutes)
                         .then(pl => {
-                            if (pl && pl.data.length > 0) {
-                                dispatch(setAllMatches(pl.data));
-                                dispatch((pl.data));
+                            if (pl && pl.data) {
+                                dispatch(addMatch(pl.data));
                                 dispatch(setGlobalPopout(false))
+                                dispatch(setErrorMessage("Успешно добавлено"))
+
                             }
                             else {
 
-                                dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                                //dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
                                 dispatch(setGlobalPopout(false))
                             }
                         })
@@ -212,7 +244,7 @@ export const addMatchToShedule = (match = null, userProfile = null, hours = 0, m
                     }
                 else {
 
-                    dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                    //dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
                     dispatch(setGlobalPopout(false))
 
                 }
@@ -231,9 +263,8 @@ export const delMatchFromShedule = (match = null, userProfile = null, hours = 0,
                 
                     MatchAPI.delMatch(match, userProfile, Number(hours) > 21 ? 24-Number(hours) : Number(hours)+3 , minutes)
                         .then(pl => {
-                            if (pl && pl.data.length > 0) {
-                                dispatch(setAllMatches(pl.data));
-                                dispatch((pl.data));
+                            if (pl && pl.data) {
+                                dispatch(delMatch(pl.data));
                                 dispatch(setGlobalPopout(false))
                             }
                             else {

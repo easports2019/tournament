@@ -444,6 +444,8 @@ export const getAllCityTeamAdmins = (startindex = 0) => {
 export const getAllCityTeamAdminsByCityId = (cityTeamId, startindex = 0) => {
     return dispatch => {
 
+        dispatch(setGlobalPopout(true))
+
         if (authQueryString && authQueryString.length > 0)
             TeamAdminAPI.getAllInCityByCityId(cityTeamId, startindex)
                 .then(pl => {
@@ -473,7 +475,9 @@ export const getAllCityTeamAdminsByCityId = (cityTeamId, startindex = 0) => {
 // сохраняет (добавляет) в базу новую команду
 export const saveSelectedTeam = (team = null, userprofile = null) => {
     return dispatch => {
-        if (team != null) {
+        dispatch(setGlobalPopout(true))
+
+        if (team != null && userprofile != null) {
             if (authQueryString && authQueryString.length > 0)
             {
                 if (team.Id < 0) // добавление
@@ -532,7 +536,9 @@ export const saveSelectedTeam = (team = null, userprofile = null) => {
 export const publishTeam = (team = null, userprofile = null, publish = false) => {
 
     return dispatch => {
-        if ((team != null) || (userprofile == null)) {
+        dispatch(setGlobalPopout(true))
+
+        if ((team != null) || (userprofile != null)) {
             if (authQueryString && authQueryString.length > 0)
                 TeamAdminAPI.publishTeam(team, userprofile, publish)
                     .then(pl => {
@@ -569,7 +575,9 @@ export const publishTeam = (team = null, userprofile = null, publish = false) =>
 export const deleteTeam = (team = null, userprofile = null) => {
 
     return dispatch => {
-        if ((team != null) || (userprofile == null)) {
+        dispatch(setGlobalPopout(true))
+
+        if ((team != null) || (userprofile != null)) {
             if (authQueryString && authQueryString.length > 0)
                 TeamAdminAPI.deleteTeam(team, userprofile)
                     .then(pl => {
@@ -604,7 +612,9 @@ export const deleteTeam = (team = null, userprofile = null) => {
 // возвращает с сервера все турниры для админа по его UserProfileId
 export const getMyTeams = (userProfileId = -1) => {
     return dispatch => {
-        if (userProfileId != null) {
+        dispatch(setGlobalPopout(true))
+
+        if (userProfileId != -1) {
             if (authQueryString && authQueryString.length > 0)
 
 
@@ -632,7 +642,7 @@ export const getMyTeams = (userProfileId = -1) => {
             }
         }
         else {
-            dispatch(setErrorMessage("Не удалось загрузить команды, в функцию передан null"))
+            dispatch(setErrorMessage("Не удалось загрузить команды, в функцию передан userprofile = -1"))
             dispatch(setGlobalPopout(false))
 
         }
@@ -642,15 +652,17 @@ export const getMyTeams = (userProfileId = -1) => {
 // возвращает с сервера все турниры для админа по его UserProfileId
 export const getTeamInfo = (team = null) => {
     return dispatch => {
+        dispatch(setGlobalPopout(true))
+
         if (team != null) {
             if (authQueryString && authQueryString.length > 0)
 
 
             TeamAPI.getTeamInfoByTeamId(team.Id)
                     .then(pl => {
-                        debugger
+                        
                         if (pl && pl.data) {
-                            debugger
+                            
                             dispatch(setSelectedTeam(pl.data));
                             dispatch(setGlobalPopout(false))
                         }

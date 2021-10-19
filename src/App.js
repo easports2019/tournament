@@ -13,7 +13,7 @@ import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelected
 import { getMatchesInCurrentCity, setHotPanel } from './store/matchReducer';
 import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity } from './store/bidTeamsReducer';
 import { getAllCitiesFromServer } from './store/cityReducer';
-import { setShowAdminTourneyTab, setCurrentModalWindow } from './store/systemReducer';
+import { setShowAdminTourneyTab, setCurrentModalWindow, setLoading } from './store/systemReducer';
 import { getUser, setSelectedUser } from './store/vkReducer';
 import { addToTime } from './utils/convertors/dateUtils'
 
@@ -81,36 +81,17 @@ const App = (props) => {
 	async function fetchData() {
 
 		const user = await bridge.send('VKWebAppGetUserInfo');
-
-
-		// const params = bridge.send("VKWebAppGetAuthToken", {"app_id": 7161115, "scope": ""}).then(res => {
-
-		// 	bridge.send("VKWebAppCallAPIMethod", 
-		// 	{"method": "users.get", 
-		// 	"request_id": "32test", 
-		// 	"params": {"user_ids": "19757699", "fields": "sex,photo_100,bdate", "v":"5.131", 
-		// 	"access_token":res.access_token}})
-		// 	.then(us => {
-
-		// 		props.setSelectedUser(us);
-		// 	})
-		// });
-		// https://vk.com/dev/users.get
-
-
-
-
 		setUser(user);
 		props.setVkProfileInfo(user);
 		props.getAllCitiesFromServer();
-
-
-		//Build an object which matches the structure of our view model class
-		//setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 	}
 
 	// это системное, загрузка приложения вк
 	useEffect(() => {
+		if (props.myProfile && props.myProfile.CityUmbracoId != undefined){
+			props.setLoading(true);
+		}
+
 		bridge.subscribe(({ detail: { type, data } }) => {
 			if (type === 'VKWebAppUpdateConfig') {
 
@@ -120,46 +101,7 @@ const App = (props) => {
 			}
 		});
 
-		async function getDataFromServer() {
-
-			// грузим профиль. 
-			//props.getUserProfile();
-			//props.getAllPlaces();
-
-
-			// если не загрузился, значит регистрируем пользователя.
-			// в хранилище у нас уже лежит инфа о пользователе (может кроме друзей и года рождения)
-			// запросить у пользователя реальную дату рождения [и список друзей]
-			// отправить запрос на регстрицию профиля (Имя, фамилия, дата рождения, город, профиль ВК, [друзья])
-			// загрузить с сервера профиль пользователя
-			// если город пользователя найден среди городов работы приложения, тогда
-			// загружаем все сборы по этому городу
-			// если не найден, тогда говорим, что его город не найден и предлагаем выбрать город из списка
-
-			// после выбора города из списка, сохраняем его в профиль пользователю, загружаем снова профиль и 
-			// грузим сборы по этому городу
-
-			// у организатора должен быть указан телефон и ссылка на профиль ВК, куда можно написать вопрос.
-			// роль организатора - нужен доступ к телефону
-
-
-			// загрузка сборов (по городу)
-			// загрузка мест (надо по городу)
-			//props.getAllPlaces();
-
-			// получение всех городов
-		}
-
-
-		//getDataFromServer();
 		fetchData();
-
-		// загружаем сборы (в полях должны быть айдишники и текстовое описание. чтобы далее подробности подгружались при переходе к подробностям)
-		//props.getHotCollects();
-
-
-		// загружаем пользователей 
-
 
 	}, []);
 
@@ -212,6 +154,10 @@ const App = (props) => {
 		if (props.places && props.places.length > 0) {
 
 			props.getMatchesInCurrentCity(props.myProfile);
+			
+			// завершили загрузку
+			if (props.Loading)
+				props.setLoading(false);
 		}
 	}, [props.places])
 
@@ -690,6 +636,7 @@ const mapStateToProps = (state) => {
 		ShowAdminTourneyTab: state.system.ShowAdminTourneyTab,
 		ShowAdminTeamTab: state.system.ShowAdminTeamTab,
 		CurrentModalWindow: state.system.CurrentModalWindow,
+		Loading: state.system.Loading,
 		cities: state.cityEntity.cities,
 		//places: state.placeEntity.places,
 		places: state.simplePlaceEntity.places,
@@ -710,7 +657,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, { 
-	setCurrentModalWindow,
+	setCurrentModalWindow, setLoading, 
 	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId, getUser, setSelectedUser,
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode, setCollectItemMode,
 	setActiveMenuItem, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError, selectSimpleCollect,

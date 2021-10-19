@@ -9,6 +9,7 @@ import {
     setMode, setAccess, addMatchToShedule, getAllMatchesByTournament, delMatchFromShedule,
 } from '../../../../store/matchReducer'
 import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
+import ButtonWithNotify from '../WithNotify/ButtonWithNotify';
 
 
 // const SheduleContainer = (props) => {
@@ -112,6 +113,7 @@ const Shedule = (props) => {
             };
 
         props.addMatchToShedule(match, props.myProfile, selectedHour, selectedMinute);
+        props.setMode("list")
     }
 
 
@@ -132,6 +134,7 @@ const Shedule = (props) => {
         }
 
         props.delMatchFromShedule(match, props.myProfile, selectedHour, selectedMinute)
+        props.setMode("list")
         //props.addMatchToShedule(match, props.myProfile, selectedHour, selectedMinute);
     }
 
@@ -374,7 +377,7 @@ const Shedule = (props) => {
                                 <Checkbox checked={selectedPlayed} onChange={() => setSelectedPlayed(!selectedPlayed)}>Сыгран</Checkbox>
                             </FormItem>
                             <Button onClick={() => props.setMode("list")}>Отмена</Button>
-                            <Button onClick={() => addMatch(-1)}>Добавить</Button>
+                            <ButtonWithNotify Message="Добавить матч?" Yes={() => addMatch(-1)}>Добавить</ButtonWithNotify>
                         </Group>
                     )
                 }; break;
@@ -529,8 +532,8 @@ const Shedule = (props) => {
                                 <Checkbox checked={selectedPlayed} onChange={() => setSelectedPlayed(!selectedPlayed)}>Сыгран</Checkbox>
                             </FormItem>
                             <Button onClick={() => props.setMode("list")}>Отмена</Button>
-                            <Button onClick={() => addMatch(selectedId)}>Сохранить</Button>
-                            <Button onClick={() => delCurrentMatch()} align="right" mode="destructive">Удалить</Button>
+                            <ButtonWithNotify Message="Сохранить матч?" Yes={() => addMatch(selectedId)}>Сохранить</ButtonWithNotify>
+                            <ButtonWithNotify Message="Удалить матч?" Yes={() => delCurrentMatch()} align="right" mode="destructive">Удалить</ButtonWithNotify>
                         </Group>
                     )
                 }; break;

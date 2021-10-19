@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import {
     RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea,
     File, CellButton, Button, Header, List, Cell, Select, CustomSelectOption, IconButton,
-    CardGrid, Card, SplitLayout, SplitCol, Div, Radio, RangeSlider
+    CardGrid, Card, SplitLayout, SplitCol, Div, Radio, RangeSlider, useAdaptivity
 } from '@vkontakte/vkui'
 import { defaultPhotoPath } from './../../../../../store/dataTypes/common'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
@@ -35,6 +35,10 @@ const SimpleCollectItem = (props) => {
 
     let minutesOneSlot = 30; // количество минут в таймслоте
     let minTimeSlotToRent = 2; // минимальный таймслот для аренды (в таймслотах, а не в минутах меряем)
+
+    let adapt = useAdaptivity();
+    let workoutColNumber = adapt.viewWidth+1; // количество столбцов. должно отличаться на разных разрешениях экрана
+    //adapt.viewWidth
 
     let [acceptBeMember, setAcceptBeMember] = useState(false)
     let [showPanelBeMember, setShowPanelBeMember] = useState(false)
@@ -338,7 +342,7 @@ const SimpleCollectItem = (props) => {
             let fromTmp = new Date(worktimeSlots[0].FromTime); // берем время ОТ первого слота
             let toTmp = new Date(worktimeSlots[worktimeSlots.length - 1].ToTime);  // берем время ДО последнего слота
             let slotsNumber = (toTmp.valueOf() - fromTmp.valueOf()) / (minutesOneSlot * 60 * 1000); // общее количество слотов
-            let numberOfCols = slotsNumber < 4 ? slotsNumber : 4; // количество колонок
+            let numberOfCols = slotsNumber < workoutColNumber ? slotsNumber : workoutColNumber; // количество колонок
             let numberOfRows = Math.trunc(slotsNumber / numberOfCols) == slotsNumber / numberOfCols ? slotsNumber / numberOfCols : Math.trunc(slotsNumber / numberOfCols) + 1; // количество строк
 
             let slots = timeSlotsForSimpleCollects(slotsNumber, 60 / minutesOneSlot, fromTmp.getHours()); // получили общее время работы с разбивкой по диапазонам (обычно по 30 минут на каждую ячейку)
