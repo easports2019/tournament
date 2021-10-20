@@ -404,7 +404,7 @@ const SimpleCollectItem = (props) => {
 
                             selectedSlots.forEach(slt => {
 
-                                let from = new Date(`01.01.2000 ${slt.Hours}:${slt.Minutes}`);
+                                let from = new Date(`01/01/2000 ${slt.Hours}:${slt.Minutes}`);
                                 let to = addToTime(from, 0, minutesOneSlot);
 
                                 let selectedTime = new Date(from.getFullYear(), from.getMonth(), from.getDate(), slot.Hours, slot.Minutes);
@@ -427,7 +427,6 @@ const SimpleCollectItem = (props) => {
             }
             )
 
-            
 
             // маркируем доступное и недоступное время и создаем результирующий массив кнопок
             let iButtons = slots.map(x => {
@@ -528,7 +527,7 @@ const SimpleCollectItem = (props) => {
             }
 
             ranges = (selectedTimeRanges && selectedTimeRanges.length > 0) ? selectedTimeRanges.map(tr => {
-                let until = addToTime(new Date(`01.01.2000 ${tr.Hours}:${tr.Minutes}`), 0, tr.SlotMinutes);
+                let until = addToTime(new Date(`01/01/2000 ${tr.Hours}:${tr.Minutes}`), 0, tr.SlotMinutes);
                 return <InfoRow>с {timeToString(tr.Hours, tr.Minutes)} до {timeToString(until.getHours(), until.getMinutes())}  ({tr.PricePerSlot} руб.) </InfoRow>
 
 

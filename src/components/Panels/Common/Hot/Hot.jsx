@@ -22,28 +22,31 @@ import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
 const Hot = (props) => {
     
     return (
-        <Group>
-            <List>
-                {props.Matches && props.Matches.map(match => {
-                    let date = new Date(match.When);
-                    return (
-                            <RichCell
-                                text={
-                                    match.Played ?
-                                        <span style={{ "color": "green" }}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :
-                                        <span style={{ "color": "blue" }}>Состоится {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span>
-                                }
-                            >
-                                {match.Played ?
-                                    `${match.Team1Name} ${match.Team1Goals} - ${match.Team2Goals} ${match.Team2Name}` :
-                                    `${match.Team1Name} - ${match.Team2Name}`
-                                }
-                            </RichCell>
-                    )
-                }
-                )}
-            </List>
-        </Group>
+        <FormItem>
+            <Group header={props.Name}>
+                <List>
+                    {props.Matches && props.Matches.map(match => {
+                        let date = new Date(match.When);
+                        return (
+                                <RichCell
+                                    text={
+                                        match.Played ?
+                                            <span style={{ "color": "green" }}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :
+                                            <span style={{ "color": "blue" }}>Состоится {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span>
+                                    }
+                                    caption="Место не указано"
+                                >
+                                    {match.Played ?
+                                        `${match.Team1Name} ${match.Team1Goals} - ${match.Team2Goals} ${match.Team2Name}` :
+                                        `${match.Team1Name} - ${match.Team2Name}`
+                                    }
+                                </RichCell>
+                        )
+                    }
+                    )}
+                </List>
+            </Group>
+        </FormItem>
     )
                 
 

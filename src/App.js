@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import bridge from '@vkontakte/vk-bridge';
-import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider, Badge, Header, List, RichCell, CellButton, FormItem } from '@vkontakte/vkui';
+import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider, Badge, Header, List, RichCell, CellButton, FormItem, CardGrid, Card } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 
 import { setActiveMenuItem } from './store/mainMenuReducer';
@@ -38,9 +38,11 @@ import AnyWithHistory from './components/Panels/Common/WithHistory/CellButtonWit
 import CellButtonWithHistory from './components/Panels/Common/WithHistory/CellButtonWithHistory';
 import RichCellWithHistory from './components/Panels/Common/WithHistory/RichCellWithHistory';
 import CellButtonWithNotify from './components/Panels/Common/WithNotify/CellButtonWithNotify';
+import player from './img/common/player300.png'
+import stadium from './img/common/stadium300.png'
+import tournament from './img/common/tournament300.png'
 
 
-  
 
 
 
@@ -50,6 +52,18 @@ const App = (props) => {
 	//const [modalWindow, setModalWindow] = useState(null);
 	const [viewCollectTab, setCollectViewTab] = useState("main");
 	const [timerStarts, setTimerStarts] = useState(false);
+	const cardStyle = {
+		position: 'absolute', 
+		bottom: '0px', 
+		left:'0px',  
+		width: '100%', 
+		height: '20%',
+		background: 'white', 
+		padding: '15px 0',
+		textAlign: 'center',
+		opacity: '0.9',
+		borderRadius: '10px'
+	}
 
 	
 
@@ -314,6 +328,11 @@ const App = (props) => {
 	// 	props.setActiveMenuItem(e.currentTarget.dataset.story)
 	// }
 
+	let test = () => {
+		
+		
+	}
+
 	let menuTabBarItems = props.mainMenu.menuItems.map(menuItem => {
 		if (menuItem.enabled && menuItem.show)
 			return <TabbarItemWithHistory toMenuName={menuItem.name} selected={menuItem.name === props.mainMenu.activeItem.name} data-story={menuItem.name} text={menuItem.title}></TabbarItemWithHistory>
@@ -340,67 +359,39 @@ const App = (props) => {
 					{props.ShowAdminTeamTab && <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Мои команды"></TabbarItemWithHistory>}
 				</Tabbar>}>
 
-			<View id="hot" activePanel={props.matches.hotPanel} modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
-				<Panel id="yesterday">
-					<PanelHeader left={<BackButton isBack={true} />}>Вчера</PanelHeader>
-					<Group>
-						<FormItem>
-							<InfoRow header="Информация">
-								Турниры любительской лиги твоего города
-							</InfoRow>
-						</FormItem>
+			<View id="hot" 
+			//activePanel={props.matches.hotPanel} 
+			activePanel="main" 
+			modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
+				<Panel id="main">
+					<PanelHeader left={<BackButton isBack={true} />}>Горячее в городе</PanelHeader>
+					<Group header={<Header mode="secondary">Сервисы</Header>}>
+						<CardGrid size="s">
+							<Card>
+								<img style={{width: '100%'}} src={player}></img>
+								<span style={cardStyle}>Хочу поиграть<br />ищу с кем</span>
+							</Card>
+							<Card>
+								<img style={{width: '100%'}} src={tournament}></img>
+								<span style={cardStyle}>Турниры<br />города</span>
+							</Card>
+							<Card onClick={test}>
+								<img style={{width: '100%'}} src={stadium}></img>
+								<span style={cardStyle}>Хотим поиграть<br />ищем где</span>
+							</Card>
+							
+						</CardGrid>
 					</Group>
-					<Group header={<Header mode="secondary">Матчи</Header>}>
-						<Tabs>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("yesterday")}>Вчера</TabsItem>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("today")}>Сегодня</TabsItem>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("tomorrow")}>Завтра</TabsItem>
-						</Tabs>
+					<Group header={<Header mode="secondary">Предстоящие матчи</Header>}>
+						<Hot Name="Сегодня" Matches={props.matches.hot.today}></Hot>
+						<Hot Name="Завтра" Matches={props.matches.hot.tomorrow}></Hot>
+						
+					</Group>
+					<Group header={<Header mode="secondary">Сыграны вчера</Header>}>
 						<Hot Matches={props.matches.hot.yesterday}></Hot>
 					</Group>
 				</Panel>
-				<Panel id="today">
-					<PanelHeader left={<BackButton isBack={true} />}>Сегодня</PanelHeader>
-					<Group>
-						{/* <CellButton onClick={() => UpdateFromServer()}>Обновить информацию</CellButton> */}
-						<CellButtonWithNotify 
-						Message="Уверены, что хотите обновить?"
-						Yes={() => UpdateFromServer()}
-						//onClick={() => UpdateFromServer()}
-						>Обновить информацию</CellButtonWithNotify>
-						<FormItem>
-						<InfoRow header="Информация">
-							Турниры любительской лиги твоего города
-						</InfoRow>
-						</FormItem>
-					</Group>
-					<Group header={<Header mode="secondary">Матчи</Header>}>
-						<Tabs>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("yesterday")}>Вчера</TabsItem>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("today")}>Сегодня</TabsItem>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("tomorrow")}>Завтра</TabsItem>
-						</Tabs>
-						<Hot Matches={props.matches.hot.today}></Hot>
-					</Group>
-				</Panel>
-				<Panel id="tomorrow">
-					<PanelHeader left={<BackButton isBack={true} />}>Завтра</PanelHeader>
-					<Group>
-						<FormItem>
-						<InfoRow header="Информация">
-							Турниры любительской лиги твоего города
-						</InfoRow>
-						</FormItem>
-					</Group>
-					<Group header={<Header mode="secondary">Матчи</Header>}>
-						<Tabs>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("yesterday")}>Вчера</TabsItem>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("today")}>Сегодня</TabsItem>
-							<TabsItem after={<Badge mode="prominent" />} onClick={() => props.setHotPanel("tomorrow")}>Завтра</TabsItem>
-						</Tabs>
-						<Hot Matches={props.matches.hot.tomorrow}></Hot>
-					</Group>
-				</Panel>
+			
 			</View>
 			<View id="allTournaments" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 				<Panel id="main">
