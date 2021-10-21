@@ -37,10 +37,11 @@ import ButtonWithHistory from './components/Panels/Common/WithHistory/ButtonWith
 import AnyWithHistory from './components/Panels/Common/WithHistory/CellButtonWithHistory';
 import CellButtonWithHistory from './components/Panels/Common/WithHistory/CellButtonWithHistory';
 import RichCellWithHistory from './components/Panels/Common/WithHistory/RichCellWithHistory';
-import CellButtonWithNotify from './components/Panels/Common/WithNotify/CellButtonWithNotify';
-import player from './img/common/player300.png'
-import stadium from './img/common/stadium300.png'
+import CardWithHistory from './components/Panels/Common/WithHistory/CardWithHistory';
+import player from './img/common/player300-s.png'
+import stadium from './img/common/stadium300-s.png'
 import tournament from './img/common/tournament300.png'
+import ButtonWithNotify from './components/Panels/Common/WithNotify/ButtonWithNotify';
 
 
 
@@ -353,10 +354,13 @@ const App = (props) => {
 				<Tabbar>
 					<TabbarItemWithHistory toMenuName="hot" selected={"hot" === props.mainMenu.activeItem.name} data-story="hot" text="Горячее"></TabbarItemWithHistory>
 					<TabbarItemWithHistory toMenuName="allTournaments" selected={"allTournaments" === props.mainMenu.activeItem.name} data-story="allTournaments" text="Турниры"></TabbarItemWithHistory>
-					<TabbarItemWithHistory toMenuName="collectslist" selected={"collectslist" === props.mainMenu.activeItem.name} data-story="collectslist" text="Сборы"></TabbarItemWithHistory>
+					{/* <TabbarItemWithHistory toMenuName="collectslist" selected={"collectslist" === props.mainMenu.activeItem.name} data-story="collectslist" text="Сборы"></TabbarItemWithHistory> */}
 					<TabbarItemWithHistory toMenuName="profile" selected={"profile" === props.mainMenu.activeItem.name} data-story="profile" text="Профиль"></TabbarItemWithHistory>
 					{props.ShowAdminTourneyTab && <TabbarItemWithHistory toMenuName="tournamentadmin" selected={"tournamentadmin" === props.mainMenu.activeItem.name} data-story="tournamentadmin" text="Управление турнирами"></TabbarItemWithHistory>}
-					{props.ShowAdminTeamTab && <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Мои команды"></TabbarItemWithHistory>}
+					{
+					//props.ShowAdminTeamTab 
+					props.ShowAdminTourneyTab 
+					&& <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Мои команды"></TabbarItemWithHistory>}
 				</Tabbar>}>
 
 			<View id="hot" 
@@ -367,17 +371,22 @@ const App = (props) => {
 					<PanelHeader left={<BackButton isBack={true} />}>Горячее в городе</PanelHeader>
 					<Group header={<Header mode="secondary">Сервисы</Header>}>
 						<CardGrid size="s">
-							<Card>
-								<img style={{width: '100%'}} src={player}></img>
-								<span style={cardStyle}>Хочу поиграть<br />ищу с кем</span>
-							</Card>
-							<Card>
+							<CardWithHistory
+								data-story="allTournaments"  // необходимо для использования withHistory
+								text="Перейти к турнирам" // необходимо для использования withHistory
+								toMenuName="allTournaments"  // необходимо для использования withHistory
+								//handleClick={CollectAdd} // необходимо для использования withHistory
+							>
 								<img style={{width: '100%'}} src={tournament}></img>
 								<span style={cardStyle}>Турниры<br />города</span>
+							</CardWithHistory>
+							<Card>
+								<img style={{width: '100%'}} src={player}></img>
+								<span style={cardStyle}>Скоро<br />запуск</span>
 							</Card>
 							<Card onClick={test}>
 								<img style={{width: '100%'}} src={stadium}></img>
-								<span style={cardStyle}>Хотим поиграть<br />ищем где</span>
+								<span style={cardStyle}>Скоро<br />запуск</span>
 							</Card>
 							
 						</CardGrid>
@@ -505,15 +514,28 @@ const App = (props) => {
 					>
 						Профиль
 					</PanelHeader>
-					<Group>{props.myProfile && props.myProfile.Name && <>
+					<Group>{props.myProfile && props.myProfile.Name && <FormItem>
 						<InfoRow header="Имя">{props.myProfile && props.myProfile.Name}</InfoRow>
 						<InfoRow header="Фамилия">{props.myProfile && props.myProfile.Surname}</InfoRow>
 						<InfoRow header="Город">{props.myProfile && props.myProfile.CityName}</InfoRow>
 						<InfoRow header="Год рождения">{props.myProfile && new Date(props.myProfile.Birth).getFullYear()}</InfoRow>
 						<InfoRow header="Id города привязки">{props.myProfile && props.myProfile.CityUmbracoId}</InfoRow>
 						<InfoRow header="Город привязки">{props.myProfile && props.myProfile.CityUmbracoName}</InfoRow>
-					</>
+					</FormItem>
 					}
+					</Group>
+					<Group hidden>
+						Описание проекта, возможность написать автору, выбор амплуа, выбор уровня (не играл, новичек, город и тд)
+						<br />
+						Ссылка на сайт и на канал на ютубе, где документация есть по проекту
+						<br/>
+						сделать кнопку "подписаться на уведомления"
+						запросить разрешение на отправку сообщения от имени приложения (или сообщества?)
+					</Group>
+					<Group header="Опции">
+						<FormItem>
+							<ButtonWithNotify Message="Подписаться на уведомления от сервиса?" mode="primary" Yes={() => bridge.send("VKWebAppAllowNotifications")}>Подписаться на события</ButtonWithNotify>
+						</FormItem>
 					</Group>
 					<ProfilePanel></ProfilePanel>
 				</Panel>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import {
     RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker, Textarea,
     File, CellButton, Button, Header, List, Cell, Select, CustomSelectOption, IconButton,
-    CardGrid, Card, SplitLayout, SplitCol, Div, Radio, RangeSlider, useAdaptivity
+    CardGrid, Card, SplitLayout, SplitCol, Div, Radio, RangeSlider, useAdaptivity, VKCOM
 } from '@vkontakte/vkui'
 import { defaultPhotoPath } from './../../../../../store/dataTypes/common'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';

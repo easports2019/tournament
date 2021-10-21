@@ -34,7 +34,7 @@ const Hot = (props) => {
                                             <span style={{ "color": "green" }}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :
                                             <span style={{ "color": "blue" }}>Состоится {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span>
                                     }
-                                    caption="Место не указано"
+                                    caption={match && match.Place ? match.Place.Name : "место не указано"}
                                 >
                                     {match.Played ?
                                         `${match.Team1Name} ${match.Team1Goals} - ${match.Team2Goals} ${match.Team2Name}` :
