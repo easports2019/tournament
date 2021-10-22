@@ -1,47 +1,40 @@
-import React, { useState, useEffect } from 'react';
 import bridge from '@vkontakte/vk-bridge';
-import { View, ScreenSpinner, AdaptivityProvider, AppRoot, ConfigProvider, Badge, Header, List, RichCell, CellButton, FormItem, CardGrid, Card } from '@vkontakte/vkui';
+import { Card, CardGrid, Epic, FormItem, Group, Header, InfoRow, List, Panel, PanelHeader, ScreenSpinner, Tabbar, Title, View } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
-
-import { setActiveMenuItem } from './store/mainMenuReducer';
-import { getAllSimplePlacesInCityByCityId, } from './store/simplePlaceReducer';
-import { getAllRentsInCityByCityId } from './store/rentReducer';
-import { setVkProfileInfo, getUserProfile, getAuthInfo, setTriedToGetProfile, setUserProfileCity } from './store/profileReducer';
-import { setGlobalPopout, resetError } from './store/systemReducer';
-import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect, setCollectItemMode } from './store/collectReducer';
-import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
-import { getMatchesInCurrentCity, setHotPanel } from './store/matchReducer';
-import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity } from './store/bidTeamsReducer';
-import { getAllCitiesFromServer } from './store/cityReducer';
-import { setShowAdminTourneyTab, setCurrentModalWindow, setLoading } from './store/systemReducer';
-import { getUser, setSelectedUser } from './store/vkReducer';
-import { addToTime } from './utils/convertors/dateUtils'
-
-
-import { Epic, Tabbar, TabbarItem, Panel, PanelHeader, PanelHeaderButton, PanelHeaderBack, Tabs, TabsItem, Div, Avatar, Group, SimpleCell, InfoRow } from '@vkontakte/vkui';
+import React, { useEffect, useState } from 'react';
+import request from 'request'
 import { connect } from 'react-redux';
-import ProfilePanel from './components/Panels/ProfilePanel/ProfilePanel';
-import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
-import BackButton from './components/Panels/Common/BackButton/BackButton';
-import TabbarItemWithHistory from './components/Panels/Common/WithHistory/TabbarItemWithHistory';
-import { memberingCollectTypes } from './store/constants/commonConstants'
 import ModalCommon from './components/Modals/ModalCommon/ModalCommon';
-import TournamentAdminPanel from './components/Panels/AdminPanel/Tournament/TournamentAdminPanel';
-import TeamAdminPanel from './components/Panels/AdminPanel/Team/TeamAdminPanel';
-import TournamentItem from './components/Panels/AdminPanel/Tournament/TournamentItem';
-import TeamItem from './components/Panels/AdminPanel/Team/TeamItem';
-import BidTeamTournamentGroupsList from './components/Panels/AdminPanel/BidTeam/BidTeamTournamentGroupsList';
-import Hot from './components/Panels/Common/Hot/Hot';
 import SimpleCollectItem from './components/Panels/AdminPanel/Collect/SimpleCollect/SimpleCollectItem';
-import ButtonWithHistory from './components/Panels/Common/WithHistory/ButtonWithHistory';
-import AnyWithHistory from './components/Panels/Common/WithHistory/CellButtonWithHistory';
+import TeamAdminPanel from './components/Panels/AdminPanel/Team/TeamAdminPanel';
+import TeamItem from './components/Panels/AdminPanel/Team/TeamItem';
+import TournamentAdminPanel from './components/Panels/AdminPanel/Tournament/TournamentAdminPanel';
+import TournamentItem from './components/Panels/AdminPanel/Tournament/TournamentItem';
+import BackButton from './components/Panels/Common/BackButton/BackButton';
+import Hot from './components/Panels/Common/Hot/Hot';
+import CardWithHistory from './components/Panels/Common/WithHistory/CardWithHistory';
 import CellButtonWithHistory from './components/Panels/Common/WithHistory/CellButtonWithHistory';
 import RichCellWithHistory from './components/Panels/Common/WithHistory/RichCellWithHistory';
-import CardWithHistory from './components/Panels/Common/WithHistory/CardWithHistory';
-import player from './img/common/player300-s.png'
-import stadium from './img/common/stadium300-s.png'
-import tournament from './img/common/tournament300.png'
+import TabbarItemWithHistory from './components/Panels/Common/WithHistory/TabbarItemWithHistory';
 import ButtonWithNotify from './components/Panels/Common/WithNotify/ButtonWithNotify';
+import ProfilePanel from './components/Panels/ProfilePanel/ProfilePanel';
+import player from './img/common/player300-s.png';
+import stadium from './img/common/stadium300-s.png';
+import tournament from './img/common/tournament300.png';
+import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity } from './store/bidTeamsReducer';
+import { getAllCitiesFromServer } from './store/cityReducer';
+import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect, setCollectItemMode } from './store/collectReducer';
+import { setActiveMenuItem } from './store/mainMenuReducer';
+import { getMatchesInCurrentCity, setHotPanel } from './store/matchReducer';
+import { getAuthInfo, getUserProfile, setTriedToGetProfile, setUserProfileCity, setVkProfileInfo } from './store/profileReducer';
+import { getAllRentsInCityByCityId } from './store/rentReducer';
+import { getAllSimplePlacesInCityByCityId } from './store/simplePlaceReducer';
+import { goToPanel, resetError, setCurrentModalWindow, setGlobalPopout, setLoading, setShowAdminTourneyTab } from './store/systemReducer';
+import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
+import { getUser, setSelectedUser } from './store/vkReducer';
+import { addToTime } from './utils/convertors/dateUtils';
+
+
 
 
 
@@ -128,6 +121,7 @@ const App = (props) => {
 		if (props.cities && props.cities.length > 0 && props.myProfile && props.myProfile.CityUmbracoId != null &&
 			props.myProfile.CityUmbracoId != -1 && new Date(props.myProfile.Birth).getFullYear() >= 1920 && props.places.length == 0) {
 			// загружаем места этого города
+			props.goToPanel("hot", false)
 
 			// получаем список админов турниров города по umbId города
 			props.getAllCityTournamentAdminsByCityId(props.myProfile.CityUmbracoId);
@@ -312,22 +306,6 @@ const App = (props) => {
 	const UpdateFromServer = () => {
 		window.location.reload(true);
 	}
-
-	// useEffect(() =>{
-	// 	debugger
-	// 	if (props.vkProfile && props.vkProfile.city) {
-	// 		if (props.myProfile) // зарегистрирован и получил данные
-	// 		{
-	// 			if (props.team.selected != null){
-	// 				props.getActualTournamentsInCity(props.myProfile, props.team.selected);
-	// 			}
-	// 		}
-	// 	}
-	// }, [props.team.selected])
-
-	// const changeView = (e) => {
-	// 	props.setActiveMenuItem(e.currentTarget.dataset.story)
-	// }
 
 	let test = () => {
 		
@@ -536,6 +514,7 @@ const App = (props) => {
 						<FormItem>
 							<ButtonWithNotify Message="Подписаться на уведомления от сервиса?" mode="primary" Yes={() => bridge.send("VKWebAppAllowNotifications")}>Подписаться на события</ButtonWithNotify>
 						</FormItem>
+						
 					</Group>
 					<ProfilePanel></ProfilePanel>
 				</Panel>
@@ -635,6 +614,19 @@ const App = (props) => {
 					Игрок
 				</Panel>
 			</View>
+			<View id="notauthorized" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
+				<Panel id="main">
+					<CardGrid size="l">
+						<Card style={{height: '100%'}}>
+							<FormItem style={{height: '100px'}}>
+								<span style={cardStyle}><Title>Вы не авторизованы</Title></span>
+							</FormItem>
+						</Card>
+					</CardGrid>
+					
+				</Panel>
+				
+			</View>
 
 
 		</Epic>
@@ -670,7 +662,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, { 
-	setCurrentModalWindow, setLoading, 
+	setCurrentModalWindow, setLoading, goToPanel,
 	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId, getUser, setSelectedUser,
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode, setCollectItemMode,
 	setActiveMenuItem, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError, selectSimpleCollect,

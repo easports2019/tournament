@@ -105,9 +105,18 @@ const initState = {
         enabled: true,
         show: true,
     },
+    {
+        id: 11,
+        name: "notauthorized",
+        title: "Не авторизован",
+        position: 13,
+        enabled: true,
+        show: true,
+    },
     
 ],
-    activeItem: {id: 0, name: "hot", title: "Горячее", position: 0, enabled: true, show: true,},
+    //activeItem: {id: 0, name: "hot", title: "Горячее", position: 0, enabled: true, show: true,},
+    activeItem: {id: 11, name: "notauthorized", title: "Не авторизован", position: 13, enabled: true, show: true,},
 }
 
 
