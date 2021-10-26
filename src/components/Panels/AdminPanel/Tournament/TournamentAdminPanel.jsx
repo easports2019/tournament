@@ -13,7 +13,7 @@ const TournamentAdminPanel = (props) => {
 
 	// let [myTournaments, setMyTournaments] = useState([]);
     const PublishTournament = (tour, publish) => {
-        
+
         props.publishTournament(tour, props.myProfile, publish);
     }
    
@@ -23,8 +23,8 @@ const TournamentAdminPanel = (props) => {
     
     const CellClick = (item) => {
         
-        props.setSelectedTournament(item);
         props.setTournamentMode("edit");
+        props.setSelectedTournament(item);
     }
     
     

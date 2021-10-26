@@ -9,6 +9,7 @@ let demoMatch = Match;
 
 const MATCH_SET_ALL_MATCHES = "MATCH_SET_ALL_MATCHES";
 const MATCH_DEL_MATCH = "MATCH_DEL_MATCH";
+const MATCH_SET_SELECTED = "MATCH_SET_SELECTED";
 const MATCH_ADD_MATCH = "MATCH_ADD_MATCH";
 const MATCH_SET_HOT_MATCHES = "MATCH_SET_HOT_MATCHES";
 const MATCH_SET_ACCESS = "MATCH_SET_ACCESS";
@@ -45,6 +46,12 @@ let matchReducer = (state = initState, action) => {
             return {
                 ...state,
                 matches: [...action.matches],
+            };
+        }
+        case MATCH_SET_SELECTED: {
+            return {
+                ...state,
+                selected: action.match,
             };
         }
         case MATCH_DEL_MATCH: {
@@ -171,6 +178,13 @@ export const setHotPanel = (panelName) => {
     return {
         type: MATCH_SET_HOT_PANEL,
         panelName
+    }
+}
+
+export const setSelectedMatch = (match) => {
+    return {
+        type: MATCH_SET_SELECTED,
+        match
     }
 }
 

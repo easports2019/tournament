@@ -113,6 +113,14 @@ const initState = {
         enabled: true,
         show: true,
     },
+    {
+        id: 11,
+        name: "matchitem",
+        title: "Матч",
+        position: 14,
+        enabled: true,
+        show: true,
+    },
     
 ],
     //activeItem: {id: 0, name: "hot", title: "Горячее", position: 0, enabled: true, show: true,},

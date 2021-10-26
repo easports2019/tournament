@@ -1,15 +1,22 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, InfoRow, Group, List, CellButton, Button, FormItem, CustomSelect, DatePicker, CustomSelectOption, Header, SimpleCell, Div } from '@vkontakte/vkui'
+import { RichCell, Avatar, InfoRow, Group, List, CellButton, Button, FormItem, CustomSelect, DatePicker, CustomSelectOption, Header, SimpleCell, Div, Headline } from '@vkontakte/vkui'
 import Icon24ChevronRightWithHistory from '../../Common/WithHistory/Icon24ChevronRightWithHistory'
 import { connect } from 'react-redux';
 import {
     getTournamentTeams,
 } from '../../../../store/tournamentsReducer'
 import {
+    setSelectedMatch,
+} from '../../../../store/matchReducer'
+import {
+    goToPanel,
+} from '../../../../store/systemReducer'
+import {
     setMode, setAccess, addMatchToShedule, getAllMatchesByTournament, delMatchFromShedule,
 } from '../../../../store/matchReducer'
 import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
 import ButtonWithNotify from '../WithNotify/ButtonWithNotify';
+import MatchListItem from '../../AdminPanel/Match/MatchListItem';
 
 
 // const SheduleContainer = (props) => {
@@ -64,6 +71,7 @@ const Shedule = (props) => {
     const [selectedDate, setSelectedDate] = React.useState({ day: new Date().getDate(), month: new Date().getMonth() + 1, year: new Date().getFullYear() });
     const [selectedHour, setSelectedHour] = React.useState([hours[0].value]);
     const [selectedMinute, setSelectedMinute] = React.useState(minutes[0].value);
+    
 
     let getGroup = (groupId) => {
         return tournament.TournamentGroups.find(x => x.Id == groupId);
@@ -171,6 +179,14 @@ const Shedule = (props) => {
         props.setMode("edit")
     }
 
+    let goToViewMatch = (match) => {
+        debugger
+
+        props.setSelectedMatch(match)
+
+        props.goToPanel("matchitem", false)
+    }
+
 //debugger
     // выводим список существующего расписания с кнопками редактирования, удаления, переноса
     // группируем список по датам, сортируем от последних к первым (последние выше)
@@ -193,20 +209,24 @@ const Shedule = (props) => {
                                                     
                                                     let place = props.places.find(p => p.UmbracoId == match.PlaceId)
                                                     let date = new Date(match.When);
-                                                    return <RichCell
-                                                        caption={place.Name}
-                                                        text={
-                                                            match.Played ?
-                                                                <span style={{ "color": "green" }}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :
-                                                                <span style={{ "color": "blue" }}>Состоится {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span>
-                                                        }
-                                                        onClick={() => goToEditMatch(match)}
-                                                    >
-                                                        {match.Played ?
-                                                            `${match.Team1.Name} ${match.Team1Goals} - ${match.Team2Goals} ${match.Team2.Name}` :
-                                                            `${match.Team1.Name} - ${match.Team2.Name}`
-                                                        }
-                                                    </RichCell>
+                                                    return <MatchListItem 
+                                                        ClickHandler={() => goToEditMatch(match)}
+                                                        Match={match} Place={place}
+                                                        ></MatchListItem>
+                                                    // <RichCell
+                                                    //     caption={place.Name}
+                                                    //     text={
+                                                    //         match.Played ?
+                                                    //             <span style={{ "color": "green" }}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :
+                                                    //             <span style={{ "color": "blue" }}>Состоится {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span>
+                                                    //     }
+                                                        
+                                                    // >
+                                                    //     {match.Played ?
+                                                    //         `${match.Team1.Name} ${match.Team1Goals} - ${match.Team2Goals} ${match.Team2.Name}` :
+                                                    //         `${match.Team1.Name} - ${match.Team2.Name}`
+                                                    //     }
+                                                    // </RichCell>
                                                 })}
                                             </List>
                                             :
@@ -548,27 +568,16 @@ const Shedule = (props) => {
                                 {allMatchesInAllGroups.map(groupAndMatchesItem => {
 
                                     return (
-                                        <Group header={<Header mode="secondary">{groupAndMatchesItem.TournamentGroup.Name}</Header>}>
+                                        <Group header={<FormItem><Headline mode="secondary">{groupAndMatchesItem.TournamentGroup.Name}</Headline></FormItem>}>
                                             {
                                                 groupAndMatchesItem.Matches.length > 0
                                                     ?
                                                     <List>
                                                         {groupAndMatchesItem.Matches.map(match => {
                                                             let place = props.places.find(p => p.UmbracoId == match.PlaceId)
-                                                            let date = new Date(match.When);
-                                                            return <RichCell
-                                                                caption={place ? place.Name : "Ошибка загрузки данных о месте"}
-                                                                text={
-                                                                    match.Played ?
-                                                                        <span style={{ "color": "green" }}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :
-                                                                        <span style={{ "color": "blue" }}>Состоится {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span>
-                                                                }
-                                                            >
-                                                                {match.Played ?
-                                                                    `${match.Team1.Name} ${match.Team1Goals} - ${match.Team2Goals} ${match.Team2.Name}` :
-                                                                    `${match.Team1.Name} - ${match.Team2.Name}`
-                                                                }
-                                                            </RichCell>
+                                                            return <MatchListItem 
+                                                            ClickHandler={() => goToViewMatch(match)}
+                                                            Match={match} Place={place}></MatchListItem>
                                                         })}
                                                     </List>
                                                     :
@@ -582,9 +591,33 @@ const Shedule = (props) => {
                         </Group>
                     )
                 }; break;
-                case "view": { }; break;
-                case "add": { }; break;
-                case "edit": { }; break;
+                case "view": {
+debugger 
+                    return (
+                        <Group>
+                            <FormItem top="Группа/лига">
+                                {matches.selected.TournamentGroup.Name}
+                            </FormItem>
+                            <FormItem top="Команда 1">
+                                {matches.selected.Team1.Name} {matches.selected.Team1Goals} : {matches.selected.Team2Goals} {matches.selected.Team2.Name}
+                            </FormItem>
+                            
+                            <FormItem top="Дата">
+                                {new Date(matches.selected.When).toLocaleDateString()}
+                            </FormItem>
+                            
+                            <FormItem top="Место">
+                                {matches.selected.Place.Name}
+                            </FormItem>
+                            <FormItem top="Матч сыгран">
+                                {matches.selected.Played}
+                            </FormItem>
+                            <Button onClick={() => props.setMode("list")}>Назад</Button>
+                        </Group>
+                    )    
+                }; break;
+                case "add": {  return <>add</>}; break;
+                case "edit": {  return <>edit</>}; break;
             }
         }; break;
 
@@ -605,6 +638,6 @@ let mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, {
-    getTournamentTeams, setMode, setAccess, addMatchToShedule, getAllMatchesByTournament, delMatchFromShedule,
+export default connect(mapStateToProps, { goToPanel,
+    getTournamentTeams, setMode, setAccess, addMatchToShedule, getAllMatchesByTournament, delMatchFromShedule, setSelectedMatch,
 })(Shedule)

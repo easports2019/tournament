@@ -33,6 +33,7 @@ import { goToPanel, resetError, setCurrentModalWindow, setGlobalPopout, setLoadi
 import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
 import { getUser, setSelectedUser } from './store/vkReducer';
 import { addToTime } from './utils/convertors/dateUtils';
+import MatchItem from './components/Panels/AdminPanel/Match/MatchItem';
 
 
 
@@ -282,8 +283,8 @@ const App = (props) => {
 
 	const TournamentSelect = (item) => {
 		//debugger
-		props.setSelectedTournament(item);
 		props.setTournamentMode("view");
+		props.setSelectedTournament(item);
 		// надо заполнять TournamentGroups!
 		//props.setActiveMenuItem("tournamentitem"); // отключил, тк установил компонент hoc withHistory
 		//toMenuName="tournamentadmin" selected={"tournamentadmin" === props.mainMenu.activeItem.name} data-story="tournamentadmin"
@@ -572,6 +573,19 @@ const App = (props) => {
 					</PanelHeader>
 					<Group>
 						<TeamItem mode={props.team.mode}></TeamItem>
+					</Group>
+				</Panel>
+			</View>
+			<View id="matchitem" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
+				<Panel id="main">
+					<PanelHeader
+						left={<BackButton isBack={true} />}
+					//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+					>
+						Матч
+					</PanelHeader>
+					<Group>
+						<MatchItem match={props.matches.selected}></MatchItem>
 					</Group>
 				</Panel>
 			</View>

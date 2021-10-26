@@ -7,6 +7,7 @@ export const backserver = "https://oblakosporta.ru";
 //export const backserver = "https://192.168.56.101:44325";
 export const URL = backserver + "/umbraco/api/";
 export const authQueryString = window.location.search;
+debugger
 
 
 export	const PostJsonInstance = Axios.create(

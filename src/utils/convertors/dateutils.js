@@ -42,22 +42,30 @@ export const dateTimeToTimeString = (datetime) => {
     return timeToString(new Date(datetime).getHours(), new Date(datetime).getMinutes())
 }
 
+// возвращает дату в формате ДН, ДД ММММ ГГГГ г. , в args args[0] - прибавить дней, args[1] - прибавить месяцев, args[2] - прибавить лет,
+// args[3] = true - пишем день недели, false - не пишем
 export const dateToString = (date, ...args) => {
     
     if (typeof date == "string")
         date = new Date(date);
 
     let newDate = date;
-    let dateOptions = {
+    let dateOptions = (args == undefined || args[3] == undefined || (args[3] != undefined && args[3] == true)) ?
+    {
         // era: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-        weekday: 'long',
+        weekday: 'short',
         // timezone: 'UTC',
         // hour: 'numeric',
         // minute: 'numeric',
         // second: 'numeric'
+    }
+    : {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
     };
 
     if (args[0])
@@ -147,6 +155,7 @@ export const timeSlotsForCollects = (hours=24, slotsInHour=timeSlotsInOneHour())
     return slots
 }
 
+// создание массива объектов для расписания работы площадки
 export const timeSlotsForSimpleCollects = (slotsNumber, slotsInHour=timeSlotsInOneHour(), startHour) => {
     
     let oneSlotMinutes = 60 / slotsInHour;  // сколько минут один слот

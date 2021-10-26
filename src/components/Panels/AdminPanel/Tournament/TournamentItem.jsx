@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import {
     RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker,
     Textarea, File, CellButton, Button, Header, List, Cell, TabsItem, Tabs, View, Panel,
-    ActionSheet, ActionSheetItem, Gallery
+    ActionSheet, ActionSheetItem, Gallery, Headline
 } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
@@ -25,7 +25,9 @@ import Icon24ChevronRightWithHistory from '../../Common/WithHistory/Icon24Chevro
 import Shedule from '../../Common/Shedule/Shedule';
 import ButtonWithNotify from '../../Common/WithNotify/ButtonWithNotify'
 
-
+const w7percent = { width: '7%', textAlign: 'center', padding: '5px 0 5px 0' }
+const w8percent = { width: '8%', textAlign: 'center', padding: '5px 0 5px 0'  }
+const w20percent = { width: '20%', textAlign: 'left', padding: '5px 0 5px 0', overflow: 'hidden'  }
 
 
 const TournamentItem = (props) => {
@@ -150,10 +152,14 @@ const TournamentItem = (props) => {
                             <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
                         </Tabs>
                         <FormLayout>
-                            <FormItem top="Ваш город">
-                                <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
-                            </FormItem>
-                            <Group header={<Header mode="secondary">Матчи</Header>}>
+                            {/* <FormItem top="Ваш город">
+                                <InfoRow>
+                                    <Headline> {props.myProfile.CityUmbracoName}</Headline>
+                                </InfoRow>
+                            </FormItem> */}
+                            <Group 
+                            //header={<Header mode="secondary">Матчи</Header>}
+                            >
                                 <Shedule access="user" tournament={props.tournaments.selected} todayIs={new Date()}></Shedule>
                             </Group>
                         </FormLayout>
@@ -219,37 +225,39 @@ const TournamentItem = (props) => {
                                             if (item.Name != "") {
                                                 let table = props.tournaments.selectedTables.filter(tT => tT.TournamentGroupId == item.Id);
                                                 table.sort((firstItem, secondItem) => firstItem.Place - secondItem.Place);
-
+                                                let chet = false;
                                                 return (
                                                     <>
-                                                        <InfoRow>Группа/лига: {item.Name}</InfoRow>
-                                                        <table>
+                                                        <InfoRow>
+                                                            <Headline> Группа/лига: {item.Name}</Headline>
+                                                        <table style={{width: '100%'}}>
                                                             <tr>
-                                                                <th>М</th>
-                                                                <th>Команда</th>
-                                                                <th>И</th>
-                                                                <th>В</th>
-                                                                <th>П</th>
-                                                                <th>Н</th>
-                                                                <th>МЗ</th>
-                                                                <th>МП</th>
-                                                                <th>МР</th>
-                                                                <th>О</th>
+                                                                <th style={w7percent}>М</th>
+                                                                <th style={w20percent}>Команда</th>
+                                                                <th style={w8percent}>И</th>
+                                                                <th style={w8percent}>В</th>
+                                                                <th style={w8percent}>П</th>
+                                                                <th style={w8percent}>Н</th>
+                                                                <th style={w8percent}>МЗ</th>
+                                                                <th style={w8percent}>МП</th>
+                                                                <th style={w8percent}>МР</th>
+                                                                <th style={w8percent}>О</th>
                                                             </tr>
                                                             {
                                                                 table.map((row) => {
+                                                                    chet = !chet;
                                                                     return (
-                                                                        <tr>
-                                                                            <td>{row.Place}</td>
-                                                                            <td>{row.TeamName}</td>
-                                                                            <td>{row.Games}</td>
-                                                                            <td>{row.Wins}</td>
-                                                                            <td>{row.Loses}</td>
-                                                                            <td>{row.Draws}</td>
-                                                                            <td>{row.GoalsScored}</td>
-                                                                            <td>{row.GoalsMissed}</td>
-                                                                            <td>{row.GoalsDifference}</td>
-                                                                            <td>{row.Points}</td>
+                                                                        <tr style={chet ? {backgroundColor: 'lightgray'} : {backgroundColor: 'white'}}>
+                                                                            <td style={w7percent}>{row.Place}</td>
+                                                                            <td style={w20percent}>{row.TeamName}</td>
+                                                                            <td style={w8percent}>{row.Games}</td>
+                                                                            <td style={w8percent}>{row.Wins}</td>
+                                                                            <td style={w8percent}>{row.Loses}</td>
+                                                                            <td style={w8percent}>{row.Draws}</td>
+                                                                            <td style={w8percent}>{row.GoalsScored}</td>
+                                                                            <td style={w8percent}>{row.GoalsMissed}</td>
+                                                                            <td style={w8percent}>{row.GoalsDifference}</td>
+                                                                            <td style={w8percent}>{row.Points}</td>
                                                                         </tr>
                                                                     )
 
@@ -257,6 +265,9 @@ const TournamentItem = (props) => {
 
                                                                 )}
                                                         </table>
+                                                        <br />
+                                                        <br />
+                                                        </InfoRow>
                                                     </>
 
                                                 )

@@ -71,7 +71,6 @@ let tournamentReducer = (state = initState, action) => {
             };
         }
         case TOURNAMENT_SET_MYTOURNAMENT: {
-            
             return {
                 ...state,
                 myTournaments: [...state.myTournaments.map(tour => {
@@ -133,7 +132,6 @@ let tournamentReducer = (state = initState, action) => {
             };
         }
         case TOURNAMENT_MY_ADD_OR_EDIT: {
-            debugger
             let newTourn = state.myTournaments.filter(t => t.Id == action.tournament.Id)
             if (newTourn){
                 return {
@@ -241,9 +239,6 @@ let tournamentReducer = (state = initState, action) => {
         }
         case TOURNAMENT_ADD_GROUP: {
             let max = -1;
-            debugger
-            
-
             state.selected.TournamentGroups.forEach(item => {
                 if (item.KeyId != undefined){
                     if (item.KeyId > max)
@@ -652,11 +647,12 @@ export const saveSelectedTournament = (tournament = null, userprofile = null) =>
 export const publishTournament = (tournament = null, userprofile = null, publish = false) => {
     
     return dispatch => {
-        if ((tournament != null) || (userprofile == null)){
+        if ((tournament != null) && (userprofile != null)){
+
             if (authQueryString && authQueryString.length > 0)
                 CityTournamentAdminAPI.publishTournament(tournament, userprofile, publish)
                     .then(pl => {
-                        
+
                         if (pl) {
                             // изменить полученный турнир в списке
                             dispatch(setMyTournament(pl.data))
