@@ -182,6 +182,7 @@ let tournamentReducer = (state = initState, action) => {
             };
         }
         case TOURNAMENT_SET_WHEN_BEGIN: {
+
             return {
                 ...state,
                 selected: {...state.selected, 

@@ -206,7 +206,7 @@ const App = (props) => {
 	useEffect(() => {
 
 		if (props.vkProfile && props.vkProfile.city) {
-			if ((!props.myProfile) & (props.triedToGetProfile)) { // не зарегистрирован
+			if ((!props.myProfile) && (props.triedToGetProfile)) { // не зарегистрирован
 				props.getAuthInfo(props.vkProfile); // регаем
 			}
 		}

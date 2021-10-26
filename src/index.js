@@ -4,7 +4,7 @@ import bridge from "@vkontakte/vk-bridge";
 import App from "./App";
 import store from './store/store'
 import { Provider } from "react-redux";
-import { AdaptivityProvider, AppRoot, ConfigProvider } from "@vkontakte/vkui";
+import { AdaptivityProvider, AppRoot, ConfigProvider, usePlatform } from "@vkontakte/vkui";
 
 // Init VK  Mini App
 bridge.send("VKWebAppInit");

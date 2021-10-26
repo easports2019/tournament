@@ -102,6 +102,7 @@ const TournamentItem = (props) => {
         props.changeTournamentTeamBidTournamentGroup(team, newGroup, oldGroup, props.myProfile)
     }
 
+
     const SaveTournament = () => {
         //props.resetTournament();
 //debugger
@@ -305,7 +306,7 @@ const TournamentItem = (props) => {
                                 min={{ day: 1, month: 1, year: currentDate.getFullYear() - 1 }}
                                 max={{ day: 1, month: 1, year: currentDate.getFullYear() + 1 }}
                                 defaultValue={props.tournaments.selected.WhenBegin}
-                                value={props.tournaments.selected.WhenBegin}
+                                //value={props.tournaments.selected.WhenBegin}
                                 onDateChange={value => props.setTournamentWhenBegin(value)}
                             />
                         </FormItem>
@@ -314,7 +315,7 @@ const TournamentItem = (props) => {
                                 min={{ day: 1, month: 1, year: currentDate.getFullYear() - 1 }}
                                 max={{ day: 1, month: 1, year: currentDate.getFullYear() + 1 }}
                                 defaultValue={props.tournaments.selected.WhenEnd}
-                                value={props.tournaments.selected.WhenEnd}
+                                //value={props.tournaments.selected.WhenEnd}
                                 onDateChange={value => props.setTournamentWhenEnd(value)}
                             />
                         </FormItem>
@@ -370,8 +371,11 @@ const TournamentItem = (props) => {
                                         min={{ day: 1, month: 1, year: currentDate.getFullYear() - 1 }}
                                         max={{ day: 1, month: 1, year: currentDate.getFullYear() + 1 }}
                                         defaultValue={props.tournaments.selected.WhenBegin}
-                                        value={props.tournaments.selected.WhenBegin}
-                                        onDateChange={value => props.setTournamentWhenBegin(value)}
+                                        //value={props.tournaments.selected.WhenBegin}
+                                        onDateChange={(value) => props.setTournamentWhenBegin(value)}
+                                        //dayPlaceholder="ДД"
+                                        //monthPlaceholder="ММММ"
+                                        //yearPlaceholder="ГГГГ"
                                     />
                                 </FormItem>
                                 <FormItem top="Дата окончания">
@@ -379,7 +383,7 @@ const TournamentItem = (props) => {
                                         min={{ day: 1, month: 1, year: currentDate.getFullYear() - 1 }}
                                         max={{ day: 1, month: 1, year: currentDate.getFullYear() + 1 }}
                                         defaultValue={props.tournaments.selected.WhenEnd}
-                                        value={props.tournaments.selected.WhenBegin}
+                                        //value={props.tournaments.selected.WhenBegin}
                                         onDateChange={value => props.setTournamentWhenEnd(value)}
                                     />
                                 </FormItem>

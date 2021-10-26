@@ -128,7 +128,7 @@ const TeamItem = (props) => {
                                 min={{ day: 1, month: 1, year: currentDate.getFullYear() - 50 }}
                                 max={{ day: 1, month: 1, year: currentDate.getFullYear() }}
                                 defaultValue={props.teams.selected.WhenBorn}
-                                value={props.teams.selected.WhenBorn}
+                                //value={props.teams.selected.WhenBorn}
                                 onDateChange={value => props.setTeamWhenBorn(value)}
                             />
                         </FormItem>
@@ -179,7 +179,7 @@ const TeamItem = (props) => {
                                 min={{ day: 1, month: 1, year: currentDate.getFullYear() - 50 }}
                                 max={{ day: 1, month: 1, year: currentDate.getFullYear() }}
                                 defaultValue={props.teams.selected.WhenBorn}
-                                value={props.teams.selected.WhenBorn}
+                                //value={props.teams.selected.WhenBorn}
                                 onDateChange={value => props.setTeamWhenBorn(value)}
                             />
                         </FormItem>
