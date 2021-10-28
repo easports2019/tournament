@@ -194,10 +194,12 @@ const App = (props) => {
 		// еще нужно запрашивать права на доступ к инфе: город, дата рождения, друзья, 
 		// а еще в бэке надо сделать так, чтобы записи в Leg и City не плодились, а искали соответствующие из умбрако и ставили их Id
 
-		if (props.vkProfile && props.vkProfile.city) {
-
+		if (props.vkProfile && props.vkProfile.city && !props.myProfile) {
+			
 			props.getUserProfile(props.vkProfile);
 		}
+
+		
 
 	}, [props.vkProfile])
 
@@ -206,8 +208,20 @@ const App = (props) => {
 	useEffect(() => {
 
 		if (props.vkProfile && props.vkProfile.city) {
-			if ((!props.myProfile) && (props.triedToGetProfile)) { // не зарегистрирован
-				props.getAuthInfo(props.vkProfile); // регаем
+			if ((!props.myProfile) && (props.triedToGetProfile>0)) { // не зарегистрирован
+				if ((props.vkProfile) && (props.vkProfile.bdate == undefined))
+				{
+					props.setGlobalPopout(false);
+					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirth" data={props.vkProfile} action={props.setVkProfileInfo} action2={props.setTriedToGetProfile} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
+				}
+				else if ((props.vkProfile) && (props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() < 1920)) {
+					
+					props.setGlobalPopout(false);
+					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirthYear" data={props.vkProfile} action={props.setVkProfileInfo} action2={props.setTriedToGetProfile} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
+				}
+				else{
+					props.getAuthInfo(props.vkProfile); // регаем
+				}
 			}
 		}
 	}, [props.triedToGetProfile])
@@ -216,45 +230,42 @@ const App = (props) => {
 	// загрузка профиля
 	useEffect(() => {
 
-		if (props.vkProfile && props.vkProfile.city) {
-			if (props.myProfile) // зарегистрирован и получил данные
+		if (props.vkProfile && props.vkProfile.city && props.myProfile) {
+			
+
+			if((props.vkProfile.bdate.split('.').length > 2) && (new Date(props.myProfile.Birth).getFullYear() > 1920)) // 
 			{
-				// если не год рождения скрыт настройками приватности и из-за этого при регистрации на бэкэнде дата рождения не определилась, 
-				// выводим окно выбора года рождения и после выбора правим его в профиле ВК
-				if ((props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() < 1920)) {
-					
+
+				// после регистрации, загрузки новых данных с сервера и указания года рождения необходимо обновить данные на сервере
+				// if (new Date(props.myProfile.Birth).getFullYear() < 1920) {
+				// 	props.getAuthInfo(props.vkProfile);
+				// }
+				// else { // если данные обновлены и все в порядке с профилями
+				// 	props.setCurrentModalWindow(null);
+				// }
+
+				// // поправка даты в vk профиле (правится, когда профиль грузится с бэкэнда без регистрации)
+				// if ((props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() >= 1920)) {
+				// 	props.setVkProfileInfo({ ...props.vkProfile, bdate: props.vkProfile.bdate + "." + new Date(props.myProfile.Birth).getFullYear().toString() })
+				// }
+
+				props.setCurrentModalWindow(null);
+
+
+				if (props.myProfile.CityUmbracoId != null && props.myProfile.CityUmbracoId == -1) {
+					//debugger
+					// предлагаем выбрать город
 					props.setGlobalPopout(false);
-					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirth" data={props.vkProfile} action={props.setVkProfileInfo} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
-				}
-				else {
-
-					// после регистрации, загрузки новых данных с сервера и указания года рождения необходимо обновить данные на сервере
-					if (new Date(props.myProfile.Birth).getFullYear() < 1920) {
-						props.getAuthInfo(props.vkProfile);
-					}
-					else { // если данные обновлены и все в порядке с профилями
-						props.setCurrentModalWindow(null);
-					}
-
-					// поправка даты в vk профиле (правится, когда профиль грузится с бэкэнда без регистрации)
-					if ((props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() >= 1920)) {
-						props.setVkProfileInfo({ ...props.vkProfile, bdate: props.vkProfile.bdate + "." + new Date(props.myProfile.Birth).getFullYear().toString() })
-					}
-
-					if (props.myProfile.CityUmbracoId != null && props.myProfile.CityUmbracoId == -1) {
-						//debugger
-						// предлагаем выбрать город
-						props.setGlobalPopout(false);
-						props.setCurrentModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
-					}
-
-
-					//props.getUser(19757699);
-
+					props.setCurrentModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
 				}
 
 
-			}
+			//props.getUser(19757699);
+
+			}	
+
+
+			
 
 
 		}

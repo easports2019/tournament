@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Group, Header, InfoRow, ModalCard, ModalPage, ModalPageHeader, ModalRoot, SelectMimicry, Textarea, Button, FormLayout, Select, CustomSelectOption, FormItem, FormLayoutGroup, Input } from '@vkontakte/vkui'
+import { Group, Header, InfoRow, ModalCard, ModalPage, ModalPageHeader, ModalRoot, SelectMimicry, Textarea, Button, FormLayout, Select, CustomSelectOption, FormItem, FormLayoutGroup, Input, DatePicker } from '@vkontakte/vkui'
 
 
 
@@ -7,6 +7,7 @@ let ModalCommon = (props) => {
     // при первом запуске подгрузить города
     let [selectedYear, setSelectedYear] = useState("Не выбран")
     let [selectedCity, setSelectedCity] = useState("Не выбран")
+    let [selectedDate, setSelectedDate] = useState("")
     let [bidCity, setBidCity] = useState("")
 
 	useEffect(() => {
@@ -14,7 +15,16 @@ let ModalCommon = (props) => {
 		
     }, [])
     
-
+    const setDate = (value) => {
+        debugger
+        setSelectedDate(`${value.day}.${value.month}.${value.year}`)
+    }
+    
+    const saveDate = (value) => {
+        
+        props.action({...props.data, bdate: selectedDate != "" ? selectedDate : undefined})
+        props.action2(2);
+    }
 
     return (
         <ModalRoot activeModal={props.modalName}>
@@ -77,10 +87,10 @@ let ModalCommon = (props) => {
             </ModalCard>
             
             <ModalCard
-                id="SelectBirth"
+                id="SelectBirthYear"
                 // onClose={props.Close}
                 header="Укажите Ваш год рождения"
-                actions={<Button size="l" mode="primary" onClick={() => props.action({...props.data, bdate: props.data.bdate + ((!isNaN(selectedYear)) && (selectedYear > 0) && "." + selectedYear)})}>Закрыть</Button>}>
+                actions={<Button size="l" mode="primary" onClick={() => props.action({...props.data, bdate: props.data.bdate && props.data.bdate + ((!isNaN(selectedYear)) && (selectedYear > 0) && "." + selectedYear)})}>Закрыть</Button>}>
                     <FormLayout>
                         <FormLayoutGroup>
                         <InfoRow header="Год рождения не определен">
@@ -106,6 +116,49 @@ let ModalCommon = (props) => {
                                 ].map(year => ({ label: year, value: year }))}
                                 renderOption={({ option, ...restProps }) => <CustomSelectOption {...restProps} />}
                                 />
+                            </FormItem>
+                        </FormLayoutGroup>
+                    </FormLayout>
+            </ModalCard>
+            <ModalCard
+                id="SelectBirth"
+                // onClose={props.Close}
+                header="Укажите дату вашего рождения"
+                actions={
+                <Button size="l" mode="primary" 
+                onClick={saveDate}>Закрыть</Button>}>
+                    <FormLayout>
+                        <FormLayoutGroup>
+                        <InfoRow header="Год рождения не определен">
+                            Дату рождения не получилось загрузить из вашего профиля Вконтакте. Укажите реальную дату вашего рождения.
+                        </InfoRow>
+                            <FormItem top="Дата рождения">
+                                <DatePicker
+                                    min={{ day: 1, month: 1, year: new Date().getFullYear() - 100 }}
+                                    max={{ day: 1, month: 1, year: new Date().getFullYear()}}
+                                    //defaultValue={props.tournaments.selected.WhenEnd}
+
+                                    onDateChange={(e) => setDate(e)}
+                                ></DatePicker>            
+                            {/* <Select
+                                placeholder="Не выбран" 
+                                onChange={(e) => {
+                                    setSelectedYear(+e.currentTarget.value)
+                                    }}
+                                options={[...((start, count) => {
+                                    
+                                        let current = start;
+                                        let result = [];
+                                        while (current < start + count){
+                                            result.push(current);
+                                            current += 1;
+                                        }
+                                        
+                                        return result
+                                    })(new Date().getFullYear() - 100, 90)
+                                ].map(year => ({ label: year, value: year }))}
+                                renderOption={({ option, ...restProps }) => <CustomSelectOption {...restProps} />}
+                                /> */}
                             </FormItem>
                         </FormLayoutGroup>
                     </FormLayout>

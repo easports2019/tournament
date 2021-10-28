@@ -1,4 +1,4 @@
-import {ampluaTypes, users} from './constants/commonConstants'
+import {ampluaTypes, myProfile, users} from './constants/commonConstants'
 import { ProfileAPI, errorObj } from './../utils/api/api.js'
 import { authQueryString } from './../utils/api/server';
 import { setGlobalPopout, setErrorMessage, resetError } from "./systemReducer";
@@ -14,7 +14,7 @@ let demoUser = users[0];
 const initState = {
     myProfile: null,
     vkProfile: null,
-    triedToGetProfile: false,
+    triedToGetProfile: 0,
 
      // level 
 
@@ -30,8 +30,13 @@ export let profileReducer = (state = initState, action) =>
             };
         }
         case PROFILE_SET_USER_PROFILE: {
+            let birth = action.user.Birth ? `${new Date(action.user.Birth).getDate()}.${new Date(action.user.Birth).getMonth()}.${new Date(action.user.Birth).getYear()}` : null;
+
             return {...state,
                 myProfile: {...action.user},
+                vkProfile: {...state.vkProfile,
+                bdate: birth
+                }
             };
         }
         case PROFILE_SET_TRIED_TO_GET_PROFILE: {
@@ -47,6 +52,7 @@ export let profileReducer = (state = initState, action) =>
 
 
 export const setVkProfileInfo = (user) => {
+    debugger
     return {
         type: PROFILE_SET_VK_PROFILE_INFO,
         user
@@ -81,11 +87,11 @@ export const getUserProfile = (vkUserData) => {
                     
                     if (pl && pl.data) {
                         dispatch(setUserProfile(pl.data));
-                        dispatch(setTriedToGetProfile(false));
+                        dispatch(setTriedToGetProfile(0));
                         dispatch(setGlobalPopout(false))
                     }
                     else {
-                        dispatch(setTriedToGetProfile(true))
+                        dispatch(setTriedToGetProfile(1))
                     }
                 })
                 .catch(error => {
@@ -144,7 +150,7 @@ export const getAuthInfo = (vkProfileInfo) => {
                 .then(pl => {
                     if (pl) {
                         dispatch(setUserProfile(pl.data));
-                        dispatch(setTriedToGetProfile(false));
+                        dispatch(setTriedToGetProfile(0));
                         dispatch(setGlobalPopout(false))
                     }
                     else {
