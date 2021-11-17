@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, InfoRow, Group, List, CellButton, Button, FormItem, CustomSelect, DatePicker, CustomSelectOption, Header, SimpleCell, Div, Headline } from '@vkontakte/vkui'
+import { RichCell, Avatar, InfoRow, Group, List, CellButton, Button, FormItem, CustomSelect, DatePicker, CustomSelectOption, Header, SimpleCell, Div, Headline, Textarea } from '@vkontakte/vkui'
 import Icon24ChevronRightWithHistory from '../../Common/WithHistory/Icon24ChevronRightWithHistory'
 import { connect } from 'react-redux';
 import {
@@ -66,6 +66,7 @@ const Shedule = (props) => {
     const [selectedTeam1Goals, setTeam1Goals] = React.useState(0);
     const [selectedTeam2Goals, setTeam2Goals] = React.useState(0);
     const [selectedPlace, setSelectedPlace] = React.useState(0);
+    const [selectedDescription, setSelectedDescription] = React.useState("");
     const [selectedId, setSelectedId] = React.useState(0);
     const [selectedPlayed, setSelectedPlayed] = React.useState(false);
     const [selectedDate, setSelectedDate] = React.useState({ day: new Date().getDate(), month: new Date().getMonth() + 1, year: new Date().getFullYear() });
@@ -101,6 +102,7 @@ const Shedule = (props) => {
                 PlaceId: selectedPlace,
                 Team1Id: selectedTeam1,
                 Team2Id: selectedTeam2,
+                Description: selectedDescription,
                 BidTeamToTournamentId1: -1,
                 BidTeamToTournamentId2: -1,
                 Team1Goals: selectedTeam1Goals,
@@ -113,6 +115,7 @@ const Shedule = (props) => {
                 PlaceId: selectedPlace,
                 Team1Id: selectedTeam1,
                 Team2Id: selectedTeam2,
+                Description: selectedDescription,
                 BidTeamToTournamentId1: -1,
                 BidTeamToTournamentId2: -1,
                 Team1Goals: selectedTeam1Goals,
@@ -166,6 +169,7 @@ const Shedule = (props) => {
         setSelectedTournamentGroupTeamList(getGroup(match.TournamentGroupId).Teams.map(team => { return { value: team.Id, label: team.Name } }));
         setSelectedTournamentGroup(match.TournamentGroupId);
         setSelectedId(match.Id);
+        setSelectedDescription(match.Description);
         setTeam1Goals(match.Team1Goals);
         setTeam2Goals(match.Team2Goals);
         setSelectedTeam1(match.Team1.Id)
@@ -393,6 +397,9 @@ const Shedule = (props) => {
                                     }}
                                 />
                             </FormItem>
+                            <FormItem top="Комментарий к матчу">
+                                <Textarea onChange={(e) => setSelectedDescription(e.currentTarget.value)}>{selectedDescription}</Textarea>
+                            </FormItem>
                             <FormItem top="Матч сыгран">
                                 <Checkbox checked={selectedPlayed} onChange={() => setSelectedPlayed(!selectedPlayed)}>Сыгран</Checkbox>
                             </FormItem>
@@ -547,6 +554,9 @@ const Shedule = (props) => {
                                         );
                                     }}
                                 />
+                            </FormItem>
+                            <FormItem top="Комментарий к матчу">
+                                <Textarea onChange={(e) => setSelectedDescription(e.currentTarget.value)} value={selectedDescription}></Textarea>
                             </FormItem>
                             <FormItem top="Матч сыгран">
                                 <Checkbox checked={selectedPlayed} onChange={() => setSelectedPlayed(!selectedPlayed)}>Сыгран</Checkbox>

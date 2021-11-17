@@ -644,7 +644,7 @@ const App = (props) => {
 					<CardGrid size="l">
 						<Card style={{height: '100%'}}>
 							<FormItem style={{height: '100px'}}>
-								<span style={cardStyle}><Title>Вы не авторизованы</Title></span>
+								<span style={cardStyle}><Title>Авторизация...</Title></span>
 							</FormItem>
 						</Card>
 					</CardGrid>

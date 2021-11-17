@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, Group, FormItem } from '@vkontakte/vkui'
+import { RichCell, Avatar, Group, FormItem, Textarea } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
 import { dateToString, timeToString } from '../../../../utils/convertors/dateUtils';
 
@@ -37,6 +37,13 @@ const MatchItem = (props) => {
                 {match.Team1.Name} {match.Team1Goals} : {match.Team2Goals} {match.Team2.Name}
             </FormItem>
             
+            <FormItem top="Комментарий к матчу">
+                <Textarea 
+                value={match.Description} 
+                readOnly
+                style={{minHeight: '100px'}}
+                ></Textarea>
+            </FormItem>
             <FormItem top="Дата">
                 {new Date(match.When).toLocaleDateString()}
             </FormItem>
@@ -44,8 +51,8 @@ const MatchItem = (props) => {
             <FormItem top="Место">
                 {match.Place.Name}
             </FormItem>
-            <FormItem top="Матч сыгран">
-                {match.Played}
+            <FormItem top="Статус матча">
+                {match.Played ? "Сыгран" : "Не сыгран"}
             </FormItem>
             
         </Group>
