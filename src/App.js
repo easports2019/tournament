@@ -29,7 +29,8 @@ import { getMatchesInCurrentCity, setHotPanel } from './store/matchReducer';
 import { getAuthInfo, getUserProfile, setTriedToGetProfile, setUserProfileCity, setVkProfileInfo } from './store/profileReducer';
 import { getAllRentsInCityByCityId } from './store/rentReducer';
 import { getAllSimplePlacesInCityByCityId } from './store/simplePlaceReducer';
-import { goToPanel, resetError, setCurrentModalWindow, setGlobalPopout, setLoading, setShowAdminTourneyTab } from './store/systemReducer';
+import { goToPanel, resetError, setCurrentModalWindow, checkConnection, setGlobalPopout, 
+	setLoading, setShowAdminTourneyTab, updateLoading } from './store/systemReducer';
 import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
 import { getUser, setSelectedUser } from './store/vkReducer';
 import { addToTime } from './utils/convertors/dateUtils';
@@ -43,6 +44,7 @@ import MatchItem from './components/Panels/AdminPanel/Match/MatchItem';
 
 const App = (props) => {
 	const [fetchedUser, setUser] = useState(null);
+	const debugModeOn = false; // флаг показа логов
 	//const [popout, setPopout] = useState(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 	//const [modalWindow, setModalWindow] = useState(null);
 	const [viewCollectTab, setCollectViewTab] = useState("main");
@@ -60,8 +62,13 @@ const App = (props) => {
 		borderRadius: '10px'
 	}
 
-	
+	// функция вывода на консоль. легко отключается флагом
+	const consoleLog = (message) => {
+		if (debugModeOn)
+			console.log(message);
+	}
 
+// интервальная проверка новых мест, сборов и аренд
 	const checkMovings = () => {
 		//alert('Привет');
 		if (props.cities && props.cities.length > 0 && props.myProfile && props.myProfile.CityUmbracoId != null &&
@@ -80,22 +87,24 @@ const App = (props) => {
 		}
 	}
 
-
 	const CloseModal = () => {
 		props.resetError()
 		props.setCurrentModalWindow(null)
 	}
 
-	// загрузка информации о пользователе ВК
+
+	// !! ================ useffects загрузка приложения ================== !!
+
+	// загрузка информации о пользователе ВК (внутри первого useffect с пустыми параметрами)
 	async function fetchData() {
 
 		const user = await bridge.send('VKWebAppGetUserInfo');
 		setUser(user);
 		props.setVkProfileInfo(user);
-		props.getAllCitiesFromServer();
+
 	}
 
-	// это системное, загрузка приложения вк
+	// 1 это системное, загрузка приложения вк
 	useEffect(() => {
 		if (props.myProfile && props.myProfile.CityUmbracoId != undefined){
 			props.setLoading(true);
@@ -111,16 +120,111 @@ const App = (props) => {
 		});
 
 		fetchData();
+		consoleLog("1 start fetchData()")
 
 	}, []);
 
-
-	// загрузка мест, админов города, текущих турниров
+	// 2 при загрузке приложения
 	useEffect(() => {
 
+		if (!props.Connected) {
+
+			consoleLog("2 start checkConnection()")
+			props.checkConnection();
+		}
+	}, [props.vkProfile])
+
+	// 3 после загрузки профиля вк проверяем инициируем соединение с сервером
+	useEffect(() => {
+		// нужно узнать город, далее если этого города нет в списке поддерживаемых, предлжить выбрать другой город и отправить заявку на добавление города. Всё это в модалке
+		// другой вопрос. если кто-то создает фейковый сбор, как гарантировать другим, что это не фейк?
+		// ввести в рейтинг поле "гарант сбора. если поступает жалоба на сбор (не было сбора), модератор засчитывает штрафной балл организатору"
+		// у людей, которые первый раз собирают, писать город из профиля, количество друзей и то, что человек еще не собирал ни разу, а значит может быть фейком
+		// еще нужно запрашивать права на доступ к инфе: город, дата рождения, друзья, 
+		// а еще в бэке надо сделать так, чтобы записи в Leg и City не плодились, а искали соответствующие из умбрако и ставили их Id
+		consoleLog("3 check if. Connected=" + (props.Connected) + " , vkProfile=" + (props.vkProfile!=null) + ", myProfile=" + (props.myProfile==null))
+		
+		if (props.Connected && props.vkProfile && props.vkProfile.city && !props.myProfile) {
+			consoleLog("3 start getUserProfile()")
+			props.getUserProfile(props.vkProfile);
+		}
+
+	}, [props.Connected, props.vkProfile])
+
+	// 4 загрузка профиля
+	useEffect(() => {
+
+		if (props.vkProfile && props.vkProfile.city && props.myProfile) {
+			consoleLog("4 vkprofile and myprofile loaded")
+
+			if((props.vkProfile.bdate != undefined) && (props.vkProfile.bdate.split('.').length > 2) && (new Date(props.myProfile.Birth).getFullYear() > 1920)) // 
+			{
+				consoleLog("4 no error in birthdate from vk")
+
+				props.setCurrentModalWindow(null);
+				props.getAllCitiesFromServer();
+				consoleLog("4 start getAllCitiesFromServer()")
+
+				if (props.myProfile.CityUmbracoId != null && props.myProfile.CityUmbracoId == -1) {
+				consoleLog("4 error in userprofile city")
+
+					//debugger
+					// предлагаем выбрать город
+					props.setGlobalPopout(false);
+					props.setCurrentModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
+				}
+			//props.getUser(19757699);
+			}
+			else{
+				consoleLog("4  error in birthdate from vk or myProfile.Birth.getFullYear < 1920")
+				
+			}
+		}
+		else{
+			// не загрузился город или вк профиль или мой профиль
+		}
+
+	}, [props.myProfile])
+	
+	// 5 регистрация пользователя
+	useEffect(() => {
+
+		if (props.vkProfile && props.vkProfile.city) {
+			if ((!props.myProfile) && (props.triedToGetProfile>0)) { // не зарегистрирован
+				consoleLog("5 not registred")
+
+				if ((props.vkProfile) && (props.vkProfile.bdate == undefined))
+				{
+					consoleLog("5 selectBirth")
+
+					props.setGlobalPopout(false);
+					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirth" data={props.vkProfile} action={props.setVkProfileInfo} action2={props.setTriedToGetProfile} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
+				}
+				else if ((props.vkProfile) && (props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() < 1920)) {
+					consoleLog("5 selectBirthYear")
+					
+					props.setGlobalPopout(false);
+					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirthYear" data={props.vkProfile} action={props.setVkProfileInfo} action2={props.setTriedToGetProfile} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
+				}
+				else{
+					props.getAuthInfo(props.vkProfile); // регаем
+					consoleLog("5 start getAuthInfo() - register")
+
+				}
+			}
+		}
+	}, [props.triedToGetProfile])
+	
+	// 6 загрузка мест, админов города, текущих турниров
+	useEffect(() => {
+		//consoleLog("6 cities fire")
 		// а это уже когда прогрузился и выбран город профиля
 		if (props.cities && props.cities.length > 0 && props.myProfile && props.myProfile.CityUmbracoId != null &&
 			props.myProfile.CityUmbracoId != -1 && new Date(props.myProfile.Birth).getFullYear() >= 1920 && props.places.length == 0) {
+			
+			consoleLog("6 start loadAll()")
+
+
 			// загружаем места этого города
 			props.goToPanel("hot", false)
 
@@ -143,7 +247,9 @@ const App = (props) => {
 			{
 				setTimerStarts(true);
 				setTimeout(() => setInterval(() => checkMovings(), 30000), 5000)
+
 			}
+
 		}
 
 		// это пока не прогрузился город профиля (не выбран)
@@ -157,13 +263,14 @@ const App = (props) => {
 		}
 
 
-	}, [props.myProfile, props.vkProfile, props.cities])
+	}, [ props.cities]) //props.myProfile, props.vkProfile,
 
-
+	// 7 загрузка матчей в выбранном городе
 	useEffect(() => {
 		if (props.places && props.places.length > 0) {
 
 			props.getMatchesInCurrentCity(props.myProfile);
+			consoleLog("7 start getMatchesInCurrentCity()")
 			
 			// завершили загрузку
 			if (props.Loading)
@@ -171,113 +278,15 @@ const App = (props) => {
 		}
 	}, [props.places])
 
-
 	// при смене глобального Popout и возникновении ошибки
 	useEffect(() => {
-		//if (props.errorObject && props.errorObject.resultcode != 0)
 		if (props.errorObject && props.errorObject != "") {
-			//props.setCurrentModalWindow(<ModalCommon modalName="Error" data={props.errorObject} Close={CloseModal}></ModalCommon>)
 		}
 		else {
-			//setPopout(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 		}
-		//}, [props.globalPopout, props.errorObject])
 	}, [props.errorObject])
 
-
-	// при загрузке профиля (по факту приложения)
-	useEffect(() => {
-		// нужно узнать город, далее если этого города нет в списке поддерживаемых, предлжить выбрать другой город и отправить заявку на добавление города. Всё это в модалке
-		// другой вопрос. если кто-то создает фейковый сбор, как гарантировать другим, что это не фейк?
-		// ввести в рейтинг поле "гарант сбора. если поступает жалоба на сбор (не было сбора), модератор засчитывает штрафной балл организатору"
-		// у людей, которые первый раз собирают, писать город из профиля, количество друзей и то, что человек еще не собирал ни разу, а значит может быть фейком
-		// еще нужно запрашивать права на доступ к инфе: город, дата рождения, друзья, 
-		// а еще в бэке надо сделать так, чтобы записи в Leg и City не плодились, а искали соответствующие из умбрако и ставили их Id
-
-		if (props.vkProfile && props.vkProfile.city && !props.myProfile) {
-			
-			props.getUserProfile(props.vkProfile);
-		}
-
-		
-
-	}, [props.vkProfile])
-
-
-	// регистрация пользователя
-	useEffect(() => {
-
-		if (props.vkProfile && props.vkProfile.city) {
-			if ((!props.myProfile) && (props.triedToGetProfile>0)) { // не зарегистрирован
-				if ((props.vkProfile) && (props.vkProfile.bdate == undefined))
-				{
-					props.setGlobalPopout(false);
-					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirth" data={props.vkProfile} action={props.setVkProfileInfo} action2={props.setTriedToGetProfile} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
-				}
-				else if ((props.vkProfile) && (props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() < 1920)) {
-					
-					props.setGlobalPopout(false);
-					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirthYear" data={props.vkProfile} action={props.setVkProfileInfo} action2={props.setTriedToGetProfile} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
-				}
-				else{
-					props.getAuthInfo(props.vkProfile); // регаем
-				}
-			}
-		}
-	}, [props.triedToGetProfile])
-
-
-	// загрузка профиля
-	useEffect(() => {
-
-		if (props.vkProfile && props.vkProfile.city && props.myProfile) {
-			
-
-			if((props.vkProfile.bdate.split('.').length > 2) && (new Date(props.myProfile.Birth).getFullYear() > 1920)) // 
-			{
-
-				// после регистрации, загрузки новых данных с сервера и указания года рождения необходимо обновить данные на сервере
-				// if (new Date(props.myProfile.Birth).getFullYear() < 1920) {
-				// 	props.getAuthInfo(props.vkProfile);
-				// }
-				// else { // если данные обновлены и все в порядке с профилями
-				// 	props.setCurrentModalWindow(null);
-				// }
-
-				// // поправка даты в vk профиле (правится, когда профиль грузится с бэкэнда без регистрации)
-				// if ((props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() >= 1920)) {
-				// 	props.setVkProfileInfo({ ...props.vkProfile, bdate: props.vkProfile.bdate + "." + new Date(props.myProfile.Birth).getFullYear().toString() })
-				// }
-
-				props.setCurrentModalWindow(null);
-
-
-				if (props.myProfile.CityUmbracoId != null && props.myProfile.CityUmbracoId == -1) {
-					//debugger
-					// предлагаем выбрать город
-					props.setGlobalPopout(false);
-					props.setCurrentModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
-				}
-
-
-			//props.getUser(19757699);
-
-			}	
-
-
-			
-
-
-		}
-
-		// if (props.myProfile.Name)
-		// {
-		// 	setModalWindow(<ModalCommon modalName="MyProfile" data={props.myProfile} Close={() => setModalWindow(null)}></ModalCommon>)
-		// }
-	}, [props.myProfile])
-
-
-	// отобразить панель админа турниров
+    // отобразить панель админа турниров
 	useEffect(() => {
 		// если загрузились админы города
 		if ((props.tournamentAdmins != undefined) && (props.tournamentAdmins.length > 0)) {
@@ -290,6 +299,9 @@ const App = (props) => {
 			}
 		}
 	}, [props.tournamentAdmins])
+
+	// !! ================ useffects загрузка приложения ================== !!
+
 
 
 	const TournamentSelect = (item) => {
@@ -307,7 +319,6 @@ const App = (props) => {
 		props.setCollectItemMode("view");
 		//props.setActiveMenuItem("collectadmin"); // отключил тк использовал компонент с hoc withHistory
 	}
-
 
 	const CollectAdd = () => {
 		//debugger
@@ -644,7 +655,7 @@ const App = (props) => {
 					<CardGrid size="l">
 						<Card style={{height: '100%'}}>
 							<FormItem style={{height: '100px'}}>
-								<span style={cardStyle}><Title>Авторизация...</Title></span>
+								<span style={cardStyle}><Title>{!props.Connected ? 'Соединение...' : 'Авторизация...'}</Title></span>
 							</FormItem>
 						</Card>
 					</CardGrid>
@@ -667,6 +678,8 @@ const mapStateToProps = (state) => {
 		ShowAdminTeamTab: state.system.ShowAdminTeamTab,
 		CurrentModalWindow: state.system.CurrentModalWindow,
 		Loading: state.system.Loading,
+		Connected: state.system.Connected,
+		CheckLoading: state.system.CheckLoading,
 		cities: state.cityEntity.cities,
 		//places: state.placeEntity.places,
 		places: state.simplePlaceEntity.places,
@@ -687,7 +700,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, { 
-	setCurrentModalWindow, setLoading, goToPanel,
+	setCurrentModalWindow, setLoading, goToPanel, checkConnection, updateLoading,
 	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId, getUser, setSelectedUser,
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode, setCollectItemMode,
 	setActiveMenuItem, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError, selectSimpleCollect,

@@ -336,7 +336,6 @@ export const CollectAPI = {
     },
 }
 
-
 export const TeamAPI = {
 
     // getAll() {
@@ -1095,4 +1094,18 @@ export const TournamentAPI = {
                 return errorObj(error)
             })
     }
+}
+
+export const ServiceAPI = {
+    checkConnection() {
+        
+        return PostJsonInstance.post("Service/Connect" + authQueryString).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
 }

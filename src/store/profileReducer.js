@@ -52,7 +52,7 @@ export let profileReducer = (state = initState, action) =>
 
 
 export const setVkProfileInfo = (user) => {
-    debugger
+    
     return {
         type: PROFILE_SET_VK_PROFILE_INFO,
         user

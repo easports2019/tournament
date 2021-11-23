@@ -1,8 +1,13 @@
 import {ampluaTypes, users} from './constants/commonConstants'
 import { setActiveMenuItem } from "./mainMenuReducer";
+import { authQueryString } from './../utils/api/server';
+import { ServiceAPI, errorObj } from './../utils/api/api.js'
 
 const ANY_ACTION_TYPE = "ANY_ACTION_TYPE";
 const SYSTEM_SET_LOADING = "SYSTEM_SET_LOADING";
+const SYSTEM_CHECK_LOADING = "SYSTEM_CHECK_LOADING";
+const SYSTEM_SET_CONNECTED = "SYSTEM_SET_CONNECTED";
+const SYSTEM_SET_DISCONNECTED = "SYSTEM_SET_DISCONNECTED";
 const SYSTEM_PUSH_TO_HISTORY = "SYSTEM_PUSH_TO_HISTORY";
 const SYSTEM_SET_CURRENT_MODAL_WINDOW = "SYSTEM_SET_CURRENT_MODAL_WINDOW";
 const SYSTEM_POP_FROM_HISTORY = "SYSTEM_POP_FROM_HISTORY";
@@ -14,6 +19,7 @@ const SYSTEM_SET_SHOW_ADMIN_TOURNEY_TAB = "SYSTEM_SET_SHOW_ADMIN_TOURNEY_TAB";
 
 const initState = {
     currentMenu: {},
+    Connected: false,
     history: ["hot"],
     GlobalPopout: false,
     CurrentModalWindow: null,
@@ -22,6 +28,7 @@ const initState = {
     ShowAdminTourneyTab: false,
     ShowAdminTeamTab: true,
     Loading: true,
+    CheckLoading: new Date(),
      // level 
 
 }
@@ -37,6 +44,21 @@ export let systemReducer = (state = initState, action) =>
         case SYSTEM_PUSH_TO_HISTORY: {
             return {...state,
                 history: [...state.history, action.item]
+            };
+        }
+        case SYSTEM_CHECK_LOADING: {
+            return {...state,
+                CheckLoading: new Date(),
+            };
+        }
+        case SYSTEM_SET_CONNECTED: {
+            return {...state,
+                Connected: true,
+            };
+        }
+        case SYSTEM_SET_DISCONNECTED: {
+            return {...state,
+                Connected: false,
             };
         }
         case SYSTEM_SET_GLOBAL_POPOUT: {
@@ -103,6 +125,24 @@ export const setLoading = (loading) => {
     return {
         type: SYSTEM_SET_LOADING,
         loading
+    }
+}
+
+export const updateLoading = () => {
+    return {
+        type: SYSTEM_CHECK_LOADING
+    }
+}
+
+export const setConnected = () => {
+    return {
+        type: SYSTEM_SET_CONNECTED
+    }
+}
+
+export const setDisconnected = () => {
+    return {
+        type: SYSTEM_SET_DISCONNECTED
     }
 }
 
@@ -174,6 +214,39 @@ export const goToPanel = (nextPanel, back) => {
             dispatch(setActiveMenuItem(nextPanel));
         }
         
+    }
+}
+
+
+// проверка связи с сервисом
+export const checkConnection = () => {
+    return dispatch => {
+        dispatch(setGlobalPopout(true))
+        dispatch(resetError())
+
+        if (authQueryString && authQueryString.length > 0)
+        ServiceAPI.checkConnection()
+                .then(pl => {
+                    if (pl) {
+                        dispatch(setConnected());
+                        dispatch(setGlobalPopout(false))
+                    }
+                    else {
+                        dispatch(setErrorMessage(errorObj("Ошибка при соединении с сервисом")))
+                        dispatch(setDisconnected());
+                        dispatch(setGlobalPopout(false))
+
+                    }
+                })
+                .catch(error => {
+                    dispatch(setErrorMessage(error))
+                    dispatch(setGlobalPopout(false))
+                })
+        else {
+            dispatch(setErrorMessage(errorObj("Ошибка запуска приложения")))
+            dispatch(setGlobalPopout(false))
+
+        }
     }
 }
 
