@@ -4,7 +4,7 @@ import {
     File, CellButton, Button, Header, List, Cell, Select, CustomSelectOption, IconButton,
     CardGrid, Card, SplitLayout, SplitCol, Div, Radio, RangeSlider, useAdaptivity, VKCOM
 } from '@vkontakte/vkui'
-import { defaultPhotoPath } from './../../../../../store/dataTypes/common'
+import { defaultPhotoPath } from './../../../../../store/dataTypes/common.js'
 import { Icon24Camera, Icon28AddOutline } from '@vkontakte/icons';
 import { connect } from 'react-redux';
 import bridge from '@vkontakte/vk-bridge';
