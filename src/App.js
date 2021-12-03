@@ -1,7 +1,9 @@
 import bridge from '@vkontakte/vk-bridge';
 import { Card, CardGrid, Epic, FormItem, Group, Header, InfoRow, List, Panel, PanelHeader, ScreenSpinner, Tabbar, Title, View } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import {useIsConnected} from './store/selectors/selectors'
 import request from 'request'
 import { connect } from 'react-redux';
 import ModalCommon from './components/Modals/ModalCommon/ModalCommon';
@@ -35,10 +37,7 @@ import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelected
 import { getUser, setSelectedUser } from './store/vkReducer';
 import { addToTime } from './utils/convertors/dateUtils';
 import MatchItem from './components/Panels/AdminPanel/Match/MatchItem';
-
-
-
-
+import { useDispatch } from 'react-redux';
 
 
 
@@ -49,6 +48,8 @@ const App = (props) => {
 	//const [modalWindow, setModalWindow] = useState(null);
 	const [viewCollectTab, setCollectViewTab] = useState("main");
 	const [timerStarts, setTimerStarts] = useState(false);
+	let connectionTimer = null;
+
 	const cardStyle = {
 		position: 'absolute', 
 		bottom: '0px', 
@@ -61,6 +62,8 @@ const App = (props) => {
 		opacity: '0.9',
 		borderRadius: '10px'
 	}
+
+
 
 	// функция вывода на консоль. легко отключается флагом
 	const consoleLog = (message) => {
@@ -86,6 +89,23 @@ const App = (props) => {
 			}
 		}
 	}
+
+
+
+// интервальная проверка соединения
+	const CheckConnection = () => {
+		let ii = store.getState();
+
+		if (ii.system.Connected) {
+			consoleLog("timer stopped in CheckConnection");
+			clearInterval(connectionTimer);
+		}
+		else{
+			consoleLog("timer fires in CheckConnection, props.Connected=" + ii.system.Connected);
+			props.checkConnection();
+		}
+	}
+
 
 	const CloseModal = () => {
 		props.resetError()
@@ -131,6 +151,9 @@ const App = (props) => {
 
 			consoleLog("2 start checkConnection()")
 			props.checkConnection();
+			connectionTimer = setInterval(() => {
+				CheckConnection()
+			}, 5000)
 		}
 	}, [props.vkProfile])
 
@@ -147,6 +170,11 @@ const App = (props) => {
 		if (props.Connected && props.vkProfile && props.vkProfile.city && !props.myProfile) {
 			consoleLog("3 start getUserProfile()")
 			props.getUserProfile(props.vkProfile);
+		}
+
+		if (props.Connected) {
+			consoleLog("3 timer stopped");
+			//clearInterval(connectionTimer);
 		}
 
 	}, [props.Connected, props.vkProfile])
@@ -246,7 +274,7 @@ const App = (props) => {
 			if (!timerStarts)
 			{
 				setTimerStarts(true);
-				setTimeout(() => setInterval(() => checkMovings(), 30000), 5000)
+				setTimeout(() => setInterval(() => checkMovings(), 20000), 20000)
 
 			}
 
@@ -351,7 +379,7 @@ const App = (props) => {
 
 		<Epic
 			activeStory={props.mainMenu.activeItem.name}
-			tabbar={
+			tabbar={props.Connected ? 
 				<Tabbar>
 					<TabbarItemWithHistory toMenuName="hot" selected={"hot" === props.mainMenu.activeItem.name} data-story="hot" text="Горячее"></TabbarItemWithHistory>
 					<TabbarItemWithHistory toMenuName="allTournaments" selected={"allTournaments" === props.mainMenu.activeItem.name} data-story="allTournaments" text="Турниры"></TabbarItemWithHistory>
@@ -362,7 +390,9 @@ const App = (props) => {
 					//props.ShowAdminTeamTab 
 					props.ShowAdminTourneyTab 
 					&& <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Мои команды"></TabbarItemWithHistory>}
-				</Tabbar>}>
+				</Tabbar>
+			: null	
+			}>
 
 			<View id="hot" 
 			//activePanel={props.matches.hotPanel} 

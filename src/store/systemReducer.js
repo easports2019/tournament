@@ -52,11 +52,13 @@ export let systemReducer = (state = initState, action) =>
             };
         }
         case SYSTEM_SET_CONNECTED: {
+            
             return {...state,
                 Connected: true,
             };
         }
         case SYSTEM_SET_DISCONNECTED: {
+            
             return {...state,
                 Connected: false,
             };
@@ -227,7 +229,8 @@ export const checkConnection = () => {
         if (authQueryString && authQueryString.length > 0)
         ServiceAPI.checkConnection()
                 .then(pl => {
-                    if (pl) {
+                    
+                    if (pl && pl.result == "Ok") {
                         dispatch(setConnected());
                         dispatch(setGlobalPopout(false))
                     }
