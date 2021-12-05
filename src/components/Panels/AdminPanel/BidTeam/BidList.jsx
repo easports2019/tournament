@@ -23,7 +23,7 @@ const BidList = (props) => {
                                     caption={item.AdminTournamentComment.trim() && `Комментарий организатора: ${item.AdminTournamentComment.trim()}`}
                                     text={<b style={{"color": "green"}}>Заявка на турнир одобрена</b>}
                                 >
-                                    { `${item.TeamName} - ${item.TournamentGroup.Name} - ${item.TournamentGroup.Tournament.Name} (${item.TournamentGroup.Tournament.Founder.Surname} ${item.TournamentGroup.Tournament.Founder.Name[0]}.)`}
+                                    { `${item.TeamName} - ${item.TournamentGroup.Name} - ${item.TournamentGroup.Tournament.Name} (${item.TournamentGroup.Tournament.Founder && item.TournamentGroup.Tournament.Founder.Surname} ${item.TournamentGroup.Tournament.Founder && item.TournamentGroup.Tournament.Founder.Name[0]}.)`}
                                     
                                 </RichCell>
                             )
@@ -35,7 +35,7 @@ const BidList = (props) => {
                                     text={<b style={{"color": "red"}}>Заявка на турнир отклонена</b>}
                                     //actions={<Button mode="destructive" onClick={() => props.Button1Handle(item)}>Отменить заявку</Button>}
                                 >
-                                    { `${item.TeamName} - ${item.TournamentGroup.Name} - ${item.TournamentGroup.Tournament.Name} (${item.TournamentGroup.Tournament.Founder.Surname} ${item.TournamentGroup.Tournament.Founder.Name[0]}.)`}
+                                    { `${item.TeamName} - ${item.TournamentGroup.Name} - ${item.TournamentGroup.Tournament.Name} (${item.TournamentGroup.Tournament.Founder && item.TournamentGroup.Tournament.Founder.Surname} ${item.TournamentGroup.Tournament.Founder && item.TournamentGroup.Tournament.Founder.Name[0]}.)`}
                                     
                                 </RichCell>
                             )
@@ -46,7 +46,7 @@ const BidList = (props) => {
                                     caption={item.AdminTournamentComment.trim() && `Комментарий организатора: ${item.AdminTournamentComment.trim()}`}
                                     actions={<ButtonWithNotify mode="destructive" Message="Уверены, что хотите отменить заявку?" Yes={() => props.Button1Handle(item)}>Отменить заявку</ButtonWithNotify>}
                                 >
-                                    { `${item.TeamName} - ${item.TournamentGroup.Name} - ${item.TournamentGroup.Tournament.Name} (${item.TournamentGroup.Tournament.Founder.Surname} ${item.TournamentGroup.Tournament.Founder.Name[0]}.)`}
+                                    { `${item.TeamName} - ${item.TournamentGroup.Name} - ${item.TournamentGroup.Tournament.Name} (${item.TournamentGroup.Tournament.Founder && item.TournamentGroup.Tournament.Founder.Surname} ${item.TournamentGroup.Tournament.Founder && item.TournamentGroup.Tournament.Founder.Name[0]}.)`}
                                     
                                 </RichCell>
                             )
