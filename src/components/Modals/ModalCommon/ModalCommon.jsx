@@ -177,13 +177,12 @@ let ModalCommon = (props) => {
                         <FormLayoutGroup>
                             <InfoRow header="Город не найден">
                                 Город, указанный в вашем профиле Вконтакте <b style={{color: 'red'}}>{props.data.profile ? props.data.profile.CityName : ""}</b> не найден в списке доступных для работы площадки. 
-                                Выберите из списка ближайший к вам город, в котором вы готовы участвовать в сборах.
+                                Выберите из списка ближайший к вам город, за спортивной жизнью которого вы будете следить.
                             </InfoRow>
                             <FormItem top="Город">            
                             <Select
                                 placeholder="Не выбран" 
                                 onChange={(e) => {
-                                    debugger
                                     setSelectedCity(+e.currentTarget.value)
                                     }}
                                 options={props.data.cities && props.data.cities.map(city => {
@@ -194,14 +193,13 @@ let ModalCommon = (props) => {
                                 />
                             </FormItem>
                         </FormLayoutGroup>
-                        <InfoRow>или</InfoRow>
+                        {/* <InfoRow>или</InfoRow>
                         <FormLayoutGroup>
                             <InfoRow header="Укажите название вашего города">
                                 Оставьте заявку администратору на добавление Вашего города в систему
-                                (После отправки сказать спасибо и перевести профиль в режим просмотра... Не нужно предлагать другой город, пожалуй)
                             </InfoRow>
                             <Input value={bidCity} onChange={(e) => setBidCity(e.currentTarget.value)} type="text"></Input>
-                        </FormLayoutGroup>
+                        </FormLayoutGroup> */}
                     </FormLayout>
             </ModalCard>
       </ModalRoot>
