@@ -384,7 +384,7 @@ const App = (props) => {
             onRefresh={onRefresh}
             isFetching={isFetching}
           >
-			  <PanelHeader>
+			  <PanelHeader left={<BackButton isBack={true} />}>
 				  <h6>потяните вниз для обновления</h6>
 			  </PanelHeader>
 			<Epic
@@ -409,7 +409,7 @@ const App = (props) => {
 				activePanel="main" 
 				modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-						{/* <PanelHeader left={<BackButton isBack={true} />}>Горячее в городе</PanelHeader> */}
+						{/* <PanelHeader >Горячее в городе</PanelHeader> */}
 						<Group header={<Header mode="secondary">Сервисы</Header>}>
 							<CardGrid size="s">
 								<CardWithHistory
