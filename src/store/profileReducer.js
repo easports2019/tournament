@@ -108,6 +108,7 @@ export const getUserProfile = (vkUserData) => {
     }
 }
 
+
 // установка нового города пользователю
 export const setUserProfileCity = (userProfile) => {
     return dispatch => {

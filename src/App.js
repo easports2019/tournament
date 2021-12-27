@@ -559,6 +559,7 @@ const App = (props) => {
 							<InfoRow header="Имя">{props.myProfile && props.myProfile.Name}</InfoRow>
 							<InfoRow header="Фамилия">{props.myProfile && props.myProfile.Surname}</InfoRow>
 							<InfoRow header="Город">{props.myProfile && props.myProfile.CityName}</InfoRow>
+							<InfoRow header="Уровень игры">{props.myProfile && props.myProfile.TotalExpirience}</InfoRow>
 							<InfoRow header="Год рождения">{props.myProfile && new Date(props.myProfile.Birth).getFullYear()}</InfoRow>
 							<InfoRow header="Id города привязки">{props.myProfile && props.myProfile.CityUmbracoId}</InfoRow>
 							<InfoRow header="Город привязки">{props.myProfile && props.myProfile.CityUmbracoName}</InfoRow>
