@@ -1,9 +1,9 @@
 import bridge from '@vkontakte/vk-bridge';
-import { Card, CardGrid, Epic, FormItem, Group, Header, InfoRow, List, Panel, PanelHeader, PullToRefresh, ScreenSpinner, Tabbar, Title, View } from '@vkontakte/vkui';
+import { Button, Caption, Card, CardGrid, Epic, FormItem, Group, Header, InfoRow, List, Panel, PanelHeader, PullToRefresh, ScreenSpinner, Slider, Tabbar, Title, View } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import {useIsConnected} from './store/selectors/selectors'
+import {getCurrentExpirienceName, useIsConnected} from './store/selectors/selectors'
 import request from 'request'
 import { connect } from 'react-redux';
 import ModalCommon from './components/Modals/ModalCommon/ModalCommon';
@@ -44,6 +44,7 @@ import { useDispatch } from 'react-redux';
 const App = (props) => {
 	const [fetchedUser, setUser] = useState(null);
 	const [isFetching, setIsFetching] = useState(false);
+	const [myTotalExpirience, setMyTotalExpirience] = useState(props.myProfile ? props.myProfile.TotalExpirience : 0)
 	const debugModeOn = false; // флаг показа логов
 	//const [popout, setPopout] = useState(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 	//const [modalWindow, setModalWindow] = useState(null);
@@ -559,7 +560,26 @@ const App = (props) => {
 							<InfoRow header="Имя">{props.myProfile && props.myProfile.Name}</InfoRow>
 							<InfoRow header="Фамилия">{props.myProfile && props.myProfile.Surname}</InfoRow>
 							<InfoRow header="Город">{props.myProfile && props.myProfile.CityName}</InfoRow>
-							<InfoRow header="Уровень игры">{props.myProfile && props.myProfile.TotalExpirience}</InfoRow>
+							<InfoRow header="Уровень игры"
+							>
+								<Caption level="2">Указанное здесь значение будет влиять на подбор партнеров по игре. Указав наиболее правдивое значение, вам будет удобнее пользоваться сервисом</Caption>
+								<Caption level="2">Для изменения уровня перетягивайте ползунок влево и вправо. После выбора уровня нажмите на кнопку "Сохранить"</Caption>
+							<FormItem>
+								<Slider
+								min={0}
+								max={100}
+								value={Number(myTotalExpirience)}
+								onChange={(myTotalExpirience) => setMyTotalExpirience(myTotalExpirience)}
+								>
+														
+								</Slider>
+
+							</FormItem>
+							<Caption level="2" weight="semibold">Выбранный уровень: {getCurrentExpirienceName(myTotalExpirience)}</Caption>
+							<FormItem>
+								<Button>сделать событие Сохранить</Button>
+							</FormItem>
+							</InfoRow>
 							<InfoRow header="Год рождения">{props.myProfile && new Date(props.myProfile.Birth).getFullYear()}</InfoRow>
 							<InfoRow header="Id города привязки">{props.myProfile && props.myProfile.CityUmbracoId}</InfoRow>
 							<InfoRow header="Город привязки">{props.myProfile && props.myProfile.CityUmbracoName}</InfoRow>
