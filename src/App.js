@@ -1,5 +1,5 @@
 import bridge from '@vkontakte/vk-bridge';
-import { Button, Caption, Card, CardGrid, Epic, FormItem, Group, Header, InfoRow, List, Panel, PanelHeader, PullToRefresh, ScreenSpinner, Slider, Tabbar, Title, View } from '@vkontakte/vkui';
+import { Button, Caption, Card, CardGrid, DatePicker, Epic, FormItem, Group, Header, InfoRow, Input, List, Panel, PanelHeader, PullToRefresh, ScreenSpinner, Slider, Tabbar, Title, View } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
@@ -28,14 +28,15 @@ import { getAllCitiesFromServer } from './store/cityReducer';
 import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect, setCollectItemMode } from './store/collectReducer';
 import { setActiveMenuItem } from './store/mainMenuReducer';
 import { getMatchesInCurrentCity, setHotPanel } from './store/matchReducer';
-import { getAuthInfo, getUserProfile, setTriedToGetProfile, setUserProfileCity, setVkProfileInfo } from './store/profileReducer';
+import { getAuthInfo, getUserProfile, setTriedToGetProfile, setUserProfileCity, setBirthDate,
+	saveUserProfile, setVkProfileInfo, setUserName, setUserSurName, setMyTotalExpirience } from './store/profileReducer';
 import { getAllRentsInCityByCityId } from './store/rentReducer';
 import { getAllSimplePlacesInCityByCityId } from './store/simplePlaceReducer';
 import { goToPanel, resetError, setCurrentModalWindow, checkConnection, setGlobalPopout, 
 	setLoading, setShowAdminTourneyTab, updateLoading } from './store/systemReducer';
 import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
 import { getUser, setSelectedUser } from './store/vkReducer';
-import { addToTime } from './utils/convertors/dateUtils';
+import { addToTime, dateToString, jSDateValueToDateSelectorValue } from './utils/convertors/dateUtils';
 import MatchItem from './components/Panels/AdminPanel/Match/MatchItem';
 import { useDispatch } from 'react-redux';
 
@@ -44,7 +45,7 @@ import { useDispatch } from 'react-redux';
 const App = (props) => {
 	const [fetchedUser, setUser] = useState(null);
 	const [isFetching, setIsFetching] = useState(false);
-	const [myTotalExpirience, setMyTotalExpirience] = useState(props.myProfile ? props.myProfile.TotalExpirience : 0)
+	
 	const debugModeOn = false; // флаг показа логов
 	//const [popout, setPopout] = useState(props.globalPopout ? <ScreenSpinner size='large' /> : null);
 	//const [modalWindow, setModalWindow] = useState(null);
@@ -446,12 +447,6 @@ const App = (props) => {
 				</View>
 				<View id="allTournaments" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-						<PanelHeader
-							left={<BackButton isBack={true} />}
-						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
-						>
-							Все турниры
-						</PanelHeader>
 						<Group header={<Header>Текущие турниры города</Header>}>
 							<List>
 
@@ -480,12 +475,11 @@ const App = (props) => {
 				</View>
 				<View id="collectslist" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-						<PanelHeader
-							left={<BackButton isBack={true} />}
-						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+					<Group
+							header={<Header>Все сборы</Header>}
 						>
-							Все сборы
-						</PanelHeader>
+
+						</Group>
 						<FormItem>
 							<CellButtonWithHistory
 								data-story="collectadmin"  // необходимо для использования withHistory
@@ -539,50 +533,82 @@ const App = (props) => {
 				</View>
 				<View id="collectadmin" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-						<PanelHeader
-							left={<BackButton isBack={true} />}
-						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+					<Group
+							header={<Header>Управление сборами</Header>}
 						>
-							Управление сборами
-						</PanelHeader>
+
+						</Group>
 						<SimpleCollectItem></SimpleCollectItem>
 					</Panel>
 				</View>
 				<View id="profile" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-						<PanelHeader
-							left={<BackButton isBack={true} />}
-						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+					<Group
+							header={<Header>Мой профиль</Header>}
 						>
-							Профиль
-						</PanelHeader>
+
+						</Group>
 						<Group>{props.myProfile && props.myProfile.Name && <FormItem>
-							<InfoRow header="Имя">{props.myProfile && props.myProfile.Name}</InfoRow>
-							<InfoRow header="Фамилия">{props.myProfile && props.myProfile.Surname}</InfoRow>
-							<InfoRow header="Город">{props.myProfile && props.myProfile.CityName}</InfoRow>
-							<InfoRow header="Уровень игры"
-							>
+							<InfoRow header="Город из профиля ВК">{props.myProfile && props.myProfile.CityName}</InfoRow>
+							<InfoRow header="Город привязки турниров и сборов">{props.myProfile && props.myProfile.CityUmbracoName}</InfoRow>
+							{/* <InfoRow header="Имя">{props.myProfile && props.myProfile.Name}</InfoRow> */}
+							<FormItem top="Имя">
+								<Input value={props.myProfile && props.myProfile.Name} onChange={props.setUserName}></Input>
+							</FormItem>
+							{/* <InfoRow header="Фамилия">{props.myProfile && props.myProfile.Surname}</InfoRow> */}
+							<FormItem top="Фамилия">
+								<Input value={props.myProfile && props.myProfile.Surname} onChange={props.setUserSurName}></Input>
+							</FormItem>
+							<InfoRow header="Уровень игры">
 								<Caption level="2">Указанное здесь значение будет влиять на подбор партнеров по игре. Указав наиболее правдивое значение, вам будет удобнее пользоваться сервисом</Caption>
 								<Caption level="2">Для изменения уровня перетягивайте ползунок влево и вправо. После выбора уровня нажмите на кнопку "Сохранить"</Caption>
-							<FormItem>
-								<Slider
-								min={0}
-								max={100}
-								value={Number(myTotalExpirience)}
-								onChange={(myTotalExpirience) => setMyTotalExpirience(myTotalExpirience)}
-								>
-														
-								</Slider>
+								<FormItem>
+									<Slider
+									min={0}
+									max={100}
+									value={props.myProfile && Number(props.myProfile.TotalExpirience)}
+									onChange={(e) => props.setMyTotalExpirience(e)}
+									type="number"
+									>
+															
+									</Slider>
 
-							</FormItem>
-							<Caption level="2" weight="semibold">Выбранный уровень: {getCurrentExpirienceName(myTotalExpirience)}</Caption>
-							<FormItem>
-								<Button>сделать событие Сохранить</Button>
-							</FormItem>
+								</FormItem>
+								<Caption level="2" weight="semibold">Выбранный уровень: {getCurrentExpirienceName(props.myProfile.TotalExpirience)}</Caption>
 							</InfoRow>
-							<InfoRow header="Год рождения">{props.myProfile && new Date(props.myProfile.Birth).getFullYear()}</InfoRow>
-							<InfoRow header="Id города привязки">{props.myProfile && props.myProfile.CityUmbracoId}</InfoRow>
-							<InfoRow header="Город привязки">{props.myProfile && props.myProfile.CityUmbracoName}</InfoRow>
+							<FormItem top="Дата рождения">
+							<DatePicker
+                            min={{ day: 1, 
+								month: 0, 
+								year: new Date().getFullYear()-100 }}
+                            max={{ day: 31, 
+								month: 12, 
+								year: new Date().getFullYear() }}
+                            //defaultValue={new Date(props.myProfile.Birth)}
+							defaultValue={{
+								day: new Date(props.myProfile.Birth).getDate(), 
+								month: new Date(props.myProfile.Birth).getMonth()+1, 
+								year: new Date(props.myProfile.Birth).getFullYear()}
+								}
+                            onDateChange={(value) => { props.setBirthDate(value) }}
+                        />
+								{/* <DatePicker
+									min={{ day: 1, month: 1, year: 1901 }}
+									max={{ day: 1, month: 1, year: new Date().getFullYear() - 10 }}
+									// dayPlaceholder="ДД"
+									// monthPlaceholder="ММММ"
+									// yearPlaceholder="ГГГГ" 
+									defaultValue={{
+										day: new Date(props.myProfile.Birth).getDate(), 
+										month: new Date(props.myProfile.Birth).getMonth(), 
+										year: new Date(props.myProfile.Birth).getFullYear()}
+										}/> */}
+							</FormItem>
+
+							{/* <InfoRow header="Id города привязки">{props.myProfile && props.myProfile.CityUmbracoId}</InfoRow> */}
+							<FormItem>
+								<Button onClick={() => props.saveUserProfile(props.myProfile)}>Сохранить данные профиля</Button>
+							</FormItem>
 						</FormItem>
 						}
 						</Group>
@@ -594,7 +620,7 @@ const App = (props) => {
 							сделать кнопку "подписаться на уведомления"
 							запросить разрешение на отправку сообщения от имени приложения (или сообщества?)
 						</Group>
-						<Group header="Опции">
+						<Group header="Опции" hidden>
 							<FormItem>
 								<ButtonWithNotify Message="Подписаться на уведомления от сервиса?" mode="primary" Yes={() => bridge.send("VKWebAppAllowNotifications")}>Подписаться на события</ButtonWithNotify>
 							</FormItem>
@@ -605,12 +631,11 @@ const App = (props) => {
 				</View>
 				<View id="tournamentadmin" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-						<PanelHeader
-							left={<BackButton isBack={true} />}
-						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+					<Group
+							header={<Header>Управление турнирами</Header>}
 						>
-							Управление турнирами
-						</PanelHeader>
+
+						</Group>
 						<Group>
 							<TournamentAdminPanel></TournamentAdminPanel>
 						</Group>
@@ -618,12 +643,11 @@ const App = (props) => {
 				</View>
 				<View id="teamadmin" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-						<PanelHeader
-							left={<BackButton isBack={true} />}
-						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+					<Group
+							header={<Header>Мои команды</Header>}
 						>
-							Мои команды
-						</PanelHeader>
+
+						</Group>
 						<Group>
 							<TeamAdminPanel></TeamAdminPanel>
 						</Group>
@@ -631,12 +655,11 @@ const App = (props) => {
 				</View>
 				<View id="tournamentitem" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-						<PanelHeader
-							left={<BackButton isBack={true} />}
-						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+					<Group
+							header={<Header>Турнир</Header>}
 						>
-							Турнир
-						</PanelHeader>
+
+						</Group>
 						<Group>
 							<TournamentItem
 								mode={props.tournament.mode}
@@ -648,12 +671,11 @@ const App = (props) => {
 				</View>
 				<View id="teamitem" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-						<PanelHeader
-							left={<BackButton isBack={true} />}
-						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+					<Group
+							header={<Header>Команда</Header>}
 						>
-							Команда
-						</PanelHeader>
+
+						</Group>
 						<Group>
 							<TeamItem mode={props.team.mode}></TeamItem>
 						</Group>
@@ -661,12 +683,11 @@ const App = (props) => {
 				</View>
 				<View id="matchitem" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-						<PanelHeader
-							left={<BackButton isBack={true} />}
-						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+					<Group
+							header={<Header>Матч</Header>}
 						>
-							Матч
-						</PanelHeader>
+
+						</Group>
 						<Group>
 							<MatchItem match={props.matches.selected}></MatchItem>
 						</Group>
@@ -674,12 +695,11 @@ const App = (props) => {
 				</View>
 				<View id="bidlist" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-						<PanelHeader
-							left={<BackButton isBack={true} />}
-						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+					<Group
+							header={<Header>Доступно для заявки</Header>}
 						>
-							Доступно для заявки
-						</PanelHeader>
+
+						</Group>
 						<Group>
 							{/* <BidTeamTournamentGroupsList
 											Button1Handle = {MakeBid}
@@ -702,13 +722,12 @@ const App = (props) => {
 				</View>
 				<View id="viewuser" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-						<PanelHeader
-							left={<BackButton isBack={true} />}
-						//right={<AddCollectButton isBack={false} toMenuName="addcollect"></AddCollectButton>}
+					<Group
+							header={<Header>Игрок</Header>}
 						>
-							Игрок
-						</PanelHeader>
-						Игрок
+
+						</Group>
+						
 					</Panel>
 				</View>
 				<View id="notauthorized" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
@@ -761,7 +780,8 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, { 
-	setCurrentModalWindow, setLoading, goToPanel, checkConnection, updateLoading,
+	setBirthDate, 
+	setCurrentModalWindow, setLoading, goToPanel, checkConnection, updateLoading, saveUserProfile, setUserName, setUserSurName, setMyTotalExpirience, 
 	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId, getUser, setSelectedUser,
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode, setCollectItemMode,
 	setActiveMenuItem, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError, selectSimpleCollect,

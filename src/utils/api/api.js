@@ -431,6 +431,23 @@ export const ProfileAPI = {
         else {
             return errorObj("Внутренняя ошибка, не получены данные от провайдера в API");
         }
+    },
+    
+    // сохранение пользователя
+    saveUserProfile(userData) {
+
+        if (userData) {
+            return PostJsonInstance.post("Account/UpdateUserProfile" + authQueryString, JSON.stringify({ ...userData })).then(data => {
+
+                return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+            })
+                .catch(error => {
+                    return errorObj(error)
+                })
+        }
+        else {
+            return errorObj("Внутренняя ошибка, не получены данные от провайдера в API");
+        }
     }
 }
 

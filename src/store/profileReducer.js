@@ -8,6 +8,10 @@ const ANY_ACTION_TYPE = "ANY_ACTION_TYPE";
 const PROFILE_SET_VK_PROFILE_INFO = "PROFILE_SET_VK_PROFILE_INFO";
 const PROFILE_SET_USER_PROFILE = "PROFILE_SET_USER_PROFILE";
 const PROFILE_SET_TRIED_TO_GET_PROFILE = "PROFILE_SET_TRIED_TO_GET_PROFILE";
+const PROFILE_SET_MY_TOTAL_EXP = "PROFILE_SET_MY_TOTAL_EXP";
+const PROFILE_SET_MY_NAME = "PROFILE_SET_MY_NAME";
+const PROFILE_SET_MY_BIRTH = "PROFILE_SET_MY_BIRTH";
+const PROFILE_SET_MY_SURNAME = "PROFILE_SET_MY_SURNAME";
 
 let demoUser = users[0];
 
@@ -44,6 +48,35 @@ export let profileReducer = (state = initState, action) =>
                 triedToGetProfile: action.tried,
             };
         }
+        case PROFILE_SET_MY_TOTAL_EXP: {
+
+            return {...state,
+                myProfile: {...state.myProfile,
+                    TotalExpirience: Math.round(action.exp),
+                }
+            };
+        }
+        case PROFILE_SET_MY_NAME: {
+            return {...state,
+                myProfile: {...state.myProfile,
+                    Name: action.name,
+                }
+            };
+        }
+        case PROFILE_SET_MY_SURNAME: {
+            return {...state,
+                myProfile: {...state.myProfile,
+                    Surname: action.surname,
+                }
+            };
+        }
+        case PROFILE_SET_MY_BIRTH: {
+            return {...state,
+                myProfile: {...state.myProfile,
+                    Birth: new Date(action.birthDate.year, action.birthDate.month-1, action.birthDate.day+1),
+                }
+            };
+        }
         default: {
             return state;
         }
@@ -73,7 +106,41 @@ export const setTriedToGetProfile = (tried) => {
     }
 }
 
+// установка опыта
+export const setMyTotalExpirience = (exp) => {
+    
+    //let exp = e.CurrentTarget.value
+    return {
+        type: PROFILE_SET_MY_TOTAL_EXP,
+        exp
+    }
+}
 
+// установка имени
+export const setUserName = (e) => {
+
+    return {
+        type: PROFILE_SET_MY_NAME,
+        name: e.currentTarget.value
+    }
+}
+
+// установка фамилии
+export const setUserSurName = (e) => {
+
+    return {
+        type: PROFILE_SET_MY_SURNAME,
+        surname: e.currentTarget.value
+    }
+}
+
+// установка даты рождения
+export const setBirthDate = (birthDate) => {
+    return {
+        type: PROFILE_SET_MY_BIRTH,
+        birthDate
+    }
+}
 
 // получение данных профиля (без авторегистрации)
 export const getUserProfile = (vkUserData) => {
@@ -156,6 +223,38 @@ export const getAuthInfo = (vkProfileInfo) => {
                     }
                     else {
                         dispatch(setErrorMessage(errorObj("Ошибка при регистрации")))
+                        dispatch(setGlobalPopout(false))
+
+                    }
+                })
+                .catch(error => {
+                    dispatch(setErrorMessage(error))
+                    dispatch(setGlobalPopout(false))
+                })
+        else {
+            dispatch(setErrorMessage(errorObj("Вы не авторизованы")))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
+// сохранение профиля
+export const saveUserProfile = (ProfileInfo) => {
+    return dispatch => {
+        dispatch(setGlobalPopout(true))
+        dispatch(resetError())
+
+        if (authQueryString && authQueryString.length > 0)
+            ProfileAPI.saveUserProfile(ProfileInfo)
+                .then(pl => {
+                    if (pl) {
+                        dispatch(setUserProfile(pl.data));
+                        dispatch(setTriedToGetProfile(0));
+                        dispatch(setGlobalPopout(false))
+                    }
+                    else {
+                        dispatch(setErrorMessage(errorObj("Ошибка при сохранении профиля")))
                         dispatch(setGlobalPopout(false))
 
                     }
