@@ -33,6 +33,10 @@ const TOURNAMENT_SET_MY_TOURNAMENTS = "TOURNAMENT_SET_MY_TOURNAMENTS";
 const TOURNAMENT_SET_TOURNAMENT_BY_ID = "TOURNAMENT_SET_TOURNAMENT_BY_ID";
 const TOURNAMENT_SET_NEW_BIDS = "TOURNAMENT_SET_NEW_BIDS";
 const TOURNAMENT_DEL_BID = "TOURNAMENT_DEL_BID";
+const TOURNAMENT_SET_ORGANIZATOR_NAME = "TOURNAMENT_SET_ORGANIZATOR_NAME";
+const TOURNAMENT_SET_LINK = "TOURNAMENT_SET_LINK";
+const TOURNAMENT_SET_LINK2 = "TOURNAMENT_SET_LINK2";
+
 const TOURNAMENT_SET_SELECTED_TOURNAMENT_TABLES = "TOURNAMENT_SET_SELECTED_TOURNAMENT_TABLES";
 
 const currentDate = new Date();
@@ -203,6 +207,30 @@ let tournamentReducer = (state = initState, action) => {
                 ...state,
                 selected: {...state.selected, 
                     Name: action.value,
+                },
+            };
+        }
+        case TOURNAMENT_SET_ORGANIZATOR_NAME: {
+            return {
+                ...state,
+                selected: {...state.selected, 
+                    OrganizatorName: action.value,
+                },
+            };
+        }
+        case TOURNAMENT_SET_LINK: {
+            return {
+                ...state,
+                selected: {...state.selected, 
+                    Link: action.value,
+                },
+            };
+        }
+        case TOURNAMENT_SET_LINK2: {
+            return {
+                ...state,
+                selected: {...state.selected, 
+                    Link2: action.value,
                 },
             };
         }
@@ -442,6 +470,27 @@ export const setTournamentMode = (mode) => {
 export const setTournamentName = (value) => {
     return {
         type: TOURNAMENT_SET_NAME,
+        value
+    }
+}
+
+export const setTournamentOrganizatorName = (value) => {
+    return {
+        type: TOURNAMENT_SET_ORGANIZATOR_NAME,
+        value
+    }
+}
+
+export const setTournamentLink = (value) => {
+    return {
+        type: TOURNAMENT_SET_LINK,
+        value
+    }
+}
+
+export const setTournamentLink2 = (value) => {
+    return {
+        type: TOURNAMENT_SET_LINK2,
         value
     }
 }
