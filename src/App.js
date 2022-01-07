@@ -1,5 +1,5 @@
 import bridge from '@vkontakte/vk-bridge';
-import { Button, Caption, Card, CardGrid, DatePicker, Epic, FormItem, Group, Header, InfoRow, Input, List, Panel, PanelHeader, PullToRefresh, ScreenSpinner, Slider, Tabbar, Title, View } from '@vkontakte/vkui';
+import { Button, Caption, Card, CardGrid, Cell, DatePicker, Div, Epic, FormItem, Group, Header, InfoRow, Input, List, Panel, PanelHeader, PullToRefresh, ScreenSpinner, Slider, Tabbar, Title, View } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
@@ -461,7 +461,10 @@ const App = (props) => {
 									props.tournament.tournaments.map(t => {
 
 										return <RichCellWithHistory
-											caption={`Организатор: ${t.Founder.Name} ${t.Founder.Surname}`}
+											caption={<div>
+												<p style={{lineHeight: '7px', fontSize: '12px', color: 'gray'}}>Организатор: {t.OrganizatorName}</p>
+												<p style={{lineHeight: '7px', fontSize: '12px', color: 'gray'}}>Админ: {t.Founder.Name} {t.Founder.Surname}</p>
+												</div>}
 											text={(new Date(t.WhenBegin) > new Date()) ?
 												`Стартует 
 														${new Date(t.WhenBegin).getDate() <= 9 ? "0" + (new Date(t.WhenBegin).getDate()) : (new Date(t.WhenBegin).getDate())}.${new Date(t.WhenBegin).getMonth() + 1 <= 9 ? "0" + (new Date(t.WhenBegin).getMonth() + 1) : (new Date(t.WhenBegin).getMonth() + 1)}.${new Date(t.WhenBegin).getFullYear()}`
