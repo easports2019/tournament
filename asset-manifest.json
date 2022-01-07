@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.js": "/tournament/static/js/main.c7ca29fa.chunk.js",
-    "main.js.map": "/tournament/static/js/main.c7ca29fa.chunk.js.map",
+    "main.js": "/tournament/static/js/main.d9b12dca.chunk.js",
+    "main.js.map": "/tournament/static/js/main.d9b12dca.chunk.js.map",
     "runtime-main.js": "/tournament/static/js/runtime-main.896fc9fd.js",
     "runtime-main.js.map": "/tournament/static/js/runtime-main.896fc9fd.js.map",
     "static/css/2.fabd99e5.chunk.css": "/tournament/static/css/2.fabd99e5.chunk.css",
@@ -19,6 +19,6 @@
     "static/js/runtime-main.896fc9fd.js",
     "static/css/2.fabd99e5.chunk.css",
     "static/js/2.053cede1.chunk.js",
-    "static/js/main.c7ca29fa.chunk.js"
+    "static/js/main.d9b12dca.chunk.js"
   ]
 }
