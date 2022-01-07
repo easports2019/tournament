@@ -175,7 +175,10 @@ const TournamentItem = (props) => {
                             <FormItem top="Ваш город">
                                 <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
                             </FormItem>
-                            <FormItem top="Название турнира" bottom="Имя турнира должно быть уникальным">
+                            <FormItem top="Организатор">
+                                <InfoRow><Link href={props.tournaments.selected.Link}>{props.tournaments.selected.OrganizatorName}</Link></InfoRow>
+                            </FormItem>
+                            <FormItem top="Название турнира">
                                 <InfoRow>{props.tournaments.selected.Name}</InfoRow>
                             </FormItem>
                             <FormItem top="Дата начала">
@@ -196,19 +199,13 @@ const TournamentItem = (props) => {
                             <FormItem top="Регламент турнира">
                                 <InfoRow>{props.tournaments.selected.Reglament}</InfoRow>
                             </FormItem>
-                            <FormItem top="Название организатора">
-                                <InfoRow>{props.tournaments.selected.OrganizatorName}</InfoRow>
-                            </FormItem>
-                            <FormItem top="Ссылка на ресурс организатора">
-                                <InfoRow><Link href={props.tournaments.selected.Link}>{props.tournaments.selected.Link}</Link></InfoRow>
-                            </FormItem>
                             {props.tournaments.selected.Link2 &&
                             <FormItem top="Дополнительная ссылка">
                                 <InfoRow>{props.tournaments.selected.Link2}</InfoRow>
                             </FormItem>
                             }
-                                <FormItem>
-                                    <Group header={<Header mode="secondary">Группы</Header>}>
+                                <FormItem top="Группы/лиги">
+                                    <Group>
                                         {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
                                             <List>
                                                 {props.tournaments.selected.TournamentGroups.map((item) => <InfoRow>{item.Name}</InfoRow>)}
