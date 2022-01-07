@@ -30,11 +30,13 @@ const MatchItem = (props) => {
 
     return (
         <Group>
+            <FormItem>
+                {match.Team1 ? match.Team1.Name : match.Team1Name} 
+                {match && (match.Played ? `  ${match.Team1Goals} : ${match.Team2Goals}  ` : `  :  `)} 
+                {match.Team2 ? match.Team2.Name : match.Team2Name}
+            </FormItem>
             <FormItem top="Группа/лига">
                 {match.TournamentGroup.Name}
-            </FormItem>
-            <FormItem top="Команда 1">
-                {match.Team1.Name} {match.Team1Goals} : {match.Team2Goals} {match.Team2.Name}
             </FormItem>
             
             <FormItem top="Комментарий к матчу">

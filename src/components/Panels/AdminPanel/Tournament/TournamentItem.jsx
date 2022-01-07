@@ -12,6 +12,7 @@ import {
     acceptTeamToTournamentBid, declineTeamToTournamentBid,
     getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, changeTournamentTeamBidTournamentGroup, 
     deleteTeamFromTournament, setTournamentMatchLength, getTournamentTablesByTournamentId,  setTournamentOrganizatorName, setTournamentLink, setTournamentLink2, 
+    setTournamentOrganizatorNameShort, setTournamentLink2Name, 
 } from '../../../../store/tournamentsReducer'
 import {goToPanel} from '../../../../store/systemReducer'
 import {
@@ -176,19 +177,17 @@ const TournamentItem = (props) => {
                                 <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
                             </FormItem>
                             <FormItem top="Организатор">
-                                <InfoRow><Link href={props.tournaments.selected.Link}>{props.tournaments.selected.OrganizatorName}</Link></InfoRow>
+                                <InfoRow><Link href={props.tournaments.selected.Link}>{props.tournaments.selected.OrganizatorName}</Link> ({props.tournaments.selected.OrganizatorNameShort})</InfoRow>
                             </FormItem>
                             <FormItem top="Название турнира">
                                 <InfoRow>{props.tournaments.selected.Name}</InfoRow>
                             </FormItem>
-                            <FormItem top="Дата начала">
-                                <InfoRow>{new Date(
+                            <FormItem top="Проводится">
+                                <InfoRow>с {new Date(
                                     props.tournaments.selected.WhenBegin.year,
                                     props.tournaments.selected.WhenBegin.month - 1,
-                                    props.tournaments.selected.WhenBegin.day).toLocaleDateString()}</InfoRow>
-                            </FormItem>
-                            <FormItem top="Дата окончания">
-                                <InfoRow>{new Date(
+                                    props.tournaments.selected.WhenBegin.day).toLocaleDateString()} 
+                                    <span> по </span>{new Date(
                                     props.tournaments.selected.WhenEnd.year,
                                     props.tournaments.selected.WhenEnd.month - 1,
                                     props.tournaments.selected.WhenEnd.day).toLocaleDateString()}</InfoRow>
@@ -199,9 +198,9 @@ const TournamentItem = (props) => {
                             <FormItem top="Регламент турнира">
                                 <InfoRow>{props.tournaments.selected.Reglament}</InfoRow>
                             </FormItem>
-                            {props.tournaments.selected.Link2 &&
-                            <FormItem top="Дополнительная ссылка">
-                                <InfoRow>{props.tournaments.selected.Link2}</InfoRow>
+                            {props.tournaments.selected.Link2Name &&
+                            <FormItem top={props.tournaments.selected.Link2Name}>
+                                <InfoRow><Link href={props.tournaments.selected.Link2}>{props.tournaments.selected.Link2}</Link></InfoRow>
                             </FormItem>
                             }
                                 <FormItem top="Группы/лиги">
@@ -314,11 +313,23 @@ const TournamentItem = (props) => {
                         <FormItem top="Название организатора">
                             <Input type="text" defaultValue={props.tournaments.selected.OrganizatorName} value={props.tournaments.selected.OrganizatorName} onChange={e => props.setTournamentOrganizatorName(e.currentTarget.value)} placeholder="Например, Федерация..." />
                         </FormItem>
+                        <FormItem top="Сокращенное название организатора">
+                            <Input type="text" defaultValue={props.tournaments.selected.OrganizatorNameShort} 
+                            value={props.tournaments.selected.OrganizatorNameShort} 
+                            onChange={e => props.setTournamentOrganizatorNameShort(e.currentTarget.value)} 
+                            placeholder="Например, ФФК" />
+                        </FormItem>
                         <FormItem top="Ссылка на ресурс организатора">
                             <Input type="text" defaultValue={props.tournaments.selected.Link} value={props.tournaments.selected.Link} onChange={e => props.setTournamentLink(e.currentTarget.value)} placeholder="Например, yandex.ru" />
                         </FormItem>
                         <FormItem top="Дополнительная ссылка">
-                            <Input type="text" defaultValue={props.tournaments.selected.Link2} value={props.tournaments.selected.Link2} onChange={e => props.setTournamentLink2(e.currentTarget.value)} placeholder="Например, google.com" />
+                            <Input type="text" defaultValue={props.tournaments.selected.Link2} value={props.tournaments.selected.Link2} onChange={e => props.setTournamentLink2(e.currentTarget.value)} placeholder="Например, info@mail.ru" />
+                        </FormItem>
+                        <FormItem top="Название дополнительной ссылки">
+                            <Input type="text" defaultValue={props.tournaments.selected.Link2Name} 
+                            value={props.tournaments.selected.Link2Name} 
+                            onChange={e => props.setTournamentLink2Name(e.currentTarget.value)} 
+                            placeholder="Например, email" />
                         </FormItem>
                         <FormItem top="Дата начала">
                             <DatePicker
@@ -388,11 +399,22 @@ const TournamentItem = (props) => {
                                 <FormItem top="Название организатора">
                                     <Input type="text" defaultValue={props.tournaments.selected.OrganizatorName} onChange={e => props.setTournamentOrganizatorName(e.currentTarget.value)} placeholder="Например, Федерация..." />
                                 </FormItem>
+                                <FormItem top="Сокращенное название организатора">
+                                    <Input type="text" defaultValue={props.tournaments.selected.OrganizatorNameShort} 
+                                    value={props.tournaments.selected.OrganizatorNameShort} 
+                                    onChange={e => props.setTournamentOrganizatorNameShort(e.currentTarget.value)} 
+                                    placeholder="Например, ФФК" />
+                                </FormItem>
                                 <FormItem top="Ссылка на ресурс организатора">
                                     <Input type="text" defaultValue={props.tournaments.selected.Link} onChange={e => props.setTournamentLink(e.currentTarget.value)} placeholder="Например, yandex.ru" />
                                 </FormItem>
                                 <FormItem top="Дополнительная ссылка">
-                                    <Input type="text" defaultValue={props.tournaments.selected.Link2} onChange={e => props.setTournamentLink2(e.currentTarget.value)} placeholder="Например, google.com" />
+                                    <Input type="text" defaultValue={props.tournaments.selected.Link2} onChange={e => props.setTournamentLink2(e.currentTarget.value)} placeholder="Например, info@mail.ru" />
+                                </FormItem>
+                                <FormItem top="Название дополнительной ссылки">
+                                    <Input type="text" defaultValue={props.tournaments.selected.Link2Name} 
+                                    onChange={e => props.setTournamentLink2Name(e.currentTarget.value)} 
+                                    placeholder="Например, email" />
                                 </FormItem>
                                 <FormItem top="Дата начала">
                                     <DatePicker
@@ -597,6 +619,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {setTournamentMode, goToPanel, setTournamentOrganizatorName, setTournamentLink, setTournamentLink2, 
+    setTournamentOrganizatorNameShort, setTournamentLink2Name, 
     getTournamentTeams, getTournamentGroups, replaceTeam, deleteTeam, getTeamInfo, setTeamMode, changeTournamentTeamBidTournamentGroup, deleteTeamFromTournament, setTournamentMatchLength,
     setTournamentWhenBegin, setTournamentWhenEnd, setTournamentName, setTournamentReglament, setTournamentDetails, acceptTeamToTournamentBid, declineTeamToTournamentBid,
     delGroupFromTournamentByKeyId, deleteTournamentGroup, editGroupInTournament, addTournamentGroup, resetTournament, saveSelectedTournament, getTournamentNewBids, getTournamentTablesByTournamentId,

@@ -27,7 +27,7 @@ import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualT
 import { getAllCitiesFromServer } from './store/cityReducer';
 import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect, setCollectItemMode } from './store/collectReducer';
 import { setActiveMenuItem } from './store/mainMenuReducer';
-import { getMatchesInCurrentCity, setHotPanel } from './store/matchReducer';
+import { getMatchesInCurrentCity, setHotPanel, setSelectedMatch } from './store/matchReducer';
 import { getAuthInfo, getUserProfile, setTriedToGetProfile, setUserProfileCity, setBirthDate,
 	saveUserProfile, setVkProfileInfo, setUserName, setUserSurName, setMyTotalExpirience } from './store/profileReducer';
 import { getAllRentsInCityByCityId } from './store/rentReducer';
@@ -364,6 +364,13 @@ const App = (props) => {
 		window.location.reload(true);
 	}
 
+	let goToViewMatch = (match) => {
+
+        props.setSelectedMatch(match)
+
+        props.goToPanel("matchitem", false)
+    }
+
 	let test = () => {
 		
 		
@@ -435,12 +442,12 @@ const App = (props) => {
 							</CardGrid>
 						</Group>
 						<Group header={<Header mode="secondary">Предстоящие матчи</Header>}>
-							<Hot Name="Сегодня" Matches={props.matches.hot.today}></Hot>
-							<Hot Name="Завтра" Matches={props.matches.hot.tomorrow}></Hot>
+							<Hot Name="Сегодня" ClickHandler={goToViewMatch} Matches={props.matches.hot.today}></Hot>
+							<Hot Name="Завтра" ClickHandler={goToViewMatch} Matches={props.matches.hot.tomorrow}></Hot>
 							
 						</Group>
 						<Group header={<Header mode="secondary">Сыграны вчера</Header>}>
-							<Hot Matches={props.matches.hot.yesterday}></Hot>
+							<Hot ClickHandler={goToViewMatch} Matches={props.matches.hot.yesterday}></Hot>
 						</Group>
 					</Panel>
 				
@@ -780,7 +787,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, { 
-	setBirthDate, 
+	setBirthDate, setSelectedMatch,
 	setCurrentModalWindow, setLoading, goToPanel, checkConnection, updateLoading, saveUserProfile, setUserName, setUserSurName, setMyTotalExpirience, 
 	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId, getUser, setSelectedUser,
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode, setCollectItemMode,

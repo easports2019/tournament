@@ -35,6 +35,7 @@ const MatchListItem = (props) => {
         return (
             <RichCell
                 onClick={props.ClickHandler}
+                before={<Avatar>{match.TournamentGroup.Tournament.OrganizatorNameShort}</Avatar>}
                 caption={place ? place.Name : "Ошибка загрузки данных о месте"}
                 text={
                     match.Played ?

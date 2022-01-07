@@ -29,6 +29,8 @@ const Hot = (props) => {
                         let date = new Date(match.When);
                         return (
                                 <RichCell
+                                    before={<Avatar>{match.TournamentGroup.Tournament.OrganizatorNameShort}</Avatar>}
+                                    onClick={() => props.ClickHandler(match)}
                                     text={
                                         match.Played ?
                                             <span style={{ "color": "green" }}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :

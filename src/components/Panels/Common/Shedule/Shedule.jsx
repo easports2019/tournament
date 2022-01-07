@@ -184,7 +184,7 @@ const Shedule = (props) => {
     }
 
     let goToViewMatch = (match) => {
-        debugger
+
 
         props.setSelectedMatch(match)
 
@@ -602,7 +602,6 @@ const Shedule = (props) => {
                     )
                 }; break;
                 case "view": {
-debugger 
                     return (
                         <Group>
                             <FormItem top="Группа/лига">

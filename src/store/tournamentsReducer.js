@@ -34,8 +34,10 @@ const TOURNAMENT_SET_TOURNAMENT_BY_ID = "TOURNAMENT_SET_TOURNAMENT_BY_ID";
 const TOURNAMENT_SET_NEW_BIDS = "TOURNAMENT_SET_NEW_BIDS";
 const TOURNAMENT_DEL_BID = "TOURNAMENT_DEL_BID";
 const TOURNAMENT_SET_ORGANIZATOR_NAME = "TOURNAMENT_SET_ORGANIZATOR_NAME";
+const TOURNAMENT_SET_ORGANIZATOR_NAME_SHORT = "TOURNAMENT_SET_ORGANIZATOR_NAME_SHORT";
 const TOURNAMENT_SET_LINK = "TOURNAMENT_SET_LINK";
 const TOURNAMENT_SET_LINK2 = "TOURNAMENT_SET_LINK2";
+const TOURNAMENT_SET_LINK2NAME = "TOURNAMENT_SET_LINK2NAME";
 
 const TOURNAMENT_SET_SELECTED_TOURNAMENT_TABLES = "TOURNAMENT_SET_SELECTED_TOURNAMENT_TABLES";
 
@@ -218,6 +220,14 @@ let tournamentReducer = (state = initState, action) => {
                 },
             };
         }
+        case TOURNAMENT_SET_ORGANIZATOR_NAME_SHORT: {
+            return {
+                ...state,
+                selected: {...state.selected, 
+                    OrganizatorNameShort: action.value,
+                },
+            };
+        }
         case TOURNAMENT_SET_LINK: {
             return {
                 ...state,
@@ -231,6 +241,14 @@ let tournamentReducer = (state = initState, action) => {
                 ...state,
                 selected: {...state.selected, 
                     Link2: action.value,
+                },
+            };
+        }
+        case TOURNAMENT_SET_LINK2NAME: {
+            return {
+                ...state,
+                selected: {...state.selected, 
+                    Link2Name: action.value,
                 },
             };
         }
@@ -481,6 +499,13 @@ export const setTournamentOrganizatorName = (value) => {
     }
 }
 
+export const setTournamentOrganizatorNameShort = (value) => {
+    return {
+        type: TOURNAMENT_SET_ORGANIZATOR_NAME_SHORT,
+        value
+    }
+}
+
 export const setTournamentLink = (value) => {
     return {
         type: TOURNAMENT_SET_LINK,
@@ -491,6 +516,13 @@ export const setTournamentLink = (value) => {
 export const setTournamentLink2 = (value) => {
     return {
         type: TOURNAMENT_SET_LINK2,
+        value
+    }
+}
+
+export const setTournamentLink2Name = (value) => {
+    return {
+        type: TOURNAMENT_SET_LINK2NAME,
         value
     }
 }
