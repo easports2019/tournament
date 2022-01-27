@@ -225,68 +225,70 @@ const TournamentItem = (props) => {
                                 <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
                                 <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
                             </Tabs>
-                            <FormItem top="Ваш город">
+                            {/* <FormItem top="Ваш город">
                                 <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
-                            </FormItem>
-                            <Group header={<Header mode="secondary">Группы</Header>}>
+                            </FormItem> */}
+                            <Group header={<Header mode="secondary">Таблицы</Header>}>
                                 {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
-                                    <List>
-                                        {props.tournaments.selected.TournamentGroups.map((item) => {
-                                            if (item.Name != "") {
-                                                let table = props.tournaments.selectedTables.filter(tT => tT.TournamentGroupId == item.Id);
-                                                table.sort((firstItem, secondItem) => firstItem.Place - secondItem.Place);
-                                                let chet = false;
-                                                return (
-                                                    <>
-                                                        <InfoRow>
-                                                            <Headline> Группа/лига: {item.Name}</Headline>
-                                                        <table style={{width: '100%'}}>
-                                                            <tr>
-                                                                <th style={w7percent}>М</th>
-                                                                <th style={w20percent}>Команда</th>
-                                                                <th style={w8percent}>И</th>
-                                                                <th style={w8percent}>В</th>
-                                                                <th style={w8percent}>П</th>
-                                                                <th style={w8percent}>Н</th>
-                                                                <th style={w8percent}>МЗ</th>
-                                                                <th style={w8percent}>МП</th>
-                                                                <th style={w8percent}>МР</th>
-                                                                <th style={w8percent}>О</th>
-                                                            </tr>
-                                                            {
-                                                                table.map((row) => {
-                                                                    chet = !chet;
-                                                                    return (
-                                                                        <tr style={chet ? {backgroundColor: 'lightgray'} : {backgroundColor: 'white'}}>
-                                                                            <td style={w7percent}>{row.Place}</td>
-                                                                            <td style={w20percent}>{row.TeamName}</td>
-                                                                            <td style={w8percent}>{row.Games}</td>
-                                                                            <td style={w8percent}>{row.Wins}</td>
-                                                                            <td style={w8percent}>{row.Loses}</td>
-                                                                            <td style={w8percent}>{row.Draws}</td>
-                                                                            <td style={w8percent}>{row.GoalsScored}</td>
-                                                                            <td style={w8percent}>{row.GoalsMissed}</td>
-                                                                            <td style={w8percent}>{row.GoalsDifference}</td>
-                                                                            <td style={w8percent}>{row.Points}</td>
-                                                                        </tr>
-                                                                    )
+                                    <FormItem>
+                                        <List>
+                                            {props.tournaments.selected.TournamentGroups.map((item) => {
+                                                if (item.Name != "") {
+                                                    let table = props.tournaments.selectedTables.filter(tT => tT.TournamentGroupId == item.Id);
+                                                    table.sort((firstItem, secondItem) => firstItem.Place - secondItem.Place);
+                                                    let chet = false;
+                                                    return (
+                                                        <>
+                                                            <InfoRow>
+                                                                <Headline>{item.Name}</Headline>
+                                                            <table style={{width: '100%'}}>
+                                                                <tr>
+                                                                    <th style={w7percent}>М</th>
+                                                                    <th style={w20percent}>Команда</th>
+                                                                    <th style={w8percent}>И</th>
+                                                                    <th style={w8percent}>В</th>
+                                                                    <th style={w8percent}>П</th>
+                                                                    <th style={w8percent}>Н</th>
+                                                                    <th style={w8percent}>МЗ</th>
+                                                                    <th style={w8percent}>МП</th>
+                                                                    <th style={w8percent}>МР</th>
+                                                                    <th style={w8percent}>О</th>
+                                                                </tr>
+                                                                {
+                                                                    table.map((row) => {
+                                                                        chet = !chet;
+                                                                        return (
+                                                                            <tr style={chet ? {backgroundColor: 'lightgray'} : {backgroundColor: 'white'}}>
+                                                                                <td style={w7percent}>{row.Place}</td>
+                                                                                <td style={w20percent}>{row.TeamName}</td>
+                                                                                <td style={w8percent}>{row.Games}</td>
+                                                                                <td style={w8percent}>{row.Wins}</td>
+                                                                                <td style={w8percent}>{row.Loses}</td>
+                                                                                <td style={w8percent}>{row.Draws}</td>
+                                                                                <td style={w8percent}>{row.GoalsScored}</td>
+                                                                                <td style={w8percent}>{row.GoalsMissed}</td>
+                                                                                <td style={w8percent}>{row.GoalsDifference}</td>
+                                                                                <td style={w8percent}>{row.Points}</td>
+                                                                            </tr>
+                                                                        )
 
-                                                                }
+                                                                    }
 
-                                                                )}
-                                                        </table>
-                                                        <br />
-                                                        <br />
-                                                        </InfoRow>
-                                                    </>
+                                                                    )}
+                                                            </table>
+                                                            <br />
+                                                            <br />
+                                                            </InfoRow>
+                                                        </>
 
-                                                )
+                                                    )
+                                                }
+                                                else
+                                                    return null;
+                                            })
                                             }
-                                            else
-                                                return null;
-                                        })
-                                        }
-                                    </List>
+                                        </List>
+                                    </FormItem>
                                     :
                                     <FormItem>
                                         <InfoRow>Нет групп</InfoRow>

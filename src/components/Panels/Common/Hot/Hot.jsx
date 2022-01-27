@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, InfoRow, Group, List, CellButton, Button, FormItem, CustomSelect, DatePicker, CustomSelectOption, Header, SimpleCell, Div } from '@vkontakte/vkui'
+import { RichCell, InitialsAvatar, InfoRow, Group, List, CellButton, Button, FormItem, CustomSelect, 
+    DatePicker, CustomSelectOption, Header, SimpleCell, Div, calcInitialsAvatarColor } from '@vkontakte/vkui'
 import Icon24ChevronRightWithHistory from '../../Common/WithHistory/Icon24ChevronRightWithHistory'
 import { connect } from 'react-redux';
 import {
@@ -29,7 +30,14 @@ const Hot = (props) => {
                         let date = new Date(match.When);
                         return (
                                 <RichCell
-                                    before={<Avatar>{match.TournamentGroup.Tournament.OrganizatorNameShort}</Avatar>}
+                                    before={
+                                        <InitialsAvatar
+                                            gradientColor={calcInitialsAvatarColor(match.TournamentGroup.TournamentId)}
+                                            >
+                                                <h6>{match.TournamentGroup.Tournament.OrganizatorNameShort}</h6>
+                                        </InitialsAvatar>
+                                    // <Avatar>{match.TournamentGroup.Tournament.OrganizatorNameShort}</Avatar>
+                                }
                                     onClick={() => props.ClickHandler(match)}
                                     text={
                                         match.Played ?

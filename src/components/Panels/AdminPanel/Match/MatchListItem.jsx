@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar } from '@vkontakte/vkui'
+import { RichCell, Avatar, calcInitialsAvatarColor, InitialsAvatar } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
 import { dateToString, timeToString } from '../../../../utils/convertors/dateUtils';
 import { green } from 'chalk';
@@ -35,7 +35,13 @@ const MatchListItem = (props) => {
         return (
             <RichCell
                 onClick={props.ClickHandler}
-                before={<Avatar>{match.TournamentGroup.Tournament.OrganizatorNameShort}</Avatar>}
+                before={
+                <InitialsAvatar
+                gradientColor={calcInitialsAvatarColor(match.TournamentGroup.TournamentId)}
+                >
+                    <h6>{match.TournamentGroup.Tournament.OrganizatorNameShort}</h6>
+                    </InitialsAvatar>
+            }
                 caption={place ? place.Name : "Ошибка загрузки данных о месте"}
                 text={
                     match.Played ?

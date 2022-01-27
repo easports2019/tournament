@@ -205,12 +205,18 @@ const Shedule = (props) => {
                             <CellButton onClick={() => props.setMode("add")}>Добавить</CellButton>
                             <List>
                                 {allMatchesInAllGroups.map(groupAndMatchesItem => {
-
                                     return <Group header={<Header mode="secondary">{groupAndMatchesItem.TournamentGroup.Name}</Header>}>
                                         {groupAndMatchesItem.Matches.length > 0 ?
                                             <List>
-                                                {groupAndMatchesItem.Matches.map(match => {
-                                                    
+                                                {
+                                                groupAndMatchesItem.Matches
+                                                .sort((prev, next) => {
+                                                    let a = new Date(prev.When);
+                                                    let b = new Date(next.When);
+                                                    if (a < b) return 1
+                                                    else return -1;
+                                                })
+                                                .map(match => {
                                                     let place = props.places.find(p => p.UmbracoId == match.PlaceId)
                                                     let date = new Date(match.When);
                                                     return <MatchListItem 
@@ -583,7 +589,15 @@ const Shedule = (props) => {
                                                 groupAndMatchesItem.Matches.length > 0
                                                     ?
                                                     <List>
-                                                        {groupAndMatchesItem.Matches.map(match => {
+                                                        {
+                                                        groupAndMatchesItem.Matches
+                                                        .sort((prev, next) => {
+                                                            let a = new Date(prev.When);
+                                                            let b = new Date(next.When);
+                                                            if (a < b) return 1
+                                                            else return -1;
+                                                        })
+                                                        .map(match => {
                                                             let place = props.places.find(p => p.UmbracoId == match.PlaceId)
                                                             return <MatchListItem 
                                                             ClickHandler={() => goToViewMatch(match)}

@@ -1,5 +1,5 @@
 import bridge from '@vkontakte/vk-bridge';
-import { Button, Caption, Card, CardGrid, Cell, DatePicker, Div, Epic, FormItem, Group, Header, InfoRow, Input, List, Panel, PanelHeader, PullToRefresh, ScreenSpinner, Slider, Tabbar, Title, View } from '@vkontakte/vkui';
+import { Button, calcInitialsAvatarColor, Caption, Card, CardGrid, Cell, DatePicker, Div, Epic, FormItem, Group, Header, InfoRow, InitialsAvatar, Input, List, Panel, PanelHeader, PullToRefresh, ScreenSpinner, Slider, Tabbar, Title, View } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
@@ -62,10 +62,11 @@ const App = (props) => {
 		background: 'white', 
 		padding: '15px 0',
 		textAlign: 'center',
+		fontSize: document.documentElement.clientWidth <= 320 ? '10px' : 'auto',
 		opacity: '0.9',
 		borderRadius: '10px'
-	}
-
+	} 
+	
 
 
 	// функция вывода на консоль. легко отключается флагом
@@ -231,7 +232,7 @@ const App = (props) => {
 					props.setGlobalPopout(false);
 					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirth" data={props.vkProfile} action={props.setVkProfileInfo} action2={props.setTriedToGetProfile} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
 				}
-				else if ((props.vkProfile) && (props.vkProfile.bdate.split('.').length == 2) && (new Date(props.myProfile.Birth).getFullYear() < 1920)) {
+				else if ((props.vkProfile) && (props.vkProfile.bdate.split('.').length == 2) && (props.myProfile && new Date(props.myProfile.Birth).getFullYear() < 1920)) {
 					consoleLog("5 selectBirthYear")
 					
 					props.setGlobalPopout(false);
@@ -385,7 +386,7 @@ const App = (props) => {
 	).filter(i => i);
 
 	//if ((Array.isArray(props.tournamentsForBids.selectedTournament)) && (props.tournamentsForBids.selectedTournament.length > 0))
-	//debugger
+
 
 
 	return (
@@ -428,15 +429,21 @@ const App = (props) => {
 									//handleClick={CollectAdd} // необходимо для использования withHistory
 								>
 									<img style={{width: '100%'}} src={tournament}></img>
-									<span style={cardStyle}>Турниры<br />города</span>
+									<span 
+									style={cardStyle}
+									>Турниры<br />города</span>
 								</CardWithHistory>
 								<Card>
 									<img style={{width: '100%'}} src={player}></img>
-									<span style={cardStyle}>Скоро<br />запуск</span>
+									<span 
+									style={cardStyle}
+									>Скоро<br />запуск</span>
 								</Card>
 								<Card onClick={test}>
 									<img style={{width: '100%'}} src={stadium}></img>
-									<span style={cardStyle}>Скоро<br />запуск</span>
+									<span 
+									style={cardStyle}
+									>Скоро<br />запуск</span>
 								</Card>
 								
 							</CardGrid>
@@ -463,7 +470,7 @@ const App = (props) => {
 										return <RichCellWithHistory
 											caption={<div>
 												<p style={{lineHeight: '7px', fontSize: '12px', color: 'gray'}}>Организатор: {t.OrganizatorName}</p>
-												<p style={{lineHeight: '7px', fontSize: '12px', color: 'gray'}}>Админ: {t.Founder.Name} {t.Founder.Surname}</p>
+												{/* <p style={{lineHeight: '7px', fontSize: '12px', color: 'gray'}}>Админ: {t.Founder.Name} {t.Founder.Surname}</p> */}
 												</div>}
 											text={(new Date(t.WhenBegin) > new Date()) ?
 												`Стартует 
@@ -473,6 +480,12 @@ const App = (props) => {
 											handleClick={() => TournamentSelect(t)}
 											data-story="tournamentitem"
 											toMenuName="tournamentitem"
+											before={<InitialsAvatar
+												gradientColor={calcInitialsAvatarColor(t.Id)}
+												size={56}
+												>
+													<h6>{t.OrganizatorNameShort}</h6>
+											</InitialsAvatar>}
 										>{t.Name}</RichCellWithHistory>
 									})}
 							</List>
@@ -665,17 +678,18 @@ const App = (props) => {
 				</View>
 				<View id="tournamentitem" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
-					<Group
-							header={<Header>Турнир</Header>}
-						>
+						<Group
+								header={<Header>
+									<h4>{props.tournament.selected.Name}</h4>
+									</Header>}
+							>
 
-						</Group>
-						<Group>
-							<TournamentItem
-								mode={props.tournament.mode}
-							//Tab="shedule"
-							//mode="view"
-							></TournamentItem>
+							
+								<TournamentItem
+									mode={props.tournament.mode}
+								//Tab="shedule"
+								//mode="view"
+								></TournamentItem>
 						</Group>
 					</Panel>
 				</View>
@@ -694,11 +708,8 @@ const App = (props) => {
 				<View id="matchitem" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
 					<Group
-							header={<Header>Матч</Header>}
+							// header={<Header>Матч</Header>}
 						>
-
-						</Group>
-						<Group>
 							<MatchItem match={props.matches.selected}></MatchItem>
 						</Group>
 					</Panel>
