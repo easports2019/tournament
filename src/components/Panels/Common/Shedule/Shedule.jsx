@@ -63,6 +63,8 @@ const Shedule = (props) => {
 
     const [selectedTeam1, setSelectedTeam1] = React.useState(0);
     const [selectedTeam2, setSelectedTeam2] = React.useState(0);
+    const [selectedBidTeam1ToTournament, setSelectedBidTeam1ToTournament] = React.useState(0);
+    const [selectedBidTeam2ToTournament, setSelectedBidTeam2ToTournament] = React.useState(0);
     const [selectedTeam1Goals, setTeam1Goals] = React.useState(0);
     const [selectedTeam2Goals, setTeam2Goals] = React.useState(0);
     const [selectedPlace, setSelectedPlace] = React.useState(0);
@@ -82,6 +84,11 @@ const Shedule = (props) => {
         setSelectedTournamentGroup(league_id);
         setSelectedTournamentGroupTeamList(getGroup(league_id).Teams.map(team => { return { value: team.Id, label: team.Name } }));
     }
+
+    // let changeGroup2 = (league_id) => {
+    //     setSelectedTournamentGroup(league_id);
+    //     setSelectedTournamentGroupTeamList(getGroup(league_id).Teams.map(team => { return { value: team.Id, label: team.Name } }));
+    // }
 
     let allMatchesInAllGroups = []
     props.tournaments.selected.TournamentGroups.forEach(tg => {
@@ -103,8 +110,8 @@ const Shedule = (props) => {
                 Team1Id: selectedTeam1,
                 Team2Id: selectedTeam2,
                 Description: selectedDescription,
-                BidTeamToTournamentId1: -1,
-                BidTeamToTournamentId2: -1,
+                BidTeamToTournamentId1: selectedBidTeam1ToTournament,
+                BidTeamToTournamentId2: selectedBidTeam2ToTournament,
                 Team1Goals: selectedTeam1Goals,
                 Team2Goals: selectedTeam2Goals,
                 Played: selectedPlayed,
@@ -116,8 +123,8 @@ const Shedule = (props) => {
                 Team1Id: selectedTeam1,
                 Team2Id: selectedTeam2,
                 Description: selectedDescription,
-                BidTeamToTournamentId1: -1,
-                BidTeamToTournamentId2: -1,
+                BidTeamToTournamentId1: selectedBidTeam1ToTournament,
+                BidTeamToTournamentId2: selectedBidTeam2ToTournament,
                 Team1Goals: selectedTeam1Goals,
                 Team2Goals: selectedTeam2Goals,
                 Played: selectedPlayed,
@@ -172,6 +179,8 @@ const Shedule = (props) => {
         setSelectedDescription(match.Description);
         setTeam1Goals(match.Team1Goals);
         setTeam2Goals(match.Team2Goals);
+        setSelectedBidTeam1ToTournament(match.BidTeamToTournamentId1);
+        setSelectedBidTeam2ToTournament(match.BidTeamToTournamentId2);
         setSelectedTeam1(match.Team1.Id)
         setSelectedTeam2(match.Team2.Id)
         setSelectedPlace(match.PlaceId)
