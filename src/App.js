@@ -186,10 +186,15 @@ const App = (props) => {
 	// 4 загрузка профиля
 	useEffect(() => {
 
-		if (props.vkProfile && props.vkProfile.city && props.myProfile) {
+		if (props.vkProfile && props.vkProfile.city && props.myProfile && props.myProfile.UserVkId != "") {
 			consoleLog("4 vkprofile and myprofile loaded")
 
-			if((props.vkProfile.bdate != undefined) && (props.vkProfile.bdate.split('.').length > 2) && (new Date(props.myProfile.Birth).getFullYear() > 1920)) // 
+			if(
+				(props.vkProfile.bdate != undefined) 
+				&& (props.vkProfile.bdate.split('.').length > 2) 
+				&& (props.myProfile != null) 
+				&& (new Date(props.myProfile.Birth).getFullYear() > 1920)
+			) // 
 			{
 				consoleLog("4 no error in birthdate from vk")
 
@@ -220,7 +225,7 @@ const App = (props) => {
 	
 	// 5 регистрация пользователя
 	useEffect(() => {
-
+		debugger
 		if (props.vkProfile && props.vkProfile.city) {
 			if ((!props.myProfile) && (props.triedToGetProfile>0)) { // не зарегистрирован
 				consoleLog("5 not registred")
@@ -232,7 +237,7 @@ const App = (props) => {
 					props.setGlobalPopout(false);
 					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirth" data={props.vkProfile} action={props.setVkProfileInfo} action2={props.setTriedToGetProfile} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
 				}
-				else if ((props.vkProfile) && (props.vkProfile.bdate.split('.').length == 2) && (props.myProfile && new Date(props.myProfile.Birth).getFullYear() < 1920)) {
+				else if ((props.vkProfile) && (props.vkProfile.bdate.split('.').length == 2)) {
 					consoleLog("5 selectBirthYear")
 					
 					props.setGlobalPopout(false);
@@ -255,7 +260,8 @@ const App = (props) => {
 			props.myProfile.CityUmbracoId != -1 && new Date(props.myProfile.Birth).getFullYear() >= 1920 && props.places.length == 0) {
 			
 			consoleLog("6 start loadAll()")
-
+			// props.setGlobalPopout(false);
+			// props.setCurrentModalWindow(null);
 
 			// загружаем места этого города
 			props.goToPanel("hot", false)

@@ -25,6 +25,14 @@ let ModalCommon = (props) => {
         props.action({...props.data, bdate: selectedDate != "" ? selectedDate : undefined})
         props.action2(2);
     }
+    
+    const saveYear = (value) => {
+        
+        props.action(
+            {...props.data, 
+                bdate: props.data.bdate && props.data.bdate + ((!isNaN(selectedYear)) && (selectedYear > 0) && "." + selectedYear)});
+        props.action2(2);
+    }
 
     return (
         <ModalRoot activeModal={props.modalName}>
@@ -90,7 +98,7 @@ let ModalCommon = (props) => {
                 id="SelectBirthYear"
                 // onClose={props.Close}
                 header="Укажите Ваш год рождения"
-                actions={<Button size="l" mode="primary" onClick={() => props.action({...props.data, bdate: props.data.bdate && props.data.bdate + ((!isNaN(selectedYear)) && (selectedYear > 0) && "." + selectedYear)})}>Закрыть</Button>}>
+                actions={<Button size="l" mode="primary" onClick={saveYear}>Закрыть</Button>}>
                     <FormLayout>
                         <FormLayoutGroup>
                         <InfoRow header="Год рождения не определен">
