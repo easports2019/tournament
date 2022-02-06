@@ -10,6 +10,7 @@ import {
     setMode, setAccess, addMatchToShedule, getAllMatchesByTournament, delMatchFromShedule,
 } from '../../../../store/matchReducer'
 import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
+import MatchListItem from '../../AdminPanel/Match/MatchListItem';
 
 
 // const SheduleContainer = (props) => {
@@ -27,30 +28,14 @@ const Hot = (props) => {
             <Group header={props.Name}>
                 <List>
                     {props.Matches && props.Matches.map(match => {
-                        let date = new Date(match.When);
+                        match.Team1 = {Name: match.Team1Name}
+                        match.Team2 = {Name: match.Team2Name}
+
                         return (
-                                <RichCell
-                                    before={
-                                        <InitialsAvatar
-                                            gradientColor={calcInitialsAvatarColor(match.TournamentGroup.TournamentId)}
-                                            >
-                                                <h6>{match.TournamentGroup.Tournament.OrganizatorNameShort}</h6>
-                                        </InitialsAvatar>
-                                    // <Avatar>{match.TournamentGroup.Tournament.OrganizatorNameShort}</Avatar>
-                                }
-                                    onClick={() => props.ClickHandler(match)}
-                                    text={
-                                        match.Played ?
-                                            <span style={{ "color": "green" }}>Сыгран {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span> :
-                                            <span style={{ "color": "blue" }}>Состоится {`${date.toLocaleDateString()} в ${date.toLocaleTimeString()}`}</span>
-                                    }
-                                    caption={match && match.Place ? match.Place.Name : "место не указано"}
-                                >
-                                    {match.Played ?
-                                        `${match.Team1Name} ${match.Team1Goals} - ${match.Team2Goals} ${match.Team2Name}` :
-                                        `${match.Team1Name} - ${match.Team2Name}`
-                                    }
-                                </RichCell>
+                            <MatchListItem 
+                                ClickHandler={() => props.ClickHandler(match)}
+                                Match={match} Place={match.Place}
+                                ></MatchListItem>
                         )
                     }
                     )}
