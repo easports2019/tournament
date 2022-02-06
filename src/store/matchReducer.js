@@ -61,10 +61,30 @@ let matchReducer = (state = initState, action) => {
             };
         }
         case MATCH_ADD_MATCH: {
-            return {
-                ...state,
-                matches: [...state.matches, action.match],
-            };
+            debugger
+            if (state.matches != null && state.matches.filter(x => x.Id == action.match.Id).length > 0)
+            {
+                return {
+                    ...state,
+                    matches: [...state.matches.map(x => {
+                        if (x.Id == action.match.Id){
+                            return action.match
+                        }
+                        else
+                        {
+                            return x
+                        }
+                    })],
+                }
+            }
+            else
+            {
+                return {
+                    ...state,
+                    matches: [...state.matches, action.match],
+                }
+            }
+            
         }
         case MATCH_SET_HOT_MATCHES: {
             
@@ -227,7 +247,7 @@ export const getAllMatchesByTournament = (tournament = null, userProfile = null,
 }
 
 // добавить матч в турнир
-export const addMatchToShedule = (match = null, userProfile = null, hours = 0, minutes = 0) => {
+export const addMatchToShedule = (match = null, userProfile = null, hours = 0, minutes = 0, seconds = 0) => {
     return dispatch => {
 
         dispatch(setGlobalPopout(true))
@@ -236,7 +256,7 @@ export const addMatchToShedule = (match = null, userProfile = null, hours = 0, m
             {
                 if (authQueryString && authQueryString.length > 0){
                 
-                    MatchAPI.addMatch(match, userProfile, Number(hours) > 21 ? 24-Number(hours) : Number(hours)+3 , minutes)
+                    MatchAPI.addMatch(match, userProfile, Number(hours) > 21 ? 24-Number(hours) : Number(hours)+3 , minutes, seconds)
                         .then(pl => {
                             if (pl && pl.data) {
                                 dispatch(addMatch(pl.data));

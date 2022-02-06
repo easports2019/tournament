@@ -12,6 +12,14 @@ export const getAge = (date) => {
     
 }
 
+/// проверка, установлено ли время игры (если время равно 00:00:05, значит не установлено)
+export const TimeIsNotAssigned = (date) => {
+    return date != null 
+    ? ((date.getHours() == 0 && date.getMinutes() == 0 && date.getSeconds() == 5) ? true : false)
+    : true
+    
+}
+
 export const timeToString = (hours, minutes, seconds) => {
     
     let h = ((hours != undefined) ? (hours < 10? "0" + hours.toString(): hours.toString()) : "");

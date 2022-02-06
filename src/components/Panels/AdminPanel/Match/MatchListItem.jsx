@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { RichCell, Avatar, calcInitialsAvatarColor, InitialsAvatar } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
-import { dateToString, timeToString } from '../../../../utils/convertors/dateUtils';
+import {  dateToString, TimeIsNotAssigned, timeToString } from '../../../../utils/convertors/dateUtils';
 import { green } from 'chalk';
 
 const schet = {
@@ -29,7 +29,8 @@ const MatchListItem = (props) => {
     
     let match=props.Match;
     let place=props.Place;
-    let date = new Date(match.When);
+    let date = match.When != null ? new Date(match.When) : null;
+    let timeString = date != null ? (TimeIsNotAssigned(date) ? " время не назначено" : ` в ${timeToString(date.getHours(), date.getMinutes())}`) : "";
 
 
         return (
@@ -42,11 +43,23 @@ const MatchListItem = (props) => {
                     <h6>{match.TournamentGroup.Tournament.OrganizatorNameShort}</h6>
                     </InitialsAvatar>
             }
-                caption={place ? place.Name : "Ошибка загрузки данных о месте"}
+                caption={place ? place.Name : "Не назначено"}
                 text={
                     match.Played ?
-                        <span style={{ "color": "green" }}>Сыгран <span>в {`${dateToString(date, 0, 0, 0, true)}`}</span></span> :
-                        <span style={{ "color": "blue" }}>Состоится <span>в {`${dateToString(date, 0, 0, 0, true)}`}</span> в {timeToString(date.getHours(), date.getMinutes())}</span>
+                        <span style={{ "color": "green" }}>Сыгран 
+                        {date != null 
+                            && <span>{` в ${dateToString(date, 0, 0, 0, true)}`}</span>
+                        }
+                        </span> :
+                        <span style={{ "color": "blue" }}> 
+                        {
+                            date != null
+                            ? <span>Состоится в {`${dateToString(date, 0, 0, 0, true)}`} 
+                            { timeString }
+                            </span>
+                            : <span>Дата и время не назначено</span>
+                        }
+                        </span>
                 }
             >
                 {match.Played ? <span>

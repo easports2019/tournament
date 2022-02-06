@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { RichCell, Avatar, Group, FormItem, Textarea } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
-import { dateToString, timeToString } from '../../../../utils/convertors/dateUtils';
+import { dateToString, TimeIsNotAssigned, timeToString } from '../../../../utils/convertors/dateUtils';
 
 const schet = {
     fontWeight: 'bold', 
@@ -26,7 +26,10 @@ const MatchItem = (props) => {
     
     let match=props.match;
     let place=props.Place;
-    let date = new Date(match.When);
+    let date = match.When != null ? new Date(match.When) : null;
+    let time = date != null 
+    ? (TimeIsNotAssigned(date) ? " время не указано" : ` в ${timeToString(date.getHours(), date.getMinutes())}`)
+    : "";
 
     return (
         <Group>
@@ -47,7 +50,10 @@ const MatchItem = (props) => {
                 ></Textarea>
             </FormItem>
             <FormItem top="Дата">
-                {new Date(match.When).toLocaleDateString()}
+                {date != null
+                ? <span>{`${date.toLocaleDateString()} ${time}`}</span>
+                : "Не назначена"
+                }
             </FormItem>
             
             <FormItem top="Место">

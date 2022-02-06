@@ -1019,10 +1019,13 @@ export const BidTeamAPI = {
 }
 
 export const MatchAPI = {
-    addMatch(matchInfo, userprofile, hours, minutes) {
+    addMatch(matchInfo, userprofile, hours, minutes, seconds) {
         
         //new Date()
-        matchInfo.When = new Date(matchInfo.When.year, matchInfo.When.month - 1, matchInfo.When.day, hours, minutes );
+        matchInfo.When = matchInfo.When != null
+        ? new Date(matchInfo.When.year, matchInfo.When.month - 1, matchInfo.When.day, hours, minutes, seconds )
+        : null;
+        
         return PostJsonInstance.post("Match/Add2" + authQueryString, JSON.stringify({ match: { ...matchInfo }, userProfile: { ...userprofile } })).then(data => {
             
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);

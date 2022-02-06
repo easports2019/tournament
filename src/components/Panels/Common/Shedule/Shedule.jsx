@@ -17,6 +17,7 @@ import {
 import { Checkbox } from '@vkontakte/vkui/dist/components/Checkbox/Checkbox';
 import ButtonWithNotify from '../WithNotify/ButtonWithNotify';
 import MatchListItem from '../../AdminPanel/Match/MatchListItem';
+import { TimeIsNotAssigned } from '../../../../utils/convertors/dateUtils';
 
 
 // const SheduleContainer = (props) => {
@@ -74,6 +75,8 @@ const Shedule = (props) => {
     const [selectedDate, setSelectedDate] = React.useState({ day: new Date().getDate(), month: new Date().getMonth() + 1, year: new Date().getFullYear() });
     const [selectedHour, setSelectedHour] = React.useState([hours[0].value]);
     const [selectedMinute, setSelectedMinute] = React.useState(minutes[0].value);
+    const [timeIsNotAssigned, setTimeIsNotAssigned] = React.useState(false);
+    const [dateIsNotAssigned, setDateIsNotAssigned] = React.useState(false);
     
 
     let getGroup = (groupId) => {
@@ -104,33 +107,41 @@ const Shedule = (props) => {
         let match = (editId >= 0) ?
             {
                 Id: editId,
-                When: selectedDate,
+                When: !dateIsNotAssigned ? selectedDate : null,
                 TournamentGroupId: selectedTournamentGroup,
                 PlaceId: selectedPlace,
                 Team1Id: selectedTeam1,
                 Team2Id: selectedTeam2,
                 Description: selectedDescription,
-                BidTeamToTournamentId1: selectedBidTeam1ToTournament,
-                BidTeamToTournamentId2: selectedBidTeam2ToTournament,
+                // BidTeamToTournamentId1: selectedBidTeam1ToTournament,
+                // BidTeamToTournamentId2: selectedBidTeam2ToTournament,
+                BidTeamToTournamentId1: -1,
+                BidTeamToTournamentId2: -1,
                 Team1Goals: selectedTeam1Goals,
                 Team2Goals: selectedTeam2Goals,
                 Played: selectedPlayed,
             } :
             {
-                When: selectedDate,
+                When: !dateIsNotAssigned ? selectedDate : null,
                 TournamentGroupId: selectedTournamentGroup,
                 PlaceId: selectedPlace,
                 Team1Id: selectedTeam1,
                 Team2Id: selectedTeam2,
                 Description: selectedDescription,
-                BidTeamToTournamentId1: selectedBidTeam1ToTournament,
-                BidTeamToTournamentId2: selectedBidTeam2ToTournament,
+                // BidTeamToTournamentId1: selectedBidTeam1ToTournament,
+                // BidTeamToTournamentId2: selectedBidTeam2ToTournament,
+                BidTeamToTournamentId1: -1,
+                BidTeamToTournamentId2: -1,
                 Team1Goals: selectedTeam1Goals,
                 Team2Goals: selectedTeam2Goals,
                 Played: selectedPlayed,
             };
 
-        props.addMatchToShedule(match, props.myProfile, selectedHour, selectedMinute);
+            if (!timeIsNotAssigned)
+                props.addMatchToShedule(match, props.myProfile, selectedHour, selectedMinute);
+            else
+                props.addMatchToShedule(match, props.myProfile, 0, 0, 5);
+
         props.setMode("list")
     }
 
@@ -173,14 +184,15 @@ const Shedule = (props) => {
         let date = new Date(match.When);
 
 
+        //setSelectedTournamentGroupTeamList(getGroup(match.TournamentGroupId).Teams.map(team => { return { value: team.Id, label: team.Name } }));
         setSelectedTournamentGroupTeamList(getGroup(match.TournamentGroupId).Teams.map(team => { return { value: team.Id, label: team.Name } }));
         setSelectedTournamentGroup(match.TournamentGroupId);
         setSelectedId(match.Id);
         setSelectedDescription(match.Description);
         setTeam1Goals(match.Team1Goals);
         setTeam2Goals(match.Team2Goals);
-        setSelectedBidTeam1ToTournament(match.BidTeamToTournamentId1);
-        setSelectedBidTeam2ToTournament(match.BidTeamToTournamentId2);
+        setSelectedBidTeam1ToTournament(match.Team1BidId);
+        setSelectedBidTeam2ToTournament(match.Team2BidId);
         setSelectedTeam1(match.Team1.Id)
         setSelectedTeam2(match.Team2.Id)
         setSelectedPlace(match.PlaceId)
@@ -188,6 +200,9 @@ const Shedule = (props) => {
         setSelectedDate({ day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear() })
         setSelectedHour(date.getHours())
         setSelectedMinute(date.getMinutes())
+
+        setDateIsNotAssigned(match.When == null ? true : false);
+        setTimeIsNotAssigned(TimeIsNotAssigned(date));
 
         props.setMode("edit")
     }
@@ -198,6 +213,16 @@ const Shedule = (props) => {
         props.setSelectedMatch(match)
 
         props.goToPanel("matchitem", false)
+    }
+    
+
+    let changeTimeIsNotAssigned = (assigned) => {
+        setTimeIsNotAssigned(assigned);
+    }
+    
+
+    let changeDateIsNotAssigned = (assigned) => {
+        setDateIsNotAssigned(assigned);
     }
 
 //debugger
@@ -227,7 +252,7 @@ const Shedule = (props) => {
                                                 })
                                                 .map(match => {
                                                     let place = props.places.find(p => p.UmbracoId == match.PlaceId)
-                                                    let date = new Date(match.When);
+                                                    let date = match.When != null ? new Date(match.When) : null;
                                                     return <MatchListItem 
                                                         ClickHandler={() => goToEditMatch(match)}
                                                         Match={match} Place={place}
@@ -320,46 +345,58 @@ const Shedule = (props) => {
                                     }}
                                 />
                             </FormItem>
+                            
                             <FormItem top="Дата">
-                                <DatePicker
-                                    min={{ day: 1, month: 1, year: new Date().getFullYear() - 1 }}
-                                    max={{ day: 1, month: 1, year: new Date().getFullYear() + 1 }}
-                                    defaultValue={selectedDate}
-                                    onDateChange={(value) => setSelectedDate(value)}
-                                />
+                                <Checkbox checked={dateIsNotAssigned} onChange={() => changeDateIsNotAssigned(!dateIsNotAssigned)}>Дата не назначена</Checkbox>
+                                {!dateIsNotAssigned &&
+                                    <>
+                                        <DatePicker
+                                            min={{ day: 1, month: 1, year: new Date().getFullYear() - 1 }}
+                                            max={{ day: 1, month: 1, year: new Date().getFullYear() + 1 }}
+                                            defaultValue={selectedDate}
+                                            onDateChange={(value) => setSelectedDate(value)}
+                                        />
+                                        <FormItem top="Время">
+                                        <Checkbox checked={timeIsNotAssigned} onChange={() => changeTimeIsNotAssigned(!timeIsNotAssigned)}>Время не назначено</Checkbox>
+                                            {!timeIsNotAssigned &&
+                                                <>
+                                                    <CustomSelect
+                                                        placeholder="Не выбрано"
+
+                                                        options={hours}
+                                                        value={selectedHour}
+                                                        onChange={(option) => setSelectedHour(option.currentTarget.value)}
+                                                        renderOption={({ ...otherProps }) => {
+                                                            return (
+                                                                <CustomSelectOption
+
+                                                                    {...otherProps}
+                                                                />
+                                                            );
+                                                        }}
+                                                    />
+                                                    <CustomSelect
+                                                        placeholder="Не выбрано"
+
+                                                        options={minutes}
+                                                        value={selectedMinute}
+                                                        onChange={(option) => setSelectedMinute(option.currentTarget.value)}
+                                                        renderOption={({ ...otherProps }) => {
+                                                            return (
+                                                                <CustomSelectOption
+
+                                                                    {...otherProps}
+                                                                />
+                                                            );
+                                                        }}
+                                                    />
+                                                </>
+                                            }
+                                        </FormItem>
+                                    </>
+                                }
                             </FormItem>
-                            <FormItem top="Время">
-                                <CustomSelect
-                                    placeholder="Не выбрано"
 
-                                    options={hours}
-                                    value={selectedHour}
-                                    onChange={(option) => setSelectedHour(option.currentTarget.value)}
-                                    renderOption={({ ...otherProps }) => {
-                                        return (
-                                            <CustomSelectOption
-
-                                                {...otherProps}
-                                            />
-                                        );
-                                    }}
-                                />
-                                <CustomSelect
-                                    placeholder="Не выбрано"
-
-                                    options={minutes}
-                                    value={selectedMinute}
-                                    onChange={(option) => setSelectedMinute(option.currentTarget.value)}
-                                    renderOption={({ ...otherProps }) => {
-                                        return (
-                                            <CustomSelectOption
-
-                                                {...otherProps}
-                                            />
-                                        );
-                                    }}
-                                />
-                            </FormItem>
                             <FormItem top="Счёт">
                                 <Div>Команда 1</Div>
                                 <CustomSelect
@@ -477,45 +514,56 @@ const Shedule = (props) => {
                                     }}
                                 />
                             </FormItem>
+
                             <FormItem top="Дата">
-                                <DatePicker
-                                    min={{ day: 1, month: 1, year: new Date().getFullYear() - 1 }}
-                                    max={{ day: 1, month: 1, year: new Date().getFullYear() + 1 }}
-                                    defaultValue={selectedDate}
-                                    onDateChange={(value) => setSelectedDate(value)}
-                                />
-                            </FormItem>
-                            <FormItem top="Время">
-                                <CustomSelect
-                                    placeholder="Не выбрано"
+                                <Checkbox checked={dateIsNotAssigned} onChange={() => changeDateIsNotAssigned(!dateIsNotAssigned)}>Дата не назначена</Checkbox>
+                                {!dateIsNotAssigned &&
+                                    <>
+                                        <DatePicker
+                                            min={{ day: 1, month: 1, year: new Date().getFullYear() - 1 }}
+                                            max={{ day: 1, month: 1, year: new Date().getFullYear() + 1 }}
+                                            defaultValue={selectedDate}
+                                            onDateChange={(value) => setSelectedDate(value)}
+                                        />
+                                        <FormItem top="Время">
+                                                <Checkbox checked={timeIsNotAssigned} onChange={() => changeTimeIsNotAssigned(!timeIsNotAssigned)}>Время не назначено</Checkbox>
+                                                    {!timeIsNotAssigned &&
+                                                        <>
+                                                    <CustomSelect
+                                                        placeholder="Не выбрано"
 
-                                    options={hours}
-                                    value={selectedHour}
-                                    onChange={(option) => setSelectedHour(option.currentTarget.value)}
-                                    renderOption={({ ...otherProps }) => {
-                                        return (
-                                            <CustomSelectOption
+                                                        options={hours}
+                                                        value={selectedHour}
+                                                        onChange={(option) => setSelectedHour(option.currentTarget.value)}
+                                                        renderOption={({ ...otherProps }) => {
+                                                            return (
+                                                                <CustomSelectOption
 
-                                                {...otherProps}
-                                            />
-                                        );
-                                    }}
-                                />
-                                <CustomSelect
-                                    placeholder="Не выбрано"
+                                                                    {...otherProps}
+                                                                />
+                                                            );
+                                                        }}
+                                                    />
+                                                    <CustomSelect
+                                                        placeholder="Не выбрано"
 
-                                    options={minutes}
-                                    value={selectedMinute}
-                                    onChange={(option) => setSelectedMinute(option.currentTarget.value)}
-                                    renderOption={({ ...otherProps }) => {
-                                        return (
-                                            <CustomSelectOption
+                                                        options={minutes}
+                                                        value={selectedMinute}
+                                                        onChange={(option) => setSelectedMinute(option.currentTarget.value)}
+                                                        renderOption={({ ...otherProps }) => {
+                                                            return (
+                                                                <CustomSelectOption
 
-                                                {...otherProps}
-                                            />
-                                        );
-                                    }}
-                                />
+                                                                    {...otherProps}
+                                                                />
+                                                            );
+                                                        }}
+                                                    />
+                                                </>
+                                            }
+                                        </FormItem>
+                                    </>
+                                }
                             </FormItem>
                             <FormItem top="Счёт">
                                 <Div>Команда 1</Div>
