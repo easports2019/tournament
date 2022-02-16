@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { RichCell, Avatar, calcInitialsAvatarColor, InitialsAvatar } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
-import {  dateToString, TimeIsNotAssigned, timeToString } from '../../../../utils/convertors/dateUtils';
+import {  addToTime, dateToString, TimeIsNotAssigned, timeToString } from '../../../../utils/convertors/dateUtils';
 import { green } from 'chalk';
 
 const schet = {
@@ -30,7 +30,11 @@ const MatchListItem = (props) => {
     let match=props.Match;
     let place=props.Place;
     let date = match.When != null ? new Date(match.When) : null;
+    let now = new Date();
+    debugger
+    let endOfMatch = addToTime(date, 0, match.TournamentGroup.Tournament.MatchLength + 10); // 10 минут добавляем на всякий случай (задержки, перерывы)
     let timeString = date != null ? (TimeIsNotAssigned(date) ? " время не назначено" : ` в ${timeToString(date.getHours(), date.getMinutes())}`) : "";
+    let inGame = ((date <= now ) && (now < endOfMatch));
 
 
         return (
@@ -45,7 +49,8 @@ const MatchListItem = (props) => {
             }
                 caption={place ? place.Name : "Не назначено"}
                 text={
-                    match.Played ?
+                    inGame ? <span style={{ "color": "red" }}>Матч идет</span> 
+                    : match.Played ?
                         <span style={{ "color": "green" }}>Сыгран 
                         {date != null 
                             && <span>{` в ${dateToString(date, 0, 0, 0, true)}`}</span>
@@ -54,7 +59,7 @@ const MatchListItem = (props) => {
                         <span style={{ "color": "blue" }}> 
                         {
                             date != null
-                            ? <span>Состоится в {`${dateToString(date, 0, 0, 0, true)}`} 
+                            ? <span>{`${dateToString(date, 0, 0, 0, true)}`} 
                             { timeString }
                             </span>
                             : <span>Дата и время не назначено</span>
