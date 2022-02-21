@@ -15,6 +15,7 @@ const SYSTEM_SET_GLOBAL_POPOUT = "SYSTEM_SET_GLOBAL_POPOUT";
 const SYSTEM_SET_ERROR_MESSAGE = "SYSTEM_SET_ERROR_MESSAGE";
 const SYSTEM_RESET_ERROR = "SYSTEM_RESET_ERROR";
 const SYSTEM_SET_SHOW_ADMIN_TOURNEY_TAB = "SYSTEM_SET_SHOW_ADMIN_TOURNEY_TAB";
+const SYSTEM_SET_SHOW_ADMIN_GROUP_TAB = "SYSTEM_SET_SHOW_ADMIN_GROUP_TAB";
 
 
 const initState = {
@@ -26,7 +27,8 @@ const initState = {
     //ErrorObject: {resultcode: 0, result: "Ok", data: null, message: ""},
     ErrorObject: "",
     ShowAdminTourneyTab: false,
-    ShowAdminTeamTab: true,
+    ShowAdminTeamTab: false,
+    UserIsGroupAdmin: false,
     Loading: true,
     CheckLoading: new Date(),
      // level 
@@ -109,6 +111,12 @@ export let systemReducer = (state = initState, action) =>
                 ShowAdminTourneyTab: action.showAdminTourneyTab
             };
         }
+        case SYSTEM_SET_SHOW_ADMIN_GROUP_TAB: {
+            
+            return {...state,
+                UserIsGroupAdmin: action.isGroupAdmin
+            };
+        }
         default: {
             return state;
         }
@@ -159,6 +167,13 @@ export const setShowAdminTourneyTab = (val) => {
     return {
         type: SYSTEM_SET_SHOW_ADMIN_TOURNEY_TAB,
         showAdminTourneyTab: val
+    }
+}
+
+export const setShowAdminGroupTab = (val) => {
+    return {
+        type: SYSTEM_SET_SHOW_ADMIN_GROUP_TAB,
+        isGroupAdmin: val
     }
 }
 

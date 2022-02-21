@@ -649,6 +649,46 @@ export const getMyTeams = (userProfileId = -1) => {
     }
 }
 
+// возвращает с сервера все команды города
+export const getTeamsInCity = (userProfile) => {
+    return dispatch => {
+        dispatch(setGlobalPopout(true))
+
+        if (userProfile != null) {
+            if (authQueryString && authQueryString.length > 0)
+
+
+                TeamAdminAPI.getAllInCityByUserProfile(userProfile)
+                    .then(pl => {
+                        if (pl && pl.data.length > 0) {
+
+                            dispatch(setTeams(pl.data));
+                            dispatch(setGlobalPopout(false))
+                        }
+                        else {
+                            dispatch(setErrorMessage("Не удалось загрузить команды"))
+                            dispatch(setGlobalPopout(false))
+                        }
+                    })
+                    .catch(error => {
+                        dispatch(setErrorMessage("Не удалось загрузить команды: " + error))
+                        dispatch(setGlobalPopout(false))
+                    })
+
+            else {
+                dispatch(setErrorMessage("Не удалось загрузить команды"))
+                dispatch(setGlobalPopout(false))
+
+            }
+        }
+        else {
+            dispatch(setErrorMessage("Не удалось загрузить команды, в функцию передан userprofile = -1"))
+            dispatch(setGlobalPopout(false))
+
+        }
+    }
+}
+
 // возвращает с сервера все турниры для админа по его UserProfileId
 export const getTeamInfo = (team = null) => {
     return dispatch => {

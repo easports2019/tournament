@@ -29,21 +29,26 @@ import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect, setColl
 import { setActiveMenuItem } from './store/mainMenuReducer';
 import { getMatchesInCurrentCity, setHotPanel, setSelectedMatch } from './store/matchReducer';
 import { getAuthInfo, getUserProfile, setTriedToGetProfile, setUserProfileCity, setBirthDate,
-	saveUserProfile, setVkProfileInfo, setUserName, setUserSurName, setMyTotalExpirience } from './store/profileReducer';
+	saveUserProfile, setVkProfileInfo, setUserName, setUserSurName, setMyTotalExpirience, setUserIsGroupAdmin } from './store/profileReducer';
 import { getAllRentsInCityByCityId } from './store/rentReducer';
+import { connectTeamWithGroup, getGroupTeamInfo } from './store/groupReducer';
 import { getAllSimplePlacesInCityByCityId } from './store/simplePlaceReducer';
 import { goToPanel, resetError, setCurrentModalWindow, checkConnection, setGlobalPopout, 
-	setLoading, setShowAdminTourneyTab, updateLoading } from './store/systemReducer';
-import { getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
+	setLoading, setShowAdminTourneyTab, updateLoading, setShowAdminGroupTab } from './store/systemReducer';
+import { addTournamentGroup, getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
 import { getUser, setSelectedUser } from './store/vkReducer';
 import { addToTime, dateToString, jSDateValueToDateSelectorValue } from './utils/convertors/dateUtils';
 import MatchItem from './components/Panels/AdminPanel/Match/MatchItem';
 import { useDispatch } from 'react-redux';
+import GroupAdminPanel from './components/Panels/AdminPanel/Team/GroupAdminPanel';
+import { myProfile } from './store/constants/commonConstants';
 
 
 
 const App = (props) => {
 	const [fetchedUser, setUser] = useState(null);
+	const [launchParams, setLaunchParams] = useState(null);
+	const [groupInfo, setGroupInfo] = useState(null);
 	const [isFetching, setIsFetching] = useState(false);
 	
 	const debugModeOn = false; // флаг показа логов
@@ -62,8 +67,8 @@ const App = (props) => {
 		background: 'white', 
 		padding: '15px 0',
 		textAlign: 'center',
-		fontSize: document.documentElement.clientWidth <= 320 ? '10px' : 'auto',
-		opacity: '0.9',
+		fontSize: document.documentElement.clientWidth <= 460 ? '9px' : (document.documentElement.clientWidth <= 500 ? '12px' : '13px'),
+		opacity: '0.91',
 		borderRadius: '10px'
 	} 
 	
@@ -126,6 +131,26 @@ const App = (props) => {
 		setUser(user);
 		props.setVkProfileInfo(user);
 
+
+		bridge.send("VKWebAppGetLaunchParams").then((data) => {
+
+			setLaunchParams(data);
+			if (data.vk_viewer_group_role == "admin"){
+				props.setShowAdminGroupTab(true);
+				props.setUserIsGroupAdmin(true);
+			}
+			else
+			{
+				props.setShowAdminGroupTab(false);
+				props.setUserIsGroupAdmin(false);
+			}
+
+			bridge.send("VKWebAppGetGroupInfo", {"group_id": data.vk_group_id}).then((info) => {
+
+				setGroupInfo(info);
+				
+			});
+		});
 	}
 
 	// 1 это системное, загрузка приложения вк
@@ -225,7 +250,7 @@ const App = (props) => {
 	
 	// 5 регистрация пользователя
 	useEffect(() => {
-		debugger
+
 		if (props.vkProfile && props.vkProfile.city) {
 			if ((!props.myProfile) && (props.triedToGetProfile>0)) { // не зарегистрирован
 				consoleLog("5 not registred")
@@ -280,6 +305,11 @@ const App = (props) => {
 
 			// получаем список аренд
 			props.getAllRentsInCityByCityId(props.myProfile.CityUmbracoId);
+
+			if (groupInfo != null)
+			{
+				props.getGroupTeamInfo(groupInfo.id, props.myProfile);
+			}
 
 			if (!timerStarts)
 			{
@@ -383,6 +413,51 @@ const App = (props) => {
 		
 	}
 
+	let addToGroup = () => {
+		bridge.send("VKWebAppAddToCommunity")
+			.then(dat => {
+
+				bridge.send("VKWebAppGetGroupInfo", {"group_id": Number(dat.group_id)})
+				.then(group => 
+					props.setCurrentModalWindow(
+						<ModalCommon modalName="Info" 
+						data={
+							{
+								Name: "Приложение добавлено успешно",
+								Message:`Вы успешно добавили приложение в группу ${group.name}.\r\n
+								Теперь для того чтобы настроить свою команду запустите приложение из сообщества от имени администратора сообщества и настройте параметры на вкладке Моя Команда`
+							}
+						}
+						Close={() => props.setCurrentModalWindow(null)
+						}>
+	
+						</ModalCommon>
+					)
+				)
+				.catch(error => {
+					//debugger
+					//log_error(error)
+					//alert(error.error_data)})
+				})
+
+				// первоначально прописываем установку в группу на сервере
+				props.connectTeamWithGroup(dat.group_id, -1, props.myProfile);
+			})
+	}
+
+	let previewWidgetGroup = () => {
+		// bridge.send("VKWebAppShowCommunityWidgetPreviewBox", 
+		// {"group_id": 178163868, "type": "text", "code": 
+		// "return {\"title\": \"Цитата\",\"text\": \"Текст цитаты\"};"})
+		// .then(null, (data) => {
+		// 	debugger
+		// 	alert(data.error_data);
+		// })
+		
+		//.then((data) => addToGroup(data.group_id))
+		;
+	}
+
 	let menuTabBarItems = props.mainMenu.menuItems.map(menuItem => {
 		if (menuItem.enabled && menuItem.show)
 			return <TabbarItemWithHistory toMenuName={menuItem.name} selected={menuItem.name === props.mainMenu.activeItem.name} data-story={menuItem.name} text={menuItem.title}></TabbarItemWithHistory>
@@ -411,11 +486,9 @@ const App = (props) => {
 						<TabbarItemWithHistory toMenuName="allTournaments" selected={"allTournaments" === props.mainMenu.activeItem.name} data-story="allTournaments" text="Турниры"></TabbarItemWithHistory>
 						{/* <TabbarItemWithHistory toMenuName="collectslist" selected={"collectslist" === props.mainMenu.activeItem.name} data-story="collectslist" text="Сборы"></TabbarItemWithHistory> */}
 						<TabbarItemWithHistory toMenuName="profile" selected={"profile" === props.mainMenu.activeItem.name} data-story="profile" text="Профиль"></TabbarItemWithHistory>
+						{props.IsGroupAdmin && <TabbarItemWithHistory toMenuName="groupadmin" selected={"groupadmin" === props.mainMenu.activeItem.name} data-story="groupadmin" text="Моя команда"></TabbarItemWithHistory>}
 						{props.ShowAdminTourneyTab && <TabbarItemWithHistory toMenuName="tournamentadmin" selected={"tournamentadmin" === props.mainMenu.activeItem.name} data-story="tournamentadmin" text="Управление турнирами"></TabbarItemWithHistory>}
-						{
-						//props.ShowAdminTeamTab 
-						props.ShowAdminTourneyTab 
-						&& <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Мои команды"></TabbarItemWithHistory>}
+						{props.ShowAdminTourneyTab && <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Мои команды"></TabbarItemWithHistory>}
 					</Tabbar>
 				: null	
 				}>
@@ -437,7 +510,7 @@ const App = (props) => {
 									<img style={{width: '100%'}} src={tournament}></img>
 									<span 
 									style={cardStyle}
-									>Турниры<br />города</span>
+									>Любительский футбол<br />Костромы</span>
 								</CardWithHistory>
 								<Card>
 									<img style={{width: '100%'}} src={player}></img>
@@ -638,6 +711,12 @@ const App = (props) => {
 							<FormItem>
 								<Button onClick={() => props.saveUserProfile(props.myProfile)}>Сохранить данные профиля</Button>
 							</FormItem>
+
+
+							<FormItem top="Установка приложения">
+								<Button onClick={() => addToGroup()}>Установить в сообщество</Button>
+								{/* <Button onClick={() => previewWidgetGroup()}>Предспросмотр виджета в сообществе</Button> */}
+							</FormItem>
 						</FormItem>
 						}
 						</Group>
@@ -679,6 +758,14 @@ const App = (props) => {
 						</Group>
 						<Group>
 							<TeamAdminPanel></TeamAdminPanel>
+						</Group>
+					</Panel>
+				</View>
+				<View id="groupadmin" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
+					<Panel id="main">
+					
+						<Group>
+							<GroupAdminPanel></GroupAdminPanel>
 						</Group>
 					</Panel>
 				</View>
@@ -783,6 +870,7 @@ const mapStateToProps = (state) => {
 		mainMenu: state.mainMenu,
 		ShowAdminTourneyTab: state.system.ShowAdminTourneyTab,
 		ShowAdminTeamTab: state.system.ShowAdminTeamTab,
+		IsGroupAdmin: state.system.UserIsGroupAdmin,
 		CurrentModalWindow: state.system.CurrentModalWindow,
 		Loading: state.system.Loading,
 		Connected: state.system.Connected,
@@ -807,7 +895,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, { 
-	setBirthDate, setSelectedMatch,
+	setBirthDate, setSelectedMatch, setShowAdminGroupTab, connectTeamWithGroup, getGroupTeamInfo, setUserIsGroupAdmin,
 	setCurrentModalWindow, setLoading, goToPanel, checkConnection, updateLoading, saveUserProfile, setUserName, setUserSurName, setMyTotalExpirience, 
 	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId, getUser, setSelectedUser,
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode, setCollectItemMode,

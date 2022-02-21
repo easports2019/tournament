@@ -121,6 +121,14 @@ const initState = {
         enabled: true,
         show: true,
     },
+    {
+        id: 12,
+        name: "groupadmin",
+        title: "Моя команда",
+        position: 15,
+        enabled: true,
+        show: false,
+    },
     
 ],
     //activeItem: {id: 0, name: "hot", title: "Горячее", position: 0, enabled: true, show: true,},

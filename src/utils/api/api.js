@@ -760,6 +760,19 @@ export const TeamAdminAPI = {
             })
     },
 
+    getAllInCityByUserProfile(userProfile) {
+        let formData = new FormData();
+        formData.append("cityumbracoid", userProfile.CityUmbracoId);
+        return PostJsonInstance.post("SimpleTeam/GetAllInCity" + authQueryString, formData).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
+
     getAllByAdminProfileId(userProfileId, startindex = 0) {
         let formData = new FormData();
         formData.append("startindex", startindex);
@@ -1120,6 +1133,48 @@ export const ServiceAPI = {
     checkConnection() {
         
         return PostJsonInstance.post("Service/Connect" + authQueryString).then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
+}
+
+export const GroupAPI = {
+    
+    // возвращает связанную с группой команду
+    getTeamGroupFromServer(groupId, userProfile) {
+        let grTeam = {
+            groupId,
+            teamId: -1,
+        }
+
+        return PostJsonInstance.post("VkGroup/Get" + authQueryString, 
+        JSON.stringify({ groupTeam: { ...grTeam }, userProfile: { ...userProfile } }))
+        .then(data => {
+
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
+
+    // связывает группу с командой
+    setTeamGroupToServer(groupId, teamId, userProfile) {
+        
+        let grTeam = {
+            groupId,
+            teamId,
+        }
+
+        return PostJsonInstance.post("VkGroup/Add" + authQueryString, 
+        JSON.stringify({ groupTeam: { ...grTeam }, userProfile: { ...userProfile } }))
+        .then(data => {
 
             return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
         })

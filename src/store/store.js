@@ -13,6 +13,7 @@ import simplePlaceReducer from './simplePlaceReducer.js'
 import paymentReducer from './paymentReducer.js'
 import mainMenuReducer from './mainMenuReducer.js'
 import systemReducer from './systemReducer.js'
+import groupReducer from './groupReducer.js'
 import cityReducer from './cityReducer.js'
 import matchReducer from './matchReducer.js'
 import vkReducer from './vkReducer.js'
@@ -38,6 +39,7 @@ let reducers = combineReducers({
     matches: matchReducer,
     userEntity: userReducer,
     cityEntity: cityReducer,
+    groupEntity: groupReducer,
     ampluaEntity: ampluaReducer,
     //placeEntity: placeReducer,
     rentEntity: rentReducer,

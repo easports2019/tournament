@@ -12,6 +12,7 @@ const PROFILE_SET_MY_TOTAL_EXP = "PROFILE_SET_MY_TOTAL_EXP";
 const PROFILE_SET_MY_NAME = "PROFILE_SET_MY_NAME";
 const PROFILE_SET_MY_BIRTH = "PROFILE_SET_MY_BIRTH";
 const PROFILE_SET_MY_SURNAME = "PROFILE_SET_MY_SURNAME";
+const PROFILE_SET_USER_IS_GROUP_ADMIN = "PROFILE_SET_USER_IS_GROUP_ADMIN";
 
 let demoUser = users[0];
 
@@ -19,6 +20,7 @@ const initState = {
     myProfile: null,
     vkProfile: null,
     triedToGetProfile: 0,
+    isGroupAdmin: false,
 
      // level 
 
@@ -46,6 +48,11 @@ export let profileReducer = (state = initState, action) =>
         case PROFILE_SET_TRIED_TO_GET_PROFILE: {
             return {...state,
                 triedToGetProfile: action.tried,
+            };
+        }
+        case PROFILE_SET_USER_IS_GROUP_ADMIN: {
+            return {...state,
+                isGroupAdmin: action.isAdmin,
             };
         }
         case PROFILE_SET_MY_TOTAL_EXP: {
@@ -103,6 +110,13 @@ export const setTriedToGetProfile = (tried) => {
     return {
         type: PROFILE_SET_TRIED_TO_GET_PROFILE,
         tried
+    }
+}
+
+export const setUserIsGroupAdmin = (isAdmin) => {
+    return {
+        type: PROFILE_SET_USER_IS_GROUP_ADMIN,
+        isAdmin
     }
 }
 

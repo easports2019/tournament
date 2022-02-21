@@ -34,6 +34,7 @@ let ModalCommon = (props) => {
         props.action2(2);
     }
 
+
     return (
         <ModalRoot activeModal={props.modalName}>
             <ModalPage id="CitySelect"
@@ -54,8 +55,7 @@ let ModalCommon = (props) => {
                 </Group>    
             </ModalPage>
 
-            <ModalCard
-                id="Error"
+            <ModalCard id="Error"
                 onClose={props.Close}
                 //header={props.data.message ? props.data.message : "Произошла неизвестная ошибка"}
                 header={props.data ? props.data : "Произошла неизвестная ошибка"}
@@ -63,8 +63,7 @@ let ModalCommon = (props) => {
                     {/* <Textarea defaultValue="" /> */}
             </ModalCard>
 
-            <ModalCard
-                id="AreYouSure"
+            <ModalCard id="AreYouSure"
                 onClose={props.Close}
                 header={props.data.message ? props.data.message : "Текст вопроса не передан"}
                 actions={
@@ -77,25 +76,35 @@ let ModalCommon = (props) => {
                     {/* <Textarea defaultValue="" /> */}
             </ModalCard>
 
-            <ModalCard
-                id="MyProfile"
+            <ModalCard id="MyProfile"
                 onClose={props.Close}
                 header={props.data.Name ? props.data.Name : "Имя не прогрузилось"}
                 actions={<Button size="l" mode="primary" onClick={props.Close}>Закрыть</Button>}>
                     {/* <Textarea defaultValue="" /> */}
                     {
-                        (props.data.Name) ?
-                        `Имя: ${props.data.Name} \r\n
-                        Фамилия: ${props.data.Surname} \r\n
-                        Дата рождения: ${props.data.Birth} \r\n
-                        Зарегистрирован: ${props.data.Register} \r\n
-                        Город: ${props.data.City.Name}
+                        (props.data) ?
+                        `Имя: ${props.data.Name && props.data.Name} \r\n
+                        Фамилия: ${props.data.Surname && props.data.Surname} \r\n
+                        Дата рождения: ${props.data.Birth && props.data.Birth} \r\n
+                        Зарегистрирован: ${props.data.Register && props.data.Register} \r\n
+                        Город: ${props.data.City && props.data.City.Name && props.data.City.Name}
                         ` : ""
                     }
             </ModalCard>
+
+            <ModalCard id="Info"
+                onClose={props.Close}
+                header={(props.data && props.data.Name) ? props.data.Name : "Имя не прогрузилось"}
+                actions={<Button size="l" mode="primary" onClick={props.Close}>Закрыть</Button>}>
+                    {/* <Textarea defaultValue="" /> */}
+                    {
+                        (props.data && props.data.Message) ?
+                        props.data.Message
+                         : ""
+                    }
+            </ModalCard>
             
-            <ModalCard
-                id="SelectBirthYear"
+            <ModalCard id="SelectBirthYear"
                 // onClose={props.Close}
                 header="Укажите Ваш год рождения"
                 actions={<Button size="l" mode="primary" onClick={saveYear}>Закрыть</Button>}>
@@ -128,8 +137,8 @@ let ModalCommon = (props) => {
                         </FormLayoutGroup>
                     </FormLayout>
             </ModalCard>
-            <ModalCard
-                id="SelectBirth"
+            
+            <ModalCard id="SelectBirth"
                 // onClose={props.Close}
                 header="Укажите дату вашего рождения"
                 actions={
@@ -172,8 +181,7 @@ let ModalCommon = (props) => {
                     </FormLayout>
             </ModalCard>
             
-            <ModalCard
-                id="SelectCity"
+            <ModalCard id="SelectCity"
                 // onClose={props.Close}
                 header="Выберите город"
                 actions={<Button size="l" mode="primary" onClick={() => {
