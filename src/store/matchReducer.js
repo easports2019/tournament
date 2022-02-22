@@ -8,6 +8,7 @@ import { authQueryString } from './../utils/api/server';
 let demoMatch = Match;
 
 const MATCH_SET_ALL_MATCHES = "MATCH_SET_ALL_MATCHES";
+const MATCH_SET_ALL_MATCHES_SELECTED_TEAM = "MATCH_SET_ALL_MATCHES_SELECTED_TEAM";
 const MATCH_DEL_MATCH = "MATCH_DEL_MATCH";
 const MATCH_SET_SELECTED = "MATCH_SET_SELECTED";
 const MATCH_ADD_MATCH = "MATCH_ADD_MATCH";
@@ -28,6 +29,7 @@ const emptyTournament = EmptyTournament
 
 const initState = {
     matches: [],
+    matchesBySelectedTeam: [],
     hot: {
         yesterday: [],
         today: [],
@@ -46,6 +48,12 @@ let matchReducer = (state = initState, action) => {
             return {
                 ...state,
                 matches: [...action.matches],
+            };
+        }
+        case MATCH_SET_ALL_MATCHES_SELECTED_TEAM: {
+            return {
+                ...state,
+                matchesBySelectedTeam: [...action.matches],
             };
         }
         case MATCH_SET_SELECTED: {
@@ -148,6 +156,13 @@ let matchReducer = (state = initState, action) => {
 export const setAllMatches = (matches) => {
     return {
         type: MATCH_SET_ALL_MATCHES,
+        matches
+    }
+}
+
+export const setAllMatchesBySelectedTeam = (matches) => {
+    return {
+        type: MATCH_SET_ALL_MATCHES_SELECTED_TEAM,
         matches
     }
 }
@@ -336,11 +351,46 @@ export const getMatchesInCurrentCity = (userProfile = null) => {
                             
                             if (pl && pl.data.length > 0) {
                                 dispatch(setHotMatches(pl.data));
-                                dispatch((pl.data));
+                                //dispatch((pl.data));
                                 dispatch(setGlobalPopout(false))
                             }
                             else {
                                 dispatch(setErrorMessage("Не получены данные MatchAPI.getCurrentMatchesByCity"))
+                                dispatch(setGlobalPopout(false))
+                            }
+                        })
+                        .catch(error => {
+
+                            dispatch(setErrorMessage(error))
+                            dispatch(setGlobalPopout(false))
+                        })
+                    }
+                else {
+
+                    dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                    dispatch(setGlobalPopout(false))
+
+                }
+            }
+        
+    }
+}
+
+// возвращает расписание матчей выбранной команды во всех турнирах города
+export const getTeamSheduleByTeamId = (teamId, userProfile, groupId = -1) => {
+    return dispatch => {
+        if (userProfile != null) 
+            {
+                if (authQueryString && authQueryString.length > 0){
+                
+                    MatchAPI.getTeamSheduleByTeamId(groupId, teamId, userProfile)
+                        .then(pl => {
+                            if (pl && pl.data.length > 0) {
+                                dispatch(setAllMatchesBySelectedTeam(pl.data));
+                                dispatch(setGlobalPopout(false))
+                            }
+                            else {
+                                dispatch(setErrorMessage("Не получены данные MatchAPI.getTeamSheduleByTeamId"))
                                 dispatch(setGlobalPopout(false))
                             }
                         })

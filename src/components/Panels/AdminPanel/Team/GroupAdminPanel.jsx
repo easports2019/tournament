@@ -9,6 +9,7 @@ import {connectTeamWithGroup} from './../../../../store/groupReducer'
 import { connect } from 'react-redux';
 import ButtonWithHistory from '../../Common/WithHistory/ButtonWithHistory'
 import SimpleSearch from '../../Common/Search/SearchPanel';
+import MatchListItem from '../Match/MatchListItem';
 
 
 const GroupAdminPanel = (props) => {
@@ -21,17 +22,17 @@ const GroupAdminPanel = (props) => {
         setShowSearch(false);
     }
 
+let click = (match) => {
 
+    props.ClickHandler(match)
+}
 
     useEffect(() =>{
         
         //props.getMyTeams(props.myProfile.UserProfileId);
-        debugger
         props.getTeamsInCity(props.myProfile)
         
     }, props.myProfile)
-
-debugger
 
         return (
             <>
@@ -42,7 +43,7 @@ debugger
                     props.UserIsGroupAdmin
                     ?
                     <>
-                    <FormItem top="Наша команда">
+                    <FormItem top="Команда группы">
                         <RichCell
                             after={props.TeamId 
                                 ? <Button onClick={() => setShowSearch(true)}>Выбрать другую</Button> 
@@ -53,7 +54,7 @@ debugger
                         
                     </FormItem>
                     {showSearch && 
-                        <FormItem top="Выбрать нашу команду">
+                        <FormItem top="Выбрать команду этой группы">
                             {/* <p>Команда: {props.TeamId ? "" : "Не выбрана"}</p> */}
                             <SimpleSearch List={teams}
                             ActionOnSelect={(teamId) => SetOurTeam(teamId)}
@@ -64,14 +65,30 @@ debugger
                         }
                     </>
                     :
-                    <FormItem top="Наша команда">
+                    <FormItem top="Команда группы">
                         <RichCell
                         >{props.TeamName 
                             ? props.TeamName 
-                            : "Не выбрана"}</RichCell>
+                            : "Не выбрана админом группы"}</RichCell>
                         
                     </FormItem>
                 }
+                <Group>
+                    {props.matchesByTeam
+                    .sort((a, b) => new Date(b.When).valueOf() - new Date(a.When).valueOf())
+                    .map(match => {
+                        return (
+                        <MatchListItem
+                            Match={match} Place={match.Place}
+                            ClickHandler={() => click(match)}
+                        ></MatchListItem>
+                        )
+
+                                
+
+                        //return 
+                    })}
+                </Group>
                 {/* <FormItem>
                     <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="teamitem" data-story="teamitem">Создать команду</ButtonWithHistory>
                 </FormItem> */}
@@ -95,9 +112,11 @@ const mapStateToProps = (state) => {
 		mainMenu: state.mainMenu,
 		GroupId: state.groupEntity.GroupId,
 		TeamId: state.groupEntity.TeamId,
-        UserIsGroupAdmin: state.system.UserIsGroupAdmin,
+		TeamName: state.groupEntity.TeamName,
+		UserIsGroupAdmin: state.profileEntity.isGroupAdmin,
 		myProfile: state.profileEntity.myProfile,
         tournament: state.tournamentsEntity,
+		matchesByTeam: state.matches.matchesBySelectedTeam,
         team: state.teamsEntity,
 	}
 }

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, Group, FormItem, Textarea } from '@vkontakte/vkui'
+import { RichCell, Avatar, Group, FormItem, Textarea, CardGrid, Card, Title, Caption } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
 import { dateToString, TimeIsNotAssigned, timeToString } from '../../../../utils/convertors/dateUtils';
 
@@ -21,6 +21,26 @@ const lose = {
     //color: 'orange',
 }
 
+const CardStyle = {
+        display: "flex", 
+        height: "100px", 
+        justifyContent: "center", 
+        alignItems: "center",
+        flexWrap: "no-wrap",
+        alignSelf: "center",
+        alignContent: "center",
+        overflow: "hidden",
+    }
+
+const CardResultStyle = {
+        display: "flex", 
+        height: "100px", 
+        justifyContent: "center", 
+        alignItems: "center",
+        flexWrap: "wrap",
+        overflow: "hidden",
+    }
+
 const MatchItem = (props) => {
     
     
@@ -31,36 +51,75 @@ const MatchItem = (props) => {
     ? (TimeIsNotAssigned(date) ? " время не указано" : ` в ${timeToString(date.getHours(), date.getMinutes())}`)
     : "";
 
+    const subCardStyle = {
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center",
+        flexWrap: "wrap",
+        flexDirection: "column",
+        color: match.Played ? "green" : "blue",
+        overflow: "hidden",
+    }
+
+    const centering = {
+        textAlign: "center",
+    }
+
     return (
         <Group>
-            <FormItem>
-                {match.Team1 ? match.Team1.Name : match.Team1Name} 
-                {match && (match.Played ? `  ${match.Team1Goals} : ${match.Team2Goals}  ` : `  :  `)} 
-                {match.Team2 ? match.Team2.Name : match.Team2Name}
-            </FormItem>
-            <FormItem top="Группа/лига">
-                {match.TournamentGroup.Name}
-            </FormItem>
             
+            <FormItem>
+                <Caption level="4" weight="regular">
+                    {match.TournamentGroup.Tournament.OrganizatorName}
+                </Caption>
+                <Caption level="3" weight="regular">
+                    {match.TournamentGroup.Tournament.Name}
+                </Caption>
+                <Caption level="2" weight="regular">
+                    {match.TournamentGroup.Name}
+                </Caption>
+                <Caption level="1" weight="bold">
+                    {date != null
+                    ? <span>{`${dateToString(date)}`}</span>
+                    : "Дата не назначена"
+                    }
+                </Caption>
+            </FormItem>
+            <FormItem></FormItem>
+            <CardGrid size="s">
+                <Card style={CardStyle}>
+                    <div  style={centering}>
+                        {match.Team1Bid.TeamName} 
+                    </div>
+                </Card>
+                <Card style={CardResultStyle} mode="shadow">
+
+                    <div style={subCardStyle}>
+                        <Title level="1" weight="bold">
+                            {match && (match.Played ? `  ${match.Team1Goals} : ${match.Team2Goals}  ` : `    `)} 
+                        </Title>
+                        <Caption level="4" weight="bold">
+                            {match.Place.Name}
+                        </Caption>
+                        <Caption level="1" weight="bold">
+                            {time}
+                        </Caption>
+                    </div>
+                     
+                </Card>
+                <Card style={CardStyle}>
+                <div  style={centering}>
+                    {match.Team2Bid.TeamName}
+                </div>
+                </Card>
+            </CardGrid>
+            <FormItem></FormItem>
             <FormItem top="Комментарий к матчу">
                 <Textarea 
                 value={match.Description} 
                 readOnly
                 style={{minHeight: '100px'}}
                 ></Textarea>
-            </FormItem>
-            <FormItem top="Дата">
-                {date != null
-                ? <span>{`${date.toLocaleDateString()} ${time}`}</span>
-                : "Не назначена"
-                }
-            </FormItem>
-            
-            <FormItem top="Место">
-                {match.Place.Name}
-            </FormItem>
-            <FormItem top="Статус матча">
-                {match.Played ? "Сыгран" : "Не сыгран"}
             </FormItem>
             
         </Group>

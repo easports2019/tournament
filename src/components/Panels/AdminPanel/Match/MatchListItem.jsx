@@ -31,7 +31,7 @@ const MatchListItem = (props) => {
     let place=props.Place;
     let date = match.When != null ? new Date(match.When) : null;
     let now = new Date();
-    debugger
+
     let endOfMatch = addToTime(date, 0, match.TournamentGroup.Tournament.MatchLength + 10); // 10 минут добавляем на всякий случай (задержки, перерывы)
     let timeString = date != null ? (TimeIsNotAssigned(date) ? " время не назначено" : ` в ${timeToString(date.getHours(), date.getMinutes())}`) : "";
     let inGame = ((date <= now ) && (now < endOfMatch));
@@ -70,13 +70,13 @@ const MatchListItem = (props) => {
                 {match.Played ? <span>
                         <span 
                             style={(+match.Team1Goals > +match.Team2Goals) ? win : (+match.Team1Goals == +match.Team2Goals) ? {} : lose}
-                            >{match.Team1.Name} </span>
+                            >{match.Team1Bid.TeamName} </span>
                         <span style={schet}>{match.Team1Goals} - {match.Team2Goals}</span>
                         <span 
                             style={(+match.Team1Goals < +match.Team2Goals) ? win : (+match.Team1Goals == +match.Team2Goals) ? {} : lose}
-                        > {match.Team2.Name}</span>
+                        > {match.Team2Bid.TeamName}</span>
                     </span> :
-                    <span>{match.Team1.Name} - {match.Team2.Name}</span>
+                    <span>{match.Team1Bid.TeamName} - {match.Team2Bid.TeamName}</span>
                 }
             </RichCell>
         )

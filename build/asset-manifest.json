@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.js": "/tournament/static/js/main.b434e26f.chunk.js",
-    "main.js.map": "/tournament/static/js/main.b434e26f.chunk.js.map",
+    "main.js": "/tournament/static/js/main.55c14ff2.chunk.js",
+    "main.js.map": "/tournament/static/js/main.55c14ff2.chunk.js.map",
     "runtime-main.js": "/tournament/static/js/runtime-main.896fc9fd.js",
     "runtime-main.js.map": "/tournament/static/js/runtime-main.896fc9fd.js.map",
     "static/css/2.1aee6b68.chunk.css": "/tournament/static/css/2.1aee6b68.chunk.css",
-    "static/js/2.49636ffc.chunk.js": "/tournament/static/js/2.49636ffc.chunk.js",
-    "static/js/2.49636ffc.chunk.js.map": "/tournament/static/js/2.49636ffc.chunk.js.map",
+    "static/js/2.14761dbc.chunk.js": "/tournament/static/js/2.14761dbc.chunk.js",
+    "static/js/2.14761dbc.chunk.js.map": "/tournament/static/js/2.14761dbc.chunk.js.map",
     "index.html": "/tournament/index.html",
     "static/css/2.1aee6b68.chunk.css.map": "/tournament/static/css/2.1aee6b68.chunk.css.map",
-    "static/js/2.49636ffc.chunk.js.LICENSE.txt": "/tournament/static/js/2.49636ffc.chunk.js.LICENSE.txt",
+    "static/js/2.14761dbc.chunk.js.LICENSE.txt": "/tournament/static/js/2.14761dbc.chunk.js.LICENSE.txt",
     "static/media/defaultPlace.563ac777.jpg": "/tournament/static/media/defaultPlace.563ac777.jpg",
     "static/media/player300-s.5ad7daca.png": "/tournament/static/media/player300-s.5ad7daca.png",
     "static/media/stadium300-s.e5a62e23.png": "/tournament/static/media/stadium300-s.e5a62e23.png",
@@ -18,7 +18,7 @@
   "entrypoints": [
     "static/js/runtime-main.896fc9fd.js",
     "static/css/2.1aee6b68.chunk.css",
-    "static/js/2.49636ffc.chunk.js",
-    "static/js/main.b434e26f.chunk.js"
+    "static/js/2.14761dbc.chunk.js",
+    "static/js/main.55c14ff2.chunk.js"
   ]
 }

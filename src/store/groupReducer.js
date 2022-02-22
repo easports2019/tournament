@@ -7,6 +7,7 @@ import { GroupAPI, errorObj } from './../utils/api/api.js'
 
 const ANY_ACTION_TYPE = "ANY_ACTION_TYPE";
 const GROUP_SET_GROUP_TEAM = "GROUP_SET_GROUP_TEAM";
+const GROUP_SET_GROUP = "GROUP_SET_GROUP";
 
 const initState = {
     GroupId: null,
@@ -26,6 +27,12 @@ export let groupReducer = (state = initState, action) =>
                 TeamName: action.teamName,
             }
         }
+        case GROUP_SET_GROUP: {
+            return {
+                ...state,
+                GroupId: action.groupId,
+            }
+        }
         default: {
             return state;
         }
@@ -39,6 +46,13 @@ export const setGroupTeam = (groupId, teamId, teamName) => {
         groupId,
         teamId,
         teamName
+    }
+}
+
+export const setGroup = (groupId) => {
+    return {
+        type: GROUP_SET_GROUP,
+        groupId,
     }
 }
 
@@ -83,7 +97,7 @@ export const getGroupTeamInfo = (groupId, userProfile) => {
         GroupAPI.getTeamGroupFromServer(groupId, userProfile)
                 .then(pl => {
                     if (pl && pl.data) {
-                        dispatch(setGroupTeam(pl.data.GroupId, pl.data.TeamId));
+                        dispatch(setGroupTeam(pl.data.GroupId, pl.data.TeamId, pl.data.TeamName));
                         dispatch(setGlobalPopout(false))
                     }
                     else {

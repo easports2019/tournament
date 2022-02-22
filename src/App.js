@@ -27,14 +27,14 @@ import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualT
 import { getAllCitiesFromServer } from './store/cityReducer';
 import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect, setCollectItemMode } from './store/collectReducer';
 import { setActiveMenuItem } from './store/mainMenuReducer';
-import { getMatchesInCurrentCity, setHotPanel, setSelectedMatch } from './store/matchReducer';
+import { getMatchesInCurrentCity, setHotPanel, setSelectedMatch, getTeamSheduleByTeamId } from './store/matchReducer';
 import { getAuthInfo, getUserProfile, setTriedToGetProfile, setUserProfileCity, setBirthDate,
 	saveUserProfile, setVkProfileInfo, setUserName, setUserSurName, setMyTotalExpirience, setUserIsGroupAdmin } from './store/profileReducer';
 import { getAllRentsInCityByCityId } from './store/rentReducer';
-import { connectTeamWithGroup, getGroupTeamInfo } from './store/groupReducer';
+import { connectTeamWithGroup, getGroupTeamInfo, setGroup } from './store/groupReducer';
 import { getAllSimplePlacesInCityByCityId } from './store/simplePlaceReducer';
 import { goToPanel, resetError, setCurrentModalWindow, checkConnection, setGlobalPopout, 
-	setLoading, setShowAdminTourneyTab, updateLoading, setShowAdminGroupTab } from './store/systemReducer';
+	setLoading, setShowAdminTourneyTab, updateLoading, setShowGroupTab } from './store/systemReducer';
 import { addTournamentGroup, getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
 import { getUser, setSelectedUser } from './store/vkReducer';
 import { addToTime, dateToString, jSDateValueToDateSelectorValue } from './utils/convertors/dateUtils';
@@ -136,18 +136,19 @@ const App = (props) => {
 
 			setLaunchParams(data);
 			if (data.vk_viewer_group_role == "admin"){
-				props.setShowAdminGroupTab(true);
+				props.setShowGroupTab(true);
 				props.setUserIsGroupAdmin(true);
 			}
 			else
 			{
-				props.setShowAdminGroupTab(false);
+				props.setShowGroupTab(false);
 				props.setUserIsGroupAdmin(false);
 			}
 
-			bridge.send("VKWebAppGetGroupInfo", {"group_id": data.vk_group_id}).then((info) => {
-
+			bridge.send("VKWebAppGetGroupInfo", {"group_id": +data.vk_group_id}).then((info) => {
+				props.setGroup(info.id);
 				setGroupInfo(info);
+				// получаем информацию о команде, связанной с группой
 				
 			});
 		});
@@ -306,10 +307,6 @@ const App = (props) => {
 			// получаем список аренд
 			props.getAllRentsInCityByCityId(props.myProfile.CityUmbracoId);
 
-			if (groupInfo != null)
-			{
-				props.getGroupTeamInfo(groupInfo.id, props.myProfile);
-			}
 
 			if (!timerStarts)
 			{
@@ -345,6 +342,28 @@ const App = (props) => {
 				props.setLoading(false);
 		}
 	}, [props.places])
+
+	// 8 загрузка команды, связанной с группой
+	useEffect(() => {
+		if (props.groupId && props.myProfile)
+		{
+			props.getGroupTeamInfo(props.groupId, props.myProfile);
+		}
+		
+	}, [props.groupId, props.myProfile])
+	
+	// 9 загрузка расписания игр команды, связанной с группой
+	useEffect(() => {
+		
+		if (props.teamId && props.myProfile)
+		{
+			// переадресовываем на вкладку команды
+			// показываем вкладку Моя команда
+			props.setShowGroupTab(true);
+			props.getTeamSheduleByTeamId(props.teamId, props.myProfile, props.groupId);
+		}
+	}, [props.teamId])
+	
 
 	// при смене глобального Popout и возникновении ошибки
 	useEffect(() => {
@@ -486,7 +505,7 @@ const App = (props) => {
 						<TabbarItemWithHistory toMenuName="allTournaments" selected={"allTournaments" === props.mainMenu.activeItem.name} data-story="allTournaments" text="Турниры"></TabbarItemWithHistory>
 						{/* <TabbarItemWithHistory toMenuName="collectslist" selected={"collectslist" === props.mainMenu.activeItem.name} data-story="collectslist" text="Сборы"></TabbarItemWithHistory> */}
 						<TabbarItemWithHistory toMenuName="profile" selected={"profile" === props.mainMenu.activeItem.name} data-story="profile" text="Профиль"></TabbarItemWithHistory>
-						{props.IsGroupAdmin && <TabbarItemWithHistory toMenuName="groupadmin" selected={"groupadmin" === props.mainMenu.activeItem.name} data-story="groupadmin" text="Моя команда"></TabbarItemWithHistory>}
+						{props.ShowGroupTab && <TabbarItemWithHistory toMenuName="groupadmin" selected={"groupadmin" === props.mainMenu.activeItem.name} data-story="groupadmin" text={props.teamName ? props.teamName : "Команда группы"}></TabbarItemWithHistory>}
 						{props.ShowAdminTourneyTab && <TabbarItemWithHistory toMenuName="tournamentadmin" selected={"tournamentadmin" === props.mainMenu.activeItem.name} data-story="tournamentadmin" text="Управление турнирами"></TabbarItemWithHistory>}
 						{props.ShowAdminTourneyTab && <TabbarItemWithHistory toMenuName="teamadmin" selected={"teamadmin" === props.mainMenu.activeItem.name} data-story="teamadmin" text="Мои команды"></TabbarItemWithHistory>}
 					</Tabbar>
@@ -765,7 +784,7 @@ const App = (props) => {
 					<Panel id="main">
 					
 						<Group>
-							<GroupAdminPanel></GroupAdminPanel>
+							<GroupAdminPanel ClickHandler={goToViewMatch}></GroupAdminPanel>
 						</Group>
 					</Panel>
 				</View>
@@ -870,7 +889,7 @@ const mapStateToProps = (state) => {
 		mainMenu: state.mainMenu,
 		ShowAdminTourneyTab: state.system.ShowAdminTourneyTab,
 		ShowAdminTeamTab: state.system.ShowAdminTeamTab,
-		IsGroupAdmin: state.system.UserIsGroupAdmin,
+		ShowGroupTab: state.system.ShowGroupTab,
 		CurrentModalWindow: state.system.CurrentModalWindow,
 		Loading: state.system.Loading,
 		Connected: state.system.Connected,
@@ -890,12 +909,17 @@ const mapStateToProps = (state) => {
 		team: state.teamsEntity,
 		bidTeams: state.bidTeamsEntity,
 		matches: state.matches,
+		matchesByTeam: state.matches.matchesBySelectedTeam,
+		groupId: state.groupEntity.GroupId, // идентификатор группы, из которой запущен инстанс
+		teamId: state.groupEntity.TeamId, // идентификатор связанной с группой команды
+		teamName: state.groupEntity.TeamName, // идентификатор связанной с группой команды
 		tournamentsForBids: state.bidTeamsEntity,
 	}
 }
 
 export default connect(mapStateToProps, { 
-	setBirthDate, setSelectedMatch, setShowAdminGroupTab, connectTeamWithGroup, getGroupTeamInfo, setUserIsGroupAdmin,
+	setGroup,
+	setBirthDate, setSelectedMatch, setShowGroupTab, connectTeamWithGroup, getGroupTeamInfo, setUserIsGroupAdmin, getTeamSheduleByTeamId,
 	setCurrentModalWindow, setLoading, goToPanel, checkConnection, updateLoading, saveUserProfile, setUserName, setUserSurName, setMyTotalExpirience, 
 	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId, getUser, setSelectedUser,
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode, setCollectItemMode,

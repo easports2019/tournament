@@ -28,8 +28,8 @@ const Hot = (props) => {
             <Group header={props.Name}>
                 <List>
                     {props.Matches && props.Matches.map(match => {
-                        match.Team1 = {Name: match.Team1Name}
-                        match.Team2 = {Name: match.Team2Name}
+                        // match.Team1 = {Name: match.Team1Name}
+                        // match.Team2 = {Name: match.Team2Name}
 
                         return (
                             <MatchListItem 

@@ -1094,7 +1094,24 @@ export const MatchAPI = {
             })
     },
     
+    // возвращает расписание всех матчей всех турниров указанной команды
+    getTeamSheduleByTeamId(groupId, teamId, userProfile) {
+        let grTeam = {
+            groupId,
+            teamId,
+        }
+        
+        return PostJsonInstance.post("Match/GetTeamSheduleByTeamId" + authQueryString, 
+        JSON.stringify({ groupTeam: { ...grTeam }, userProfile: { ...userProfile } }))
+        .then(data => {
 
+            return ((data.data.ErrorMessage == "") || (data.data.ErrorMessage == undefined) || (data.data.ErrorMessage == null)) ? okObj(data.data) : errorObj(data.data.ErrorMessage);
+        })
+            .catch(error => {
+
+                return errorObj(error)
+            })
+    },
 }
 
 export const TournamentAPI = {
