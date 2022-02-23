@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import {
     RichCell, Avatar, FormLayout, FormItem, Input, InfoRow, Group, DatePicker,
     Textarea, File, CellButton, Button, Header, List, Cell, TabsItem, Tabs, View, Panel,
-    ActionSheet, ActionSheetItem, Gallery, Headline, Link
+    ActionSheet, ActionSheetItem, Gallery, Headline, Link, CardGrid, Card, Title, Caption, calcInitialsAvatarColor
 } from '@vkontakte/vkui'
 import { defaultPhotoPath } from '../../../../store/dataTypes/common'
 import {
@@ -28,7 +28,13 @@ import ButtonWithNotify from '../../Common/WithNotify/ButtonWithNotify'
 
 const w7percent = { width: '7%', textAlign: 'center', padding: '5px 0 5px 0' }
 const w8percent = { width: '8%', textAlign: 'center', padding: '5px 0 5px 0'  }
-const w20percent = { width: '20%', textAlign: 'left', padding: '5px 0 5px 0', overflow: 'hidden'  }
+const w20percent = { 
+    width: '20%', 
+    textAlign: 'left', 
+    padding: '5px 0 5px 0', 
+    overflow: 'hidden',
+    // whiteSpace: 'nowrap',
+}
 
 
 const TournamentItem = (props) => {
@@ -39,6 +45,40 @@ const TournamentItem = (props) => {
     // let [slideIndex, setSlideIndex] = useState(0);
     // let [isDraggable, setIsDraggable] = useState(true);
     // let [showArrows, setShowArrows] = useState(true);
+
+    const CardStyle = {
+        display: "flex", 
+        height: "100px", 
+        justifyContent: "center", 
+        alignItems: "center",
+        flexWrap: "no-wrap",
+        alignSelf: "center",
+        alignContent: "center",
+        overflow: "hidden",
+    }
+
+    const CardResultStyle = {
+        display: "flex", 
+        height: "100px", 
+        justifyContent: "center", 
+        alignItems: "center",
+        flexWrap: "wrap",
+        overflow: "hidden",
+    }
+
+    const subCardStyle = {
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center",
+        flexWrap: "wrap",
+        flexDirection: "column",
+        overflow: "hidden",
+    }
+
+    const centering = {
+        textAlign: "center",
+    }
+
 
     // это надо потом удалить. я вручную задал отображение вкладки расписания при открытии в режиме просмотра (для пользователей)
 
@@ -146,159 +186,205 @@ const TournamentItem = (props) => {
         case "view": {
 
             return (
-                <View popout={activePopout} activePanel={currentTab}>
-                    <Panel id="shedule">
-                        <Tabs mode="buttons">
-                            <TabsItem onClick={() => setCurrentTab("shedule")}>Матчи</TabsItem>
-                            <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
-                            <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
-                        </Tabs>
-                        <FormLayout>
-                            {/* <FormItem top="Ваш город">
-                                <InfoRow>
-                                    <Headline> {props.myProfile.CityUmbracoName}</Headline>
-                                </InfoRow>
-                            </FormItem> */}
-                            <Group 
-                            //header={<Header mode="secondary">Матчи</Header>}
-                            >
-                                <Shedule access="user" tournament={props.tournaments.selected} todayIs={new Date()}></Shedule>
-                            </Group>
-                        </FormLayout>
-                    </Panel>
-                    <Panel id="info">
-                        <Group>
-                            <Tabs mode="buttons">
-                                <TabsItem onClick={() => setCurrentTab("shedule")}>Матчи</TabsItem>
-                                <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
-                                <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
-                            </Tabs>
-                            <FormItem top="Ваш город">
-                                <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
-                            </FormItem>
-                            <FormItem top="Организатор">
-                                <InfoRow><Link href={props.tournaments.selected.Link}>{props.tournaments.selected.OrganizatorName}</Link> ({props.tournaments.selected.OrganizatorNameShort})</InfoRow>
-                            </FormItem>
-                            <FormItem top="Название турнира">
-                                <InfoRow>{props.tournaments.selected.Name}</InfoRow>
-                            </FormItem>
-                            <FormItem top="Проводится">
-                                <InfoRow>с {new Date(
-                                    props.tournaments.selected.WhenBegin.year,
-                                    props.tournaments.selected.WhenBegin.month - 1,
-                                    props.tournaments.selected.WhenBegin.day).toLocaleDateString()} 
-                                    <span> по </span>{new Date(
-                                    props.tournaments.selected.WhenEnd.year,
-                                    props.tournaments.selected.WhenEnd.month - 1,
-                                    props.tournaments.selected.WhenEnd.day).toLocaleDateString()}</InfoRow>
-                            </FormItem>
-                            <FormItem top="Описание турнира">
-                                <InfoRow>{props.tournaments.selected.Details}</InfoRow>
-                            </FormItem>
-                            <FormItem top="Регламент турнира">
-                                <InfoRow>{props.tournaments.selected.Reglament}</InfoRow>
-                            </FormItem>
-                            {props.tournaments.selected.Link2Name &&
-                            <FormItem top={props.tournaments.selected.Link2Name}>
-                                <InfoRow><Link href={props.tournaments.selected.Link2}>{props.tournaments.selected.Link2}</Link></InfoRow>
-                            </FormItem>
-                            }
-                                <FormItem top="Группы/лиги">
-                                    <Group>
-                                        {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
-                                            <List>
-                                                {props.tournaments.selected.TournamentGroups.map((item) => <InfoRow>{item.Name}</InfoRow>)}
-                                            </List>
-                                            :
-                                            <FormItem>
-                                                <InfoRow>Нет групп</InfoRow>
-                                            </FormItem>
-                                        }
-                                    </Group>
-                                </FormItem>
-                            </Group>
-                    </Panel>
-                    <Panel id="tables">
-                        <Group>
-                            <Tabs mode="buttons">
-                                <TabsItem onClick={() => setCurrentTab("shedule")}>Матчи</TabsItem>
-                                <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
-                                <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
-                            </Tabs>
-                            {/* <FormItem top="Ваш город">
-                                <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
-                            </FormItem> */}
-                            <Group header={<Header mode="secondary">Таблицы</Header>}>
-                                {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
-                                    <FormItem>
-                                        <List>
-                                            {props.tournaments.selected.TournamentGroups.map((item) => {
-                                                if (item.Name != "") {
-                                                    let table = props.tournaments.selectedTables.filter(tT => tT.TournamentGroupId == item.Id);
-                                                    table.sort((firstItem, secondItem) => firstItem.Place - secondItem.Place);
-                                                    let chet = false;
-                                                    return (
-                                                        <>
-                                                            <InfoRow>
-                                                                <Headline>{item.Name}</Headline>
-                                                            <table style={{width: '100%'}}>
-                                                                <tr>
-                                                                    <th style={w7percent}>М</th>
-                                                                    <th style={w20percent}>Команда</th>
-                                                                    <th style={w8percent}>И</th>
-                                                                    <th style={w8percent}>В</th>
-                                                                    <th style={w8percent}>П</th>
-                                                                    <th style={w8percent}>Н</th>
-                                                                    <th style={w8percent}>МЗ</th>
-                                                                    <th style={w8percent}>МП</th>
-                                                                    <th style={w8percent}>МР</th>
-                                                                    <th style={w8percent}>О</th>
-                                                                </tr>
-                                                                {
-                                                                    table.map((row) => {
-                                                                        chet = !chet;
-                                                                        return (
-                                                                            <tr style={chet ? {backgroundColor: 'lightgray'} : {backgroundColor: 'white'}}>
-                                                                                <td style={w7percent}>{row.Place}</td>
-                                                                                <td style={w20percent}>{row.TeamName}</td>
-                                                                                <td style={w8percent}>{row.Games}</td>
-                                                                                <td style={w8percent}>{row.Wins}</td>
-                                                                                <td style={w8percent}>{row.Loses}</td>
-                                                                                <td style={w8percent}>{row.Draws}</td>
-                                                                                <td style={w8percent}>{row.GoalsScored}</td>
-                                                                                <td style={w8percent}>{row.GoalsMissed}</td>
-                                                                                <td style={w8percent}>{row.GoalsDifference}</td>
-                                                                                <td style={w8percent}>{row.Points}</td>
-                                                                            </tr>
-                                                                        )
+                <>
+                    <CardGrid size="l">
+                        {/* <Card style={CardStyle}>
+                            <div  style={centering}>
 
-                                                                    }
-
-                                                                    )}
-                                                            </table>
-                                                            <br />
-                                                            <br />
-                                                            </InfoRow>
-                                                        </>
-
-                                                    )
-                                                }
-                                                else
-                                                    return null;
-                                            })
-                                            }
-                                        </List>
-                                    </FormItem>
-                                    :
-                                    <FormItem>
-                                        <InfoRow>Нет групп</InfoRow>
-                                    </FormItem>
+                            </div>
+                        </Card> */}
+                        <Card style={CardStyle} mode="shadow">
+                            <div style={subCardStyle}>
+                                <Title level="2" weight="semibold">
+                                    {props.tournaments.selected.Name}
+                                </Title>
+                                <Caption level="3" weight="bold">
+                                    <Link target="blank" href={props.tournaments.selected.Link}>{props.tournaments.selected.OrganizatorName}</Link> ({props.tournaments.selected.OrganizatorNameShort})
+                                </Caption>
+                                {props.tournaments.selected.Link2Name &&
+                                    <Caption level="4" weight="regular">
+                                        <Link href={props.tournaments.selected.Link2}>{props.tournaments.selected.Link2Name}</Link>
+                                    </Caption>
                                 }
-                            </Group>
-                        </Group>
-                    </Panel>
+                            </div>
+                            
+                        </Card>
+                        {/* <Card style={CardResultStyle} mode="shadow">
 
-                </View>
+                            <div style={subCardStyle}>
+                                <Title level="1" weight="bold">
+                                </Title>
+                                <Caption level="4" weight="bold">
+
+                                </Caption>
+                                <Caption level="1" weight="bold">
+
+                                </Caption>
+                            </div>
+                            
+                        </Card>
+                        <Card style={CardStyle}>
+                        <div  style={centering}>
+
+                        </div>
+                        </Card> */}
+                    </CardGrid>
+                    <FormItem></FormItem>
+                    <View popout={activePopout} activePanel={currentTab}>
+                        <Panel id="shedule">
+                            <Tabs mode="buttons">
+                                <TabsItem onClick={() => setCurrentTab("shedule")}>Матчи</TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
+                            </Tabs>
+
+                                {/* <FormItem top="Ваш город">
+                                    <InfoRow>
+                                        <Headline> {props.myProfile.CityUmbracoName}</Headline>
+                                    </InfoRow>
+                                </FormItem> */}
+                                <Group 
+                                //header={<Header mode="secondary">Матчи</Header>}
+                                >
+                                    
+                                    <Shedule access="user" tournament={props.tournaments.selected} todayIs={new Date()}></Shedule>
+                                </Group>
+
+                        </Panel>
+                        <Panel id="info">
+                            <Group>
+                                <Tabs mode="buttons">
+                                    <TabsItem onClick={() => setCurrentTab("shedule")}>Матчи</TabsItem>
+                                    <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
+                                    <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
+                                </Tabs>
+                                <FormItem top="Ваш город">
+                                    <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
+                                </FormItem>
+                                <FormItem top="Организатор">
+                                    <InfoRow><Link href={props.tournaments.selected.Link}>{props.tournaments.selected.OrganizatorName}</Link> ({props.tournaments.selected.OrganizatorNameShort})</InfoRow>
+                                </FormItem>
+                                <FormItem top="Название турнира">
+                                    <InfoRow>{props.tournaments.selected.Name}</InfoRow>
+                                </FormItem>
+                                <FormItem top="Проводится">
+                                    <InfoRow>с {new Date(
+                                        props.tournaments.selected.WhenBegin.year,
+                                        props.tournaments.selected.WhenBegin.month - 1,
+                                        props.tournaments.selected.WhenBegin.day).toLocaleDateString()} 
+                                        <span> по </span>{new Date(
+                                        props.tournaments.selected.WhenEnd.year,
+                                        props.tournaments.selected.WhenEnd.month - 1,
+                                        props.tournaments.selected.WhenEnd.day).toLocaleDateString()}</InfoRow>
+                                </FormItem>
+                                <FormItem top="Описание турнира">
+                                    <InfoRow>{props.tournaments.selected.Details}</InfoRow>
+                                </FormItem>
+                                <FormItem top="Регламент турнира">
+                                    <InfoRow>{props.tournaments.selected.Reglament}</InfoRow>
+                                </FormItem>
+                                {props.tournaments.selected.Link2Name &&
+                                <FormItem top={props.tournaments.selected.Link2Name}>
+                                    <InfoRow><Link href={props.tournaments.selected.Link2}>{props.tournaments.selected.Link2}</Link></InfoRow>
+                                </FormItem>
+                                }
+                                    <FormItem top="Группы/лиги">
+                                        <Group>
+                                            {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
+                                                <List>
+                                                    {props.tournaments.selected.TournamentGroups.map((item) => <InfoRow>{item.Name}</InfoRow>)}
+                                                </List>
+                                                :
+                                                <FormItem>
+                                                    <InfoRow>Нет групп</InfoRow>
+                                                </FormItem>
+                                            }
+                                        </Group>
+                                    </FormItem>
+                                </Group>
+                        </Panel>
+                        <Panel id="tables">
+                            <Group>
+                                <Tabs mode="buttons">
+                                    <TabsItem onClick={() => setCurrentTab("shedule")}>Матчи</TabsItem>
+                                    <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
+                                    <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
+                                </Tabs>
+                                {/* <FormItem top="Ваш город">
+                                    <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
+                                </FormItem> */}
+                                <Group header={<Header mode="secondary">Таблицы</Header>}>
+                                    {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
+                                        <FormItem>
+                                            <List>
+                                                {props.tournaments.selected.TournamentGroups.map((item) => {
+                                                    if (item.Name != "") {
+                                                        let table = props.tournaments.selectedTables.filter(tT => tT.TournamentGroupId == item.Id);
+                                                        table.sort((firstItem, secondItem) => firstItem.Place - secondItem.Place);
+                                                        let chet = false;
+                                                        return (
+                                                            <>
+                                                                <InfoRow>
+                                                                    <Headline>{item.Name}</Headline>
+                                                                <table style={{width: '100%'}}>
+                                                                    <tr>
+                                                                        <th style={w7percent}>М</th>
+                                                                        <th style={w20percent}>Команда</th>
+                                                                        <th style={w8percent}>И</th>
+                                                                        <th style={w8percent}>В</th>
+                                                                        <th style={w8percent}>П</th>
+                                                                        <th style={w8percent}>Н</th>
+                                                                        <th style={w8percent}>МЗ</th>
+                                                                        <th style={w8percent}>МП</th>
+                                                                        <th style={w8percent}>МР</th>
+                                                                        <th style={w8percent}>О</th>
+                                                                    </tr>
+                                                                    {
+                                                                        table.map((row) => {
+                                                                            chet = !chet;
+                                                                            return (
+                                                                                <tr style={chet ? {backgroundColor: 'lightgray'} : {backgroundColor: 'white'}}>
+                                                                                    <td style={w7percent}>{row.Place}</td>
+                                                                                    <td style={w20percent}>{row.TeamName}</td>
+                                                                                    <td style={w8percent}>{row.Games}</td>
+                                                                                    <td style={w8percent}>{row.Wins}</td>
+                                                                                    <td style={w8percent}>{row.Loses}</td>
+                                                                                    <td style={w8percent}>{row.Draws}</td>
+                                                                                    <td style={w8percent}>{row.GoalsScored}</td>
+                                                                                    <td style={w8percent}>{row.GoalsMissed}</td>
+                                                                                    <td style={w8percent}>{row.GoalsDifference}</td>
+                                                                                    <td style={w8percent}>{row.Points}</td>
+                                                                                </tr>
+                                                                            )
+
+                                                                        }
+
+                                                                        )}
+                                                                </table>
+                                                                <br />
+                                                                <br />
+                                                                </InfoRow>
+                                                            </>
+
+                                                        )
+                                                    }
+                                                    else
+                                                        return null;
+                                                })
+                                                }
+                                            </List>
+                                        </FormItem>
+                                        :
+                                        <FormItem>
+                                            <InfoRow>Нет групп</InfoRow>
+                                        </FormItem>
+                                    }
+                                </Group>
+                            </Group>
+                        </Panel>
+
+                    </View>
+                </>
             )
         }; break;
         case "add": {

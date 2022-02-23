@@ -13,6 +13,8 @@ const initState = {
     GroupId: null,
     TeamId: null,
     TeamName: null,
+    IsTournament: false,
+    TournamentId: -1,
 }
 
 export let groupReducer = (state = initState, action) => 
@@ -25,6 +27,8 @@ export let groupReducer = (state = initState, action) =>
                 GroupId: action.groupId,
                 TeamId: action.teamId,
                 TeamName: action.teamName,
+                IsOranizator: action.isOrg,
+                TournamentId: action.tournamentId,
             }
         }
         case GROUP_SET_GROUP: {
@@ -40,12 +44,14 @@ export let groupReducer = (state = initState, action) =>
 }
 
 
-export const setGroupTeam = (groupId, teamId, teamName) => {
+export const setGroupTeam = (groupId, teamId, teamName, isOrg, tournamentId) => {
     return {
         type: GROUP_SET_GROUP_TEAM,
         groupId,
         teamId,
-        teamName
+        teamName,
+        isOrg,
+        tournamentId
     }
 }
 
@@ -66,7 +72,7 @@ export const connectTeamWithGroup = (groupId, teamId = -1, userProfile) => {
         GroupAPI.setTeamGroupToServer(groupId, teamId, userProfile)
                 .then(pl => {
                     if (pl && pl.data) {
-                        dispatch(setGroupTeam(pl.data.GroupId, pl.data.TeamId, pl.data.TeamName));
+                        dispatch(setGroupTeam(pl.data.GroupId, pl.data.TeamId, pl.data.TeamName, pl.data.IsOranizator, pl.data.TournamnentId));
                         dispatch(setGlobalPopout(false))
                     }
                     else {
@@ -97,7 +103,7 @@ export const getGroupTeamInfo = (groupId, userProfile) => {
         GroupAPI.getTeamGroupFromServer(groupId, userProfile)
                 .then(pl => {
                     if (pl && pl.data) {
-                        dispatch(setGroupTeam(pl.data.GroupId, pl.data.TeamId, pl.data.TeamName));
+                        dispatch(setGroupTeam(pl.data.GroupId, pl.data.TeamId, pl.data.TeamName, pl.data.IsOranizator, pl.data.TournamnentId));
                         dispatch(setGlobalPopout(false))
                     }
                     else {

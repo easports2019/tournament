@@ -214,7 +214,6 @@ const App = (props) => {
 
 		if (props.vkProfile && props.vkProfile.city && props.myProfile && props.myProfile.UserVkId != "") {
 			consoleLog("4 vkprofile and myprofile loaded")
-
 			if(
 				(props.vkProfile.bdate != undefined) 
 				&& (props.vkProfile.bdate.split('.').length > 2) 
@@ -338,8 +337,14 @@ const App = (props) => {
 			consoleLog("7 start getMatchesInCurrentCity()")
 			
 			// завершили загрузку
-			if (props.Loading)
+			if (props.Loading){
 				props.setLoading(false);
+
+				if (props.appIsFirstStart)
+				{
+					// отобразить окно первого запуска
+				}
+			}
 		}
 	}, [props.places])
 
@@ -387,6 +392,18 @@ const App = (props) => {
 		}
 	}, [props.tournamentAdmins])
 
+	useEffect(() => {
+
+		if (props.IsOranizator == true && props.TournamentId != null && props.tournament != null && props.tournament.tournaments != null && props.tournament.tournaments.length > 0)
+		{
+			debugger
+			let filtredTournaments = props.tournament.tournaments.filter(t => t.Id == props.TournamentId);
+			if (filtredTournaments != null && filtredTournaments.length > 0){
+				TournamentSelect(filtredTournaments[0]);
+			}
+		}
+	}, [props.TournamentId, props.IsOranizator, props.tournament.tournaments])
+
 	// !! ================ useffects загрузка приложения ================== !!
 
 	const onRefresh = () => {
@@ -396,6 +413,7 @@ const App = (props) => {
 
 	const TournamentSelect = (item) => {
 		//debugger
+		props.goToPanel("tournamentitem", false)
 		props.setTournamentMode("view");
 		props.setSelectedTournament(item);
 		// надо заполнять TournamentGroups!
@@ -791,9 +809,9 @@ const App = (props) => {
 				<View id="tournamentitem" activePanel="main" modal={props.CurrentModalWindow} popout={props.globalPopout ? <ScreenSpinner></ScreenSpinner> : null }>
 					<Panel id="main">
 						<Group
-								header={<Header>
-									<h4>{props.tournament.selected.Name}</h4>
-									</Header>}
+								// header={<Header>
+								// 	<h4>{props.tournament.selected.Name}</h4>
+								// 	</Header>}
 							>
 
 							
@@ -900,6 +918,7 @@ const mapStateToProps = (state) => {
 		globalPopout: state.system.GlobalPopout,
 		vkProfile: state.profileEntity.vkProfile,
 		myProfile: state.profileEntity.myProfile,
+		appIsFirstStart: state.profileEntity.isFirstStart,
 		errorObject: state.system.ErrorObject,
 		//`errorMessage: state.system.ErrorObject.message,
 		triedToGetProfile: state.profileEntity.triedToGetProfile,
@@ -913,6 +932,8 @@ const mapStateToProps = (state) => {
 		groupId: state.groupEntity.GroupId, // идентификатор группы, из которой запущен инстанс
 		teamId: state.groupEntity.TeamId, // идентификатор связанной с группой команды
 		teamName: state.groupEntity.TeamName, // идентификатор связанной с группой команды
+		IsOranizator: state.groupEntity.IsOranizator, // 
+		TournamentId: state.groupEntity.TournamentId, // 
 		tournamentsForBids: state.bidTeamsEntity,
 	}
 }

@@ -13,6 +13,7 @@ const PROFILE_SET_MY_NAME = "PROFILE_SET_MY_NAME";
 const PROFILE_SET_MY_BIRTH = "PROFILE_SET_MY_BIRTH";
 const PROFILE_SET_MY_SURNAME = "PROFILE_SET_MY_SURNAME";
 const PROFILE_SET_USER_IS_GROUP_ADMIN = "PROFILE_SET_USER_IS_GROUP_ADMIN";
+const PROFILE_SET_USER_IS_FIRST_START = "PROFILE_SET_USER_IS_FIRST_START";
 
 let demoUser = users[0];
 
@@ -21,7 +22,7 @@ const initState = {
     vkProfile: null,
     triedToGetProfile: 0,
     isGroupAdmin: false,
-
+    isFirstStart: false,
      // level 
 
 }
@@ -53,6 +54,11 @@ export let profileReducer = (state = initState, action) =>
         case PROFILE_SET_USER_IS_GROUP_ADMIN: {
             return {...state,
                 isGroupAdmin: action.isAdmin,
+            };
+        }
+        case PROFILE_SET_USER_IS_FIRST_START: {
+            return {...state,
+                isFirstStart: action.val,
             };
         }
         case PROFILE_SET_MY_TOTAL_EXP: {
@@ -117,6 +123,13 @@ export const setUserIsGroupAdmin = (isAdmin) => {
     return {
         type: PROFILE_SET_USER_IS_GROUP_ADMIN,
         isAdmin
+    }
+}
+
+export const setIsFirstStart = (val) => {
+    return {
+        type: PROFILE_SET_USER_IS_FIRST_START,
+        val
     }
 }
 
@@ -233,6 +246,7 @@ export const getAuthInfo = (vkProfileInfo) => {
                     if (pl) {
                         dispatch(setUserProfile(pl.data));
                         dispatch(setTriedToGetProfile(0));
+                        dispatch(setIsFirstStart(true)); // установить флаг зарегистрирован
                         dispatch(setGlobalPopout(false))
                     }
                     else {
