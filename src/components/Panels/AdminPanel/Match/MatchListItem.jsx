@@ -26,7 +26,7 @@ const lose = {
 
 const MatchListItem = (props) => {
     
-    
+
     let match=props.Match;
     let place=props.Place;
     let date = match.When != null ? new Date(match.When) : null;
@@ -35,7 +35,6 @@ const MatchListItem = (props) => {
     let endOfMatch = addToTime(date, 0, match.TournamentGroup.Tournament.MatchLength + 10); // 10 минут добавляем на всякий случай (задержки, перерывы)
     let timeString = date != null ? (TimeIsNotAssigned(date) ? " время не назначено" : ` в ${timeToString(date.getHours(), date.getMinutes())}`) : "";
     let inGame = ((date <= now ) && (now < endOfMatch));
-
 
         return (
             <RichCell
