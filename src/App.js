@@ -756,8 +756,30 @@ const App = (props) => {
 
 						</Group>
 						<Group>{props.myProfile && props.myProfile.Name && <FormItem>
-							<InfoRow header="Город из профиля ВК">{props.myProfile && props.myProfile.CityName}</InfoRow>
-							<InfoRow header="Город привязки турниров и сборов">{props.myProfile && props.myProfile.CityUmbracoName}</InfoRow>
+
+							<FormItem top="Установка приложения для вашего сообщества ВК">
+								<Caption weight="medium" level="2">
+								Вы можете установить приложение к себе в группу и настроить отображение расписания игр вашей команды во всех турнирах сразу.
+								Для этого нажимайте на кнопку "Установить в сообщество", выбирайте сообщество, жмите добавить. После установки зайдите в сообщество от имени администратора,
+								запустите приложение и на вкладке "Команда группы" выберите команду, расписание которой хотите видеть.
+								После выбора команды все, кто запустит приложение из вашего сообщества, увидят вкладку с вашей командой и ваше расписание игр.
+								</Caption>
+								{/* <Button onClick={() => previewWidgetGroup()}>Предспросмотр виджета в сообществе</Button> */}
+							</FormItem>
+							<FormItem>
+								<Button onClick={() => addToGroup()}>Установить в сообщество</Button>
+							</FormItem>
+							<FormItem>
+								<Caption level="2" weight="medium">
+								Подписывайтесь на сообщество "Облако спорта"
+								</Caption>
+								<Caption level="2" weight="regular">
+									чтобы узнать о всех возможностях сервиса и быть в курсе новых функций
+								</Caption>
+							</FormItem>
+							<FormItem>
+								<Button mode="commerce" onClick={addToCommunity}>Подписаться на "Облако спорта"</Button>
+							</FormItem>
 							{/* <InfoRow header="Имя">{props.myProfile && props.myProfile.Name}</InfoRow> */}
 							<FormItem top="Имя">
 								<Input value={props.myProfile && props.myProfile.Name} onChange={props.setUserName}></Input>
@@ -766,7 +788,7 @@ const App = (props) => {
 							<FormItem top="Фамилия">
 								<Input value={props.myProfile && props.myProfile.Surname} onChange={props.setUserSurName}></Input>
 							</FormItem>
-							<InfoRow header="Уровень игры">
+							<FormItem top="Уровень игры">
 								<Caption level="2">Указанное здесь значение будет влиять на подбор партнеров по игре. Указав наиболее правдивое значение, вам будет удобнее пользоваться сервисом</Caption>
 								<Caption level="2">Для изменения уровня перетягивайте ползунок влево и вправо. После выбора уровня нажмите на кнопку "Сохранить"</Caption>
 								<FormItem>
@@ -782,63 +804,60 @@ const App = (props) => {
 
 								</FormItem>
 								<Caption level="2" weight="semibold">Выбранный уровень: {getCurrentExpirienceName(props.myProfile.TotalExpirience)}</Caption>
-							</InfoRow>
+							</FormItem>
 							<FormItem top="Дата рождения">
-							<DatePicker
-                            min={{ day: 1, 
-								month: 0, 
-								year: new Date().getFullYear()-100 }}
-                            max={{ day: 31, 
-								month: 12, 
-								year: new Date().getFullYear() }}
-                            //defaultValue={new Date(props.myProfile.Birth)}
-							defaultValue={{
-								day: new Date(props.myProfile.Birth).getDate(), 
-								month: new Date(props.myProfile.Birth).getMonth()+1, 
-								year: new Date(props.myProfile.Birth).getFullYear()}
-								}
-                            onDateChange={(value) => { props.setBirthDate(value) }}
-                        />
-								{/* <DatePicker
-									min={{ day: 1, month: 1, year: 1901 }}
-									max={{ day: 1, month: 1, year: new Date().getFullYear() - 10 }}
-									// dayPlaceholder="ДД"
-									// monthPlaceholder="ММММ"
-									// yearPlaceholder="ГГГГ" 
-									defaultValue={{
-										day: new Date(props.myProfile.Birth).getDate(), 
-										month: new Date(props.myProfile.Birth).getMonth(), 
-										year: new Date(props.myProfile.Birth).getFullYear()}
-										}/> */}
+								<DatePicker
+								min={{ day: 1, 
+									month: 0, 
+									year: new Date().getFullYear()-100 }}
+								max={{ day: 31, 
+									month: 12, 
+									year: new Date().getFullYear() }}
+								//defaultValue={new Date(props.myProfile.Birth)}
+								defaultValue={{
+									day: new Date(props.myProfile.Birth).getDate(), 
+									month: new Date(props.myProfile.Birth).getMonth()+1, 
+									year: new Date(props.myProfile.Birth).getFullYear()}
+									}
+								onDateChange={(value) => { props.setBirthDate(value) }}
+								/>
+									{/* <DatePicker
+										min={{ day: 1, month: 1, year: 1901 }}
+										max={{ day: 1, month: 1, year: new Date().getFullYear() - 10 }}
+										// dayPlaceholder="ДД"
+										// monthPlaceholder="ММММ"
+										// yearPlaceholder="ГГГГ" 
+										defaultValue={{
+											day: new Date(props.myProfile.Birth).getDate(), 
+											month: new Date(props.myProfile.Birth).getMonth(), 
+											year: new Date(props.myProfile.Birth).getFullYear()}
+											}/> */}
 							</FormItem>
 
+							<FormItem top="Город из профиля ВК">{props.myProfile && props.myProfile.CityName}</FormItem>
+							<FormItem top="Город привязки турниров и сборов">{props.myProfile && props.myProfile.CityUmbracoName}</FormItem>
 							{/* <InfoRow header="Id города привязки">{props.myProfile && props.myProfile.CityUmbracoId}</InfoRow> */}
 							<FormItem>
 								<Button onClick={() => props.saveUserProfile(props.myProfile)}>Сохранить данные профиля</Button>
 							</FormItem>
 
-
-							<FormItem top="Установка приложения">
-								<Button onClick={() => addToGroup()}>Установить в сообщество</Button>
-								{/* <Button onClick={() => previewWidgetGroup()}>Предспросмотр виджета в сообществе</Button> */}
-							</FormItem>
 						</FormItem>
 						}
 						</Group>
-						<Group hidden>
+						{/* <Group hidden>
 							Описание проекта, возможность написать автору, выбор амплуа, выбор уровня (не играл, новичек, город и тд)
 							<br />
 							Ссылка на сайт и на канал на ютубе, где документация есть по проекту
 							<br/>
 							сделать кнопку "подписаться на уведомления"
 							запросить разрешение на отправку сообщения от имени приложения (или сообщества?)
-						</Group>
-						<Group header="Опции" hidden>
+						</Group> */}
+						{/* <Group header="Опции" hidden>
 							<FormItem>
 								<ButtonWithNotify Message="Подписаться на уведомления от сервиса?" mode="primary" Yes={() => bridge.send("VKWebAppAllowNotifications")}>Подписаться на события</ButtonWithNotify>
 							</FormItem>
 							
-						</Group>
+						</Group> */}
 						<ProfilePanel></ProfilePanel>
 					</Panel>
 				</View>

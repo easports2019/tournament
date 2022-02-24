@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, InfoRow, Group, List, CellButton, Button, FormItem, CustomSelect, DatePicker, CustomSelectOption, Header, SimpleCell, Div, Headline, Textarea } from '@vkontakte/vkui'
+import { RichCell, Avatar, InfoRow, Group, List, CellButton, Button, FormItem, CustomSelect, DatePicker, CustomSelectOption, Header, SimpleCell, Div, Headline, Textarea, Search } from '@vkontakte/vkui'
 import Icon24ChevronRightWithHistory from '../../Common/WithHistory/Icon24ChevronRightWithHistory'
 import { connect } from 'react-redux';
 import {
@@ -636,12 +636,20 @@ const Shedule = (props) => {
             switch (props.mode) {
                 case "list": {
                     return (
+                        <>
+                        {/* <Search></Search> */}
                         <Group>
                             <List>
+                                <FormItem></FormItem>
                                 {allMatchesInAllGroups.map(groupAndMatchesItem => {
 
                                     return (
-                                        <Group header={<FormItem><Headline mode="secondary">{groupAndMatchesItem.TournamentGroup.Name}</Headline></FormItem>}>
+                                        <FormItem top={groupAndMatchesItem.TournamentGroup.Name}>
+                                            <Group 
+                                        // header={<FormItem>
+                                        //     <Headline mode="">{groupAndMatchesItem.TournamentGroup.Name}</Headline>
+                                        //     </FormItem>}
+                                            >
                                             {
                                                 groupAndMatchesItem.Matches.length > 0
                                                     ?
@@ -665,11 +673,13 @@ const Shedule = (props) => {
                                                     <SimpleCell>Нет расписания в группе</SimpleCell>
                                             }
                                         </Group>
+                                        </FormItem>
                                     )
                                 }
                                 )}
                             </List>
                         </Group>
+                        </>
                     )
                 }; break;
                 case "view": {

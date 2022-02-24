@@ -238,14 +238,8 @@ const TournamentItem = (props) => {
                                 <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
                             </Tabs>
 
-                                {/* <FormItem top="Ваш город">
-                                    <InfoRow>
-                                        <Headline> {props.myProfile.CityUmbracoName}</Headline>
-                                    </InfoRow>
-                                </FormItem> */}
-                                <Group 
-                                //header={<Header mode="secondary">Матчи</Header>}
-                                >
+                                
+                                <Group>
                                     
                                     <Shedule access="user" tournament={props.tournaments.selected} todayIs={new Date()}></Shedule>
                                 </Group>
