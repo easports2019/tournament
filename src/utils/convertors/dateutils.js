@@ -12,6 +12,18 @@ export const getAge = (date) => {
     
 }
 
+/// проверяет, является ли дата DateTime.Min (C#)
+export const dateIsMin = (date) => {
+    if (date){
+        let dt = new Date(date);
+
+        if (dt.getDate() == 1 && dt.getMonth() == 0 && dt.getFullYear() == 1){
+            return true;
+        }
+    }
+    return false;
+}
+
 /// проверка, установлено ли время игры (если время равно 00:00:05, значит не установлено)
 export const TimeIsNotAssigned = (date) => {
     return date != null 

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { RichCell, Avatar, calcInitialsAvatarColor, InitialsAvatar } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
-import {  addToTime, dateToString, TimeIsNotAssigned, timeToString } from '../../../../utils/convertors/dateUtils';
+import {  addToTime, dateToString, TimeIsNotAssigned, timeToString, dateIsMin } from '../../../../utils/convertors/dateUtils';
 import { green } from 'chalk';
 
 
@@ -48,12 +48,12 @@ const MatchListItem = (props) => {
 
     let match=props.Match;
     let place=props.Place;
-    let date = match.When != null ? new Date(match.When) : null;
+    let date = (match.When != null && !dateIsMin(match.When)) ? new Date(match.When) : null;
     let now = new Date();
 
-    let endOfMatch = addToTime(date, 0, match.TournamentGroup.Tournament.MatchLength + 10); // 10 минут добавляем на всякий случай (задержки, перерывы)
+    let endOfMatch = date != null ? addToTime(date, 0, match.TournamentGroup.Tournament.MatchLength + 10) : null; // 10 минут добавляем на всякий случай (задержки, перерывы)
     let timeString = date != null ? (TimeIsNotAssigned(date) ? " время не назначено" : ` в ${timeToString(date.getHours(), date.getMinutes())}`) : "";
-    let inGame = ((date <= now ) && (now < endOfMatch));
+    let inGame = date != null && ((date <= now ) && (now < endOfMatch));
 
         return (
             <RichCell

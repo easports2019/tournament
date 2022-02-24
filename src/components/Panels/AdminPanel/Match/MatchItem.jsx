@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { RichCell, Avatar, Group, FormItem, Textarea, CardGrid, Card, Title, Caption } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
-import { dateToString, TimeIsNotAssigned, timeToString } from '../../../../utils/convertors/dateUtils';
+import { dateToString, TimeIsNotAssigned, timeToString, dateIsMin } from '../../../../utils/convertors/dateUtils';
 
 const schet = {
     fontWeight: 'bold', 
@@ -45,7 +45,7 @@ const MatchItem = (props) => {
     
     let match=props.match;
     let place=props.Place;
-    let date = match.When != null ? new Date(match.When) : null;
+    let date = (match.When != null && !dateIsMin(match.When)) ? new Date(match.When) : null;
     let time = date != null 
     ? (TimeIsNotAssigned(date) ? " время не указано" : ` в ${timeToString(date.getHours(), date.getMinutes())}`)
     : "";
