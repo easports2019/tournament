@@ -29,11 +29,12 @@ import ButtonWithNotify from '../../Common/WithNotify/ButtonWithNotify'
 const w7percent = { width: '7%', textAlign: 'center', padding: '5px 0 5px 0' }
 const w8percent = { width: '8%', textAlign: 'center', padding: '5px 0 5px 0'  }
 const w20percent = { 
-    width: '20%', 
+    maxWidth: '100%', 
     textAlign: 'left', 
-    padding: '5px 0 5px 0', 
+    padding: '5px 0 5px 3px', 
     overflow: 'hidden',
-    // whiteSpace: 'nowrap',
+    //whiteSpace: 'nowrap',
+    display: "inline-block",
 }
 
 
@@ -46,33 +47,30 @@ const TournamentItem = (props) => {
     // let [isDraggable, setIsDraggable] = useState(true);
     // let [showArrows, setShowArrows] = useState(true);
 
-    const CardStyle = {
-        display: "flex", 
-        height: "100px", 
-        justifyContent: "center", 
-        alignItems: "center",
-        flexWrap: "no-wrap",
-        alignSelf: "center",
-        alignContent: "center",
-        overflow: "hidden",
-    }
+    
 
     const CardResultStyle = {
         display: "flex", 
         height: "100px", 
         justifyContent: "center", 
         alignItems: "center",
-        flexWrap: "wrap",
         overflow: "hidden",
+        flexWrap: "wrap",
+    }
+
+    const CardStyle = {
+        ...CardResultStyle,
+
+        flexWrap: "no-wrap",
+        alignSelf: "center",
+        alignContent: "center",
     }
 
     const subCardStyle = {
-        display: "flex", 
-        justifyContent: "center", 
-        alignItems: "center",
-        flexWrap: "wrap",
+        ...CardResultStyle,
+
+        height: 'auto',
         flexDirection: "column",
-        overflow: "hidden",
     }
 
     const centering = {
@@ -209,48 +207,25 @@ const TournamentItem = (props) => {
                             </div>
                             
                         </Card>
-                        {/* <Card style={CardResultStyle} mode="shadow">
-
-                            <div style={subCardStyle}>
-                                <Title level="1" weight="bold">
-                                </Title>
-                                <Caption level="4" weight="bold">
-
-                                </Caption>
-                                <Caption level="1" weight="bold">
-
-                                </Caption>
-                            </div>
-                            
-                        </Card>
-                        <Card style={CardStyle}>
-                        <div  style={centering}>
-
-                        </div>
-                        </Card> */}
                     </CardGrid>
                     <FormItem></FormItem>
                     <View popout={activePopout} activePanel={currentTab}>
                         <Panel id="shedule">
                             <Tabs mode="buttons">
-                                <TabsItem onClick={() => setCurrentTab("shedule")}>Матчи</TabsItem>
-                                <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
-                                <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("shedule")}><Title level="3" weight="bold">Матчи</Title></TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("tables")}><Title level="3" weight="regular">Таблицы</Title></TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("info")}><Title level="3" weight="regular">О турнире</Title></TabsItem>
                             </Tabs>
-
-                                
-                                <Group>
-                                    
-                                    <Shedule access="user" tournament={props.tournaments.selected} todayIs={new Date()}></Shedule>
-                                </Group>
-
+                            <Group>
+                                <Shedule access="user" tournament={props.tournaments.selected} todayIs={new Date()}></Shedule>
+                            </Group>
                         </Panel>
                         <Panel id="info">
                             <Group>
                                 <Tabs mode="buttons">
-                                    <TabsItem onClick={() => setCurrentTab("shedule")}>Матчи</TabsItem>
-                                    <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
-                                    <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
+                                    <TabsItem onClick={() => setCurrentTab("shedule")}><Title level="3" weight="regular">Матчи</Title></TabsItem>
+                                    <TabsItem onClick={() => setCurrentTab("tables")}><Title level="3" weight="regular">Таблицы</Title></TabsItem>
+                                    <TabsItem onClick={() => setCurrentTab("info")}><Title level="3" weight="bold">О турнире</Title></TabsItem>
                                 </Tabs>
                                 <FormItem top="Ваш город">
                                     <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
@@ -300,16 +275,16 @@ const TournamentItem = (props) => {
                         <Panel id="tables">
                             <Group>
                                 <Tabs mode="buttons">
-                                    <TabsItem onClick={() => setCurrentTab("shedule")}>Матчи</TabsItem>
-                                    <TabsItem onClick={() => setCurrentTab("tables")}>Таблицы</TabsItem>
-                                    <TabsItem onClick={() => setCurrentTab("info")}>О турнире</TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("shedule")}><Title level="3" weight="regular">Матчи</Title></TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("tables")}><Title level="3" weight="bold">Таблицы</Title></TabsItem>
+                                <TabsItem onClick={() => setCurrentTab("info")}><Title level="3" weight="regular">О турнире</Title></TabsItem>
                                 </Tabs>
                                 {/* <FormItem top="Ваш город">
                                     <InfoRow>{props.myProfile.CityUmbracoName}</InfoRow>
                                 </FormItem> */}
-                                <Group header={<Header mode="secondary">Таблицы</Header>}>
+                                <Group>
                                     {(props.tournaments.selected.TournamentGroups && props.tournaments.selected.TournamentGroups.length > 0) ?
-                                        <FormItem>
+                                        
                                             <List>
                                                 {props.tournaments.selected.TournamentGroups.map((item) => {
                                                     if (item.Name != "") {
@@ -318,36 +293,40 @@ const TournamentItem = (props) => {
                                                         let chet = false;
                                                         return (
                                                             <>
-                                                                <InfoRow>
-                                                                    <Headline>{item.Name}</Headline>
+                                                                <FormItem top={item.Name}>
+                                                                    {/* <Headline>{}</Headline> */}
                                                                 <table style={{width: '100%'}}>
                                                                     <tr>
-                                                                        <th style={w7percent}>М</th>
-                                                                        <th style={w20percent}>Команда</th>
-                                                                        <th style={w8percent}>И</th>
-                                                                        <th style={w8percent}>В</th>
-                                                                        <th style={w8percent}>П</th>
-                                                                        <th style={w8percent}>Н</th>
-                                                                        <th style={w8percent}>МЗ</th>
-                                                                        <th style={w8percent}>МП</th>
-                                                                        <th style={w8percent}>МР</th>
-                                                                        <th style={w8percent}>О</th>
+                                                                        <th style={w7percent}><Caption weight="bold" level="3">М</Caption></th>
+                                                                        <th style={w20percent}><Caption weight="bold" level="3">Команда</Caption></th>
+                                                                        <th style={w8percent}><Caption weight="bold" level="3">И</Caption></th>
+                                                                        <th style={w8percent}><Caption weight="bold" level="3">В</Caption></th>
+                                                                        <th style={w8percent}><Caption weight="bold" level="3">П</Caption></th>
+                                                                        <th style={w8percent}><Caption weight="bold" level="3">Н</Caption></th>
+                                                                        <th style={w8percent}><Caption weight="bold" level="3">МЗ</Caption></th>
+                                                                        <th style={w8percent}><Caption weight="bold" level="3">МП</Caption></th>
+                                                                        <th style={w8percent}><Caption weight="bold" level="3">МР</Caption></th>
+                                                                        <th style={w8percent}><Caption weight="bold" level="3">О</Caption></th>
                                                                     </tr>
                                                                     {
                                                                         table.map((row) => {
                                                                             chet = !chet;
                                                                             return (
                                                                                 <tr style={chet ? {backgroundColor: 'lightgray'} : {backgroundColor: 'white'}}>
-                                                                                    <td style={w7percent}>{row.Place}</td>
-                                                                                    <td style={w20percent}>{row.TeamName}</td>
-                                                                                    <td style={w8percent}>{row.Games}</td>
-                                                                                    <td style={w8percent}>{row.Wins}</td>
-                                                                                    <td style={w8percent}>{row.Loses}</td>
-                                                                                    <td style={w8percent}>{row.Draws}</td>
-                                                                                    <td style={w8percent}>{row.GoalsScored}</td>
-                                                                                    <td style={w8percent}>{row.GoalsMissed}</td>
-                                                                                    <td style={w8percent}>{row.GoalsDifference}</td>
-                                                                                    <td style={w8percent}>{row.Points}</td>
+                                                                                    <td style={w7percent}><Caption weight="regular" level="1">{row.Place}</Caption></td>
+                                                                                    <td style={w20percent}>
+                                                                                        <Caption weight="regular" level="3">
+                                                                                        {row.TeamName}
+                                                                                        </Caption>
+                                                                                    </td>
+                                                                                    <td style={w8percent}><Caption weight="regular" level="1">{row.Games}</Caption></td>
+                                                                                    <td style={w8percent}><Caption weight="regular" level="1">{row.Wins}</Caption></td>
+                                                                                    <td style={w8percent}><Caption weight="regular" level="1">{row.Loses}</Caption></td>
+                                                                                    <td style={w8percent}><Caption weight="regular" level="1">{row.Draws}</Caption></td>
+                                                                                    <td style={w8percent}><Caption weight="regular" level="1">{row.GoalsScored}</Caption></td>
+                                                                                    <td style={w8percent}><Caption weight="regular" level="1">{row.GoalsMissed}</Caption></td>
+                                                                                    <td style={w8percent}><Caption weight="regular" level="1">{row.GoalsDifference}</Caption></td>
+                                                                                    <td style={w8percent}><Caption weight="regular" level="1">{row.Points}</Caption></td>
                                                                                 </tr>
                                                                             )
 
@@ -357,7 +336,7 @@ const TournamentItem = (props) => {
                                                                 </table>
                                                                 <br />
                                                                 <br />
-                                                                </InfoRow>
+                                                                </FormItem>
                                                             </>
 
                                                         )
@@ -367,7 +346,7 @@ const TournamentItem = (props) => {
                                                 })
                                                 }
                                             </List>
-                                        </FormItem>
+                                        
                                         :
                                         <FormItem>
                                             <InfoRow>Нет групп</InfoRow>

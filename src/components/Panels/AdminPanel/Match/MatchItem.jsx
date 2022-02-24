@@ -21,25 +21,24 @@ const lose = {
     //color: 'orange',
 }
 
+
+const CardResultStyle = {
+    display: "flex", 
+    height: "100px", 
+    justifyContent: "center", 
+    alignItems: "center",
+    overflow: "hidden",   
+    flexWrap: "wrap",
+}
+
 const CardStyle = {
-        display: "flex", 
-        height: "100px", 
-        justifyContent: "center", 
-        alignItems: "center",
+        ...CardResultStyle,
+
         flexWrap: "no-wrap",
         alignSelf: "center",
         alignContent: "center",
-        overflow: "hidden",
     }
 
-const CardResultStyle = {
-        display: "flex", 
-        height: "100px", 
-        justifyContent: "center", 
-        alignItems: "center",
-        flexWrap: "wrap",
-        overflow: "hidden",
-    }
 
 const MatchItem = (props) => {
     
@@ -52,13 +51,14 @@ const MatchItem = (props) => {
     : "";
 
     const subCardStyle = {
-        display: "flex", 
-        justifyContent: "center", 
-        alignItems: "center",
-        flexWrap: "wrap",
+        ...CardResultStyle,
+
+        height: 'auto',
         flexDirection: "column",
         color: match.Played ? "green" : "blue",
-        overflow: "hidden",
+        flexWrap: "no-wrap",
+        alignSelf: "center",
+        alignContent: "center",
     }
 
     const centering = {
@@ -78,6 +78,8 @@ const MatchItem = (props) => {
                 <Caption level="2" weight="regular">
                     {match.TournamentGroup.Name}
                 </Caption>
+            </FormItem>
+            <FormItem>
                 <Caption level="1" weight="bold">
                     {date != null
                     ? <span>{`${dateToString(date)}`}</span>
@@ -124,29 +126,6 @@ const MatchItem = (props) => {
             
         </Group>
     ) 
-        // return (
-        //     <RichCell
-        //         onClick={props.ClickHandler}
-        //         caption={place ? place.Name : "Ошибка загрузки данных о месте"}
-        //         text={
-        //             match.Played ?
-        //                 <span style={{ "color": "green" }}>Сыгран <span>в {`${dateToString(date, 0, 0, 0, true)}`}</span></span> :
-        //                 <span style={{ "color": "blue" }}>Состоится <span>в {`${dateToString(date, 0, 0, 0, true)}`}</span> в {timeToString(date.getHours(), date.getMinutes())}</span>
-        //         }
-        //     >
-        //         {match.Played ? <span>
-        //                 <span 
-        //                     style={(+match.Team1Goals > +match.Team2Goals) ? win : (+match.Team1Goals == +match.Team2Goals) ? {} : lose}
-        //                     >{match.Team1.Name} </span>
-        //                 <span style={schet}>{match.Team1Goals} - {match.Team2Goals}</span>
-        //                 <span 
-        //                     style={(+match.Team1Goals < +match.Team2Goals) ? win : (+match.Team1Goals == +match.Team2Goals) ? {} : lose}
-        //                 > {match.Team2.Name}</span>
-        //             </span> :
-        //             <span>{match.Team1.Name} - {match.Team2.Name}</span>
-        //         }
-        //     </RichCell>
-//         )
  }
 
 export default MatchItem

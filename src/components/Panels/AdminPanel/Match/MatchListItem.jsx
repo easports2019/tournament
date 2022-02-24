@@ -4,24 +4,43 @@ import {defaultPhotoPath} from '../../../../store/dataTypes/common'
 import {  addToTime, dateToString, TimeIsNotAssigned, timeToString } from '../../../../utils/convertors/dateUtils';
 import { green } from 'chalk';
 
-const schet = {
-    fontWeight: 'bold', 
-    color: 'yellow',
-    backgroundColor: 'gray',
-    padding: '1px 7px',
-    borderRadius: '10px',
+
+
+const lose = {
+    
+    maxWidth: "40%",
+    padding: '1px 0px 1px 0px',
+    overflow: "hidden",
+    display: "inline-block",
+    fontSize: "0.9em",
+    color: '#000',
 }
 
 const win = {
+    ...lose,
     fontWeight: 'bold',
-    //color: 'orange',
-    //textDecoration: 'underline',
-    //borderLeft: '10px solid orange',
 }
 
-const lose = {
-    color: '#666',
-    //color: 'orange',
+const draw = {
+    ...lose,
+}
+
+const schet = {
+    ...win,
+    maxWidth: "15%",
+    padding: '1px 7px 1px 7px',
+    margin: '0px 5px',
+    fontWeight: 'bold', 
+    color: 'yellow',
+    backgroundColor: 'gray',
+    fontSize: '1em',
+    borderRadius: '10px',
+}
+
+const noschet = {
+    ...schet,
+    color: '#000',
+    backgroundColor: 'white',
 }
 
 const MatchListItem = (props) => {
@@ -66,16 +85,20 @@ const MatchListItem = (props) => {
                         </span>
                 }
             >
-                {match.Played ? <span>
+                {match.Played ? <>
                         <span 
-                            style={(+match.Team1Goals > +match.Team2Goals) ? win : (+match.Team1Goals == +match.Team2Goals) ? {} : lose}
-                            >{match.Team1Bid.TeamName} </span>
+                            style={(+match.Team1Goals > +match.Team2Goals) ? win : (+match.Team1Goals == +match.Team2Goals) ? draw : lose}
+                            >{match.Team1Bid.TeamName}</span>
                         <span style={schet}>{match.Team1Goals} - {match.Team2Goals}</span>
                         <span 
-                            style={(+match.Team1Goals < +match.Team2Goals) ? win : (+match.Team1Goals == +match.Team2Goals) ? {} : lose}
-                        > {match.Team2Bid.TeamName}</span>
-                    </span> :
-                    <span>{match.Team1Bid.TeamName} - {match.Team2Bid.TeamName}</span>
+                            style={(+match.Team1Goals < +match.Team2Goals) ? win : (+match.Team1Goals == +match.Team2Goals) ? draw : lose}
+                        >{match.Team2Bid.TeamName}</span>
+                    </> :
+                    <>
+                    <span style={draw}>{match.Team1Bid.TeamName}</span>
+                    <span style={noschet}> - </span>
+                    <span style={draw}>{match.Team2Bid.TeamName}</span>
+                    </>
                 }
             </RichCell>
         )
