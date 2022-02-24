@@ -16,7 +16,6 @@ let ModalCommon = (props) => {
     }, [])
     
     const setDate = (value) => {
-        debugger
         setSelectedDate(`${value.day}.${value.month}.${value.year}`)
     }
     
@@ -94,6 +93,7 @@ let ModalCommon = (props) => {
 
             <ModalCard id="Info"
                 onClose={props.Close}
+                icon={props.Icon && props.Icon}
                 header={(props.data && props.data.Name) ? props.data.Name : "Имя не прогрузилось"}
                 actions={<Button size="l" mode="primary" onClick={props.Close}>Закрыть</Button>}>
                     {/* <Textarea defaultValue="" /> */}
@@ -185,7 +185,6 @@ let ModalCommon = (props) => {
                 // onClose={props.Close}
                 header="Выберите город"
                 actions={<Button size="l" mode="primary" onClick={() => {
-                        debugger
                         props.action({...props.data.profile, CityUmbracoId: selectedCity})
                         }
                     }>Закрыть</Button>}>

@@ -1,5 +1,5 @@
 import bridge from '@vkontakte/vk-bridge';
-import { Button, calcInitialsAvatarColor, Caption, Card, CardGrid, Cell, DatePicker, Div, Epic, FormItem, Group, Header, InfoRow, InitialsAvatar, Input, List, Panel, PanelHeader, PullToRefresh, ScreenSpinner, Slider, Tabbar, Title, View } from '@vkontakte/vkui';
+import { Avatar, Button, calcInitialsAvatarColor, Caption, Card, CardGrid, Cell, DatePicker, Div, Epic, FormItem, Group, Header, InfoRow, InitialsAvatar, Input, List, Panel, PanelHeader, PullToRefresh, ScreenSpinner, Slider, Snackbar, Tabbar, Title, View } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
@@ -42,6 +42,8 @@ import MatchItem from './components/Panels/AdminPanel/Match/MatchItem';
 import { useDispatch } from 'react-redux';
 import GroupAdminPanel from './components/Panels/AdminPanel/Team/GroupAdminPanel';
 import { myProfile } from './store/constants/commonConstants';
+import { Icon16Done, Icon56GestureOutline } from '@vkontakte/icons';
+import { Icon28CloudOutline } from '@vkontakte/icons';
 
 
 
@@ -50,6 +52,7 @@ const App = (props) => {
 	const [launchParams, setLaunchParams] = useState(null);
 	const [groupInfo, setGroupInfo] = useState(null);
 	const [isFetching, setIsFetching] = useState(false);
+	const [snackBar, setSnackBar] = useState(null);
 	
 	const debugModeOn = false; // флаг показа логов
 	//const [popout, setPopout] = useState(props.globalPopout ? <ScreenSpinner size='large' /> : null);
@@ -72,7 +75,26 @@ const App = (props) => {
 		borderRadius: '10px'
 	} 
 	
-
+	let addToCommunity =() => {
+		bridge.send("VKWebAppJoinGroup", {"group_id": +209616079}).then(() => {
+			setSnackBar(<Snackbar
+				layout="vertical"
+				onClose={() => setSnackBar(null)}
+				// action="Подписаться на сообщество «Облако спорта"
+				// onActionClick={() =>
+				//   this.setState({ text: "Открыта подробная информация." })
+				// }
+				before={
+				  <Avatar size={24} style={{ background: "var(--accent)" }}>
+					<Icon16Done fill="#fff" width={14} height={14} />
+				  </Avatar>
+				}
+			>
+				Успешная подписка на сообщество "Облако спорта"
+				</Snackbar>)
+		})
+		;
+	}
 
 	// функция вывода на консоль. легко отключается флагом
 	const consoleLog = (message) => {
@@ -342,6 +364,53 @@ const App = (props) => {
 
 				if (props.appIsFirstStart)
 				{
+					props.setCurrentModalWindow(
+						<ModalCommon modalName="Info" 
+						data={
+							{
+								Name: props.myProfile.Name + ", добро пожаловать в Облако спорта!",
+								Message: <>
+								<p></p>
+								<Caption level="2" weight="regular">
+								Поздравляем! Вы стали частью большого проекта по созданию единого пространства любительского спорта России.
+                                </Caption>
+								<Caption level="2" weight="bold">
+								Что это?
+								</Caption>
+								<Caption level="2" weight="regular">
+								Это сервис, где вы можете следить за статистикой сразу всех спортивных турниров вашего города. 
+								</Caption>
+								<Caption level="2" weight="bold">
+								Зачем это?
+								</Caption>
+								<Caption level="2" weight="regular">
+								Это удобство и экономия вашего времени. Добавьте приложение в избранное или установите в сообщество вашей команды.
+								</Caption>
+								<Caption level="2" weight="bold">
+								Это всё?
+								</Caption>
+								<Caption level="2" weight="regular">
+								Нет. Сейчас мы активно работаем над расширением функционала приложение.
+								</Caption>
+								<Caption level="2" weight="bold">
+								Подписывайтесь на сообщество "Облако спорта"
+								</Caption>
+								<Caption level="2" weight="regular">
+									чтобы узнать о всех возможностях сервиса и быть в курсе новых функций
+								</Caption>
+								<Caption level="2" weight="regular">
+									<Button mode="commerce" onClick={addToCommunity}>Подписаться</Button>
+								</Caption>
+								</>
+							}
+						}
+						Close={() => props.setCurrentModalWindow(null)	
+						}
+						Icon={<Icon56GestureOutline></Icon56GestureOutline>}
+						>
+	
+						</ModalCommon>
+					)
 					// отобразить окно первого запуска
 				}
 			}
@@ -396,7 +465,6 @@ const App = (props) => {
 
 		if (props.IsOranizator == true && props.TournamentId != null && props.tournament != null && props.tournament.tournaments != null && props.tournament.tournaments.length > 0)
 		{
-			debugger
 			let filtredTournaments = props.tournament.tournaments.filter(t => t.Id == props.TournamentId);
 			if (filtredTournaments != null && filtredTournaments.length > 0){
 				TournamentSelect(filtredTournaments[0]);
@@ -461,7 +529,7 @@ const App = (props) => {
 						data={
 							{
 								Name: "Приложение добавлено успешно",
-								Message:`Вы успешно добавили приложение в группу ${group.name}.\r\n
+								Message:`Вы успешно добавили приложение в группу ${group.name}.
 								Теперь для того чтобы настроить свою команду запустите приложение из сообщества от имени администратора сообщества и настройте параметры на вкладке Моя Команда`
 							}
 						}
@@ -553,13 +621,13 @@ const App = (props) => {
 									<img style={{width: '100%'}} src={player}></img>
 									<span 
 									style={cardStyle}
-									>Скоро<br />запуск</span>
+									>Сборы на тренировку<br /><span style={{color: "red"}}>[скоро запуск]</span></span>
 								</Card>
 								<Card onClick={test}>
 									<img style={{width: '100%'}} src={stadium}></img>
 									<span 
 									style={cardStyle}
-									>Скоро<br />запуск</span>
+									>Бронирование площадки<br /><span style={{color: "red"}}>[скоро запуск]</span></span>
 								</Card>
 								
 							</CardGrid>
@@ -897,6 +965,7 @@ const App = (props) => {
 
 
 			</Epic>
+			{snackBar && snackBar}
 		</PullToRefresh>
 	);
 }

@@ -208,11 +208,9 @@ export const setUserProfileCity = (userProfile) => {
     return dispatch => {
         dispatch(setGlobalPopout(true))
         dispatch(resetError())
-        debugger
         if (authQueryString && authQueryString.length > 0)
             ProfileAPI.setUserProfileCity(userProfile).then()
                 .then(pl => {
-                    debugger
                     if (pl && pl.data) {
                         dispatch(setUserProfile(pl.data));
                         dispatch(setGlobalPopout(false))
