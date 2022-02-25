@@ -312,7 +312,7 @@ const TournamentItem = (props) => {
                                                                         table.map((row) => {
                                                                             chet = !chet;
                                                                             return (
-                                                                                <tr style={chet ? {backgroundColor: 'lightgray'} : {backgroundColor: 'white'}}>
+                                                                                <tr style={chet ? {backgroundColor: 'lightgray', color: 'black'} : {backgroundColor: 'white', color: 'black'}}>
                                                                                     <td style={w7percent}><Caption weight="regular" level="1">{row.Place}</Caption></td>
                                                                                     <td style={w20percent}>
                                                                                         <Caption weight="regular" level="3">

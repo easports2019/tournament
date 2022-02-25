@@ -13,7 +13,6 @@ const lose = {
     overflow: "hidden",
     display: "inline-block",
     fontSize: "0.9em",
-    color: '#000',
 }
 
 const win = {
@@ -25,22 +24,24 @@ const draw = {
     ...lose,
 }
 
-const schet = {
+const schet_base = {
     ...win,
     maxWidth: "15%",
     padding: '1px 7px 1px 7px',
     margin: '0px 5px',
     fontWeight: 'bold', 
-    color: 'yellow',
-    backgroundColor: 'gray',
     fontSize: '1em',
     borderRadius: '10px',
 }
 
+const schet = {
+    ...schet_base,
+    color: 'yellow',
+    backgroundColor: 'gray',
+}
+
 const noschet = {
-    ...schet,
-    color: '#000',
-    backgroundColor: 'white',
+    ...schet_base,
 }
 
 const MatchListItem = (props) => {

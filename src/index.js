@@ -11,7 +11,7 @@ bridge.send("VKWebAppInit");
 
 ReactDOM.render(
   <Provider store={store}>
-    <ConfigProvider>
+    <ConfigProvider appearance="light">
       <AdaptivityProvider>
         <AppRoot>
           <App />

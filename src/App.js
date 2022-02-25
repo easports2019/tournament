@@ -72,7 +72,8 @@ const App = (props) => {
 		textAlign: 'center',
 		fontSize: document.documentElement.clientWidth <= 460 ? '9px' : (document.documentElement.clientWidth <= 500 ? '12px' : '13px'),
 		opacity: '0.91',
-		borderRadius: '10px'
+		borderRadius: '10px',
+		color: 'black',
 	} 
 	
 	let addToCommunity =() => {
