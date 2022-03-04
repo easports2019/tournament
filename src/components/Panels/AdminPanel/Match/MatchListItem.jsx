@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { RichCell, Avatar, calcInitialsAvatarColor, InitialsAvatar } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
-import {  addToTime, dateToString, TimeIsNotAssigned, timeToString, dateIsMin } from '../../../../utils/convertors/dateUtils';
+import {  addToTime, dateToString, TimeIsNotAssigned, timeToString, dateIsMin, datesWithoutTimeIsSame } from '../../../../utils/convertors/dateUtils';
 import { green } from 'chalk';
 
 
@@ -49,11 +49,17 @@ const MatchListItem = (props) => {
 
     let match=props.Match;
     let place=props.Place;
-    let date = (match.When != null && !dateIsMin(match.When)) ? new Date(match.When) : null;
+    let date = (match.When != null && !dateIsMin(match.When)) 
+        ? new Date(match.When) 
+        : null;
     let now = new Date();
 
     let endOfMatch = date != null ? addToTime(date, 0, match.TournamentGroup.Tournament.MatchLength + 10) : null; // 10 минут добавляем на всякий случай (задержки, перерывы)
     let timeString = date != null ? (TimeIsNotAssigned(date) ? " время не назначено" : ` в ${timeToString(date.getHours(), date.getMinutes())}`) : "";
+    let dateString = "";
+    // let date = (match.When != null && !dateIsMin(match.When)) 
+    // ? (datesWithoutTimeIsSame(new Date, new Date(match.When)) ? "Сегодня" : new Date(match.When)) 
+    // : null;
     let inGame = date != null && ((date <= now ) && (now < endOfMatch));
 
         return (
@@ -68,7 +74,8 @@ const MatchListItem = (props) => {
             }
                 caption={place ? place.Name : "Не назначено"}
                 text={
-                    inGame ? <span style={{ "color": "red" }}>Матч идет</span> 
+                    inGame 
+                    ? <span style={{ "color": "red" }}>Матч идет</span> 
                     : match.Played ?
                         <span style={{ "color": "green" }}>Сыгран 
                         {date != null 

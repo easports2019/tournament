@@ -64,6 +64,7 @@ export const dateTimeToTimeString = (datetime) => {
 
 // возвращает дату в формате ДН, ДД ММММ ГГГГ г. , в args args[0] - прибавить дней, args[1] - прибавить месяцев, args[2] - прибавить лет,
 // args[3] = true - пишем день недели, false - не пишем
+// args[4] = true - указываем Сегодня/завтра, false - просто пишем дату
 export const dateToString = (date, ...args) => {
     
     if (typeof date == "string")
@@ -97,7 +98,17 @@ export const dateToString = (date, ...args) => {
     if (args[2])
         newDate = new Date(newDate.getFullYear() + args[2], newDate.getMonth(), newDate.getDate())
 
-    return newDate.toLocaleString("ru", dateOptions)
+    if (args[4] != undefined && args[4] == true)
+        return datesWithoutTimeIsSame(new Date, newDate) 
+            ? "Сегодня"
+            : ((datesWithoutTimeIsSame(addToDate(new Date, 1), newDate) 
+                ? "Завтра" 
+                : newDate.toLocaleString("ru", dateOptions)))
+    else 
+        return newDate.toLocaleString("ru", dateOptions);
+
+
+    //return newDate.toLocaleString("ru", dateOptions)
 }
 
 // прибавляет к дате переданное в параметрах количество дней, месяцев, лет. первый параметр -дни, второй- месяцы и т.д.

@@ -616,7 +616,7 @@ const App = (props) => {
 									<img style={{width: '100%'}} src={tournament}></img>
 									<span 
 									style={cardStyle}
-									>Любительский футбол<br />Костромы</span>
+									>Городские турниры<br />Костромы</span>
 								</CardWithHistory>
 								<Card>
 									<img style={{width: '100%'}} src={player}></img>
