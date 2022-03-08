@@ -389,7 +389,8 @@ export const ProfileAPI = {
     },
 
     // регистрация/обновление даты рождения + получение данных о профиле
-    getAuthInfo(vkUser) {
+    //getAuthInfo(vkUser) {
+    registerUser(vkUser) {
 
         let [day, month, year] = vkUser.bdate.split('.');
         let bDate = new Date(Date.UTC(year ? +year : 1, month ? (+month - 1) : 1, day ? day : 1, 0, 0, 0));

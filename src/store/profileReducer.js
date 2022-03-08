@@ -1,7 +1,10 @@
 import {ampluaTypes, myProfile, users} from './constants/commonConstants'
 import { ProfileAPI, errorObj } from './../utils/api/api.js'
 import { authQueryString } from './../utils/api/server';
-import { setGlobalPopout, setErrorMessage, resetError } from "./systemReducer";
+import { setGlobalPopout, setErrorMessage, resetError, setTriedToLoadOblakoProfile,
+    setOblakoProfileLoaded, setVkProfileLoaded, setTriedToLoadVkProfile, 
+    setVkProfileBirthDateLoaded, setVkProfileBirthYearLoaded, setVkProfileCityLoaded,
+} from "./systemReducer";
 
 
 const ANY_ACTION_TYPE = "ANY_ACTION_TYPE";
@@ -20,7 +23,6 @@ let demoUser = users[0];
 const initState = {
     myProfile: null,
     vkProfile: null,
-    triedToGetProfile: 0,
     isGroupAdmin: false,
     isFirstStart: false,
      // level 
@@ -44,11 +46,6 @@ export let profileReducer = (state = initState, action) =>
                 vkProfile: {...state.vkProfile,
                 bdate: birth
                 }
-            };
-        }
-        case PROFILE_SET_TRIED_TO_GET_PROFILE: {
-            return {...state,
-                triedToGetProfile: action.tried,
             };
         }
         case PROFILE_SET_USER_IS_GROUP_ADMIN: {
@@ -112,13 +109,6 @@ export const setUserProfile = (user) => {
     }
 }
 
-export const setTriedToGetProfile = (tried) => {
-    return {
-        type: PROFILE_SET_TRIED_TO_GET_PROFILE,
-        tried
-    }
-}
-
 export const setUserIsGroupAdmin = (isAdmin) => {
     return {
         type: PROFILE_SET_USER_IS_GROUP_ADMIN,
@@ -178,14 +168,15 @@ export const getUserProfile = (vkUserData) => {
         if (authQueryString && authQueryString.length > 0)
             ProfileAPI.getUserProfile(vkUserData)
                 .then(pl => {
-                    
+                    debugger
                     if (pl && pl.data) {
                         dispatch(setUserProfile(pl.data));
-                        dispatch(setTriedToGetProfile(0));
+                        dispatch(setTriedToLoadOblakoProfile(0));
+                        dispatch(setOblakoProfileLoaded(true));
                         dispatch(setGlobalPopout(false))
                     }
                     else {
-                        dispatch(setTriedToGetProfile(1))
+                        dispatch(setTriedToLoadOblakoProfile(1))
                     }
                 })
                 .catch(error => {
@@ -195,13 +186,30 @@ export const getUserProfile = (vkUserData) => {
         else {
             dispatch(setErrorMessage(errorObj("Вы не авторизованы")))
             dispatch(setGlobalPopout(false))
-            //dispatch(setUserProfile(demoUser))
-            //dispatch(setTriedToGetProfile(true))
-
         }
     }
 }
 
+
+// установка флагов загрузки пользователя ВК
+export const setVkProfileInfoAndSetFlags = (userProfile) => {
+    return dispatch => {
+        debugger
+        dispatch(setVkProfileInfo(userProfile));
+
+        if (userProfile.bdate != undefined){
+            dispatch(setVkProfileBirthYearLoaded(true));
+            if (userProfile.bdate.split('.').length > 2)
+                dispatch(setVkProfileBirthDateLoaded(true));
+        }
+
+        if ((userProfile.city != null) && (userProfile.city.id != 0))
+            dispatch(setVkProfileCityLoaded(true));
+
+        dispatch(setVkProfileLoaded(true));
+        dispatch(setTriedToLoadVkProfile(0));
+    }
+}
 
 // установка нового города пользователю
 export const setUserProfileCity = (userProfile) => {
@@ -211,8 +219,11 @@ export const setUserProfileCity = (userProfile) => {
         if (authQueryString && authQueryString.length > 0)
             ProfileAPI.setUserProfileCity(userProfile).then()
                 .then(pl => {
+                    debugger
                     if (pl && pl.data) {
                         dispatch(setUserProfile(pl.data));
+                        if (pl.data.CityUmbracoId >= 0)
+                            dispatch(setOblakoProfileCityLoaded(true));
                         dispatch(setGlobalPopout(false))
                     }
                     else {
@@ -233,17 +244,20 @@ export const setUserProfileCity = (userProfile) => {
 
 
 // авторизация (со встроенной регистрацией)
-export const getAuthInfo = (vkProfileInfo) => {
+//export const getAuthInfo = (vkProfileInfo) => {
+export const registerUser = (vkProfileInfo) => {
     return dispatch => {
         dispatch(setGlobalPopout(true))
         dispatch(resetError())
 
         if (authQueryString && authQueryString.length > 0)
-            ProfileAPI.getAuthInfo(vkProfileInfo)
+            ProfileAPI.registerUser(vkProfileInfo)
                 .then(pl => {
+                    debugger
                     if (pl) {
                         dispatch(setUserProfile(pl.data));
-                        dispatch(setTriedToGetProfile(0));
+                        dispatch(setTriedToLoadOblakoProfile(0));
+                        dispatch(setOblakoProfileLoaded(true));
                         dispatch(setIsFirstStart(true)); // установить флаг зарегистрирован
                         dispatch(setGlobalPopout(false))
                     }
@@ -276,7 +290,7 @@ export const saveUserProfile = (ProfileInfo) => {
                 .then(pl => {
                     if (pl) {
                         dispatch(setUserProfile(pl.data));
-                        dispatch(setTriedToGetProfile(0));
+                        dispatch(setTriedToLoadOblakoProfile(0));
                         dispatch(setGlobalPopout(false))
                     }
                     else {

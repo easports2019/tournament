@@ -28,13 +28,14 @@ import { getAllCitiesFromServer } from './store/cityReducer';
 import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect, setCollectItemMode } from './store/collectReducer';
 import { setActiveMenuItem } from './store/mainMenuReducer';
 import { getMatchesInCurrentCity, setHotPanel, setSelectedMatch, getTeamSheduleByTeamId } from './store/matchReducer';
-import { getAuthInfo, getUserProfile, setTriedToGetProfile, setUserProfileCity, setBirthDate,
-	saveUserProfile, setVkProfileInfo, setUserName, setUserSurName, setMyTotalExpirience, setUserIsGroupAdmin } from './store/profileReducer';
+import { registerUser, getUserProfile, setUserProfileCity, setBirthDate,
+	saveUserProfile, setVkProfileInfo, setVkProfileInfoAndSetFlags, setUserName, setUserSurName, setMyTotalExpirience, setUserIsGroupAdmin } from './store/profileReducer';
 import { getAllRentsInCityByCityId } from './store/rentReducer';
 import { connectTeamWithGroup, getGroupTeamInfo, setGroup } from './store/groupReducer';
 import { getAllSimplePlacesInCityByCityId } from './store/simplePlaceReducer';
 import { goToPanel, resetError, setCurrentModalWindow, checkConnection, setGlobalPopout, 
-	setLoading, setShowAdminTourneyTab, updateLoading, setShowGroupTab } from './store/systemReducer';
+	setLoading, setShowAdminTourneyTab, updateLoading, setShowGroupTab, 
+	setTriedToLoadOblakoProfile, setTriedToLoadVkProfile,  } from './store/systemReducer';
 import { addTournamentGroup, getAllCityTournamentAdminsByCityId, getTournamentsByCityId, setSelectedTournament, setTournamentMode } from './store/tournamentsReducer';
 import { getUser, setSelectedUser } from './store/vkReducer';
 import { addToTime, dateToString, jSDateValueToDateSelectorValue } from './utils/convertors/dateUtils';
@@ -48,7 +49,6 @@ import { Icon28CloudOutline } from '@vkontakte/icons';
 
 
 const App = (props) => {
-	const [fetchedUser, setUser] = useState(null);
 	const [launchParams, setLaunchParams] = useState(null);
 	const [groupInfo, setGroupInfo] = useState(null);
 	const [isFetching, setIsFetching] = useState(false);
@@ -150,9 +150,12 @@ const App = (props) => {
 	// загрузка информации о пользователе ВК (внутри первого useffect с пустыми параметрами)
 	async function fetchData() {
 
-		const user = await bridge.send('VKWebAppGetUserInfo');
-		setUser(user);
-		props.setVkProfileInfo(user);
+		bridge.send('VKWebAppGetUserInfo').then((user) => {
+			props.setVkProfileInfoAndSetFlags(user);
+		})
+		.catch((error) => {
+			props.setTriedToLoadVkProfile(1);
+		});
 
 
 		bridge.send("VKWebAppGetLaunchParams").then((data) => {
@@ -168,12 +171,15 @@ const App = (props) => {
 				props.setUserIsGroupAdmin(false);
 			}
 
-			bridge.send("VKWebAppGetGroupInfo", {"group_id": +data.vk_group_id}).then((info) => {
-				props.setGroup(info.id);
-				setGroupInfo(info);
-				// получаем информацию о команде, связанной с группой
-				
-			});
+			if (+data.vk_group_id > 0){
+				bridge.send("VKWebAppGetGroupInfo", {"group_id": +data.vk_group_id}).then((info) => {
+					debugger
+					props.setGroup(info.id);
+					setGroupInfo(info);
+					// получаем информацию о команде, связанной с группой
+					
+				});
+			}
 		});
 	}
 
@@ -197,144 +203,124 @@ const App = (props) => {
 
 	}, []);
 
-	// 2 при загрузке приложения
+	// 2 после загрузки профиля ВК
 	useEffect(() => {
 
-		if (!props.Connected) {
+		if (props.VkProfileLoaded){
+			if (!props.Connected) {
 
-			consoleLog("2 start checkConnection()")
-			props.checkConnection();
-			connectionTimer = setInterval(() => {
-				CheckConnection()
-			}, 5000)
+				consoleLog("2 start checkConnection()")
+				props.checkConnection();
+				connectionTimer = setInterval(() => {
+					CheckConnection()
+				}, 5000)
+			}
 		}
-	}, [props.vkProfile])
+	}, [props.VkProfileLoaded])
 
-	// 3 после загрузки профиля вк проверяем инициируем соединение с сервером
+	// 3 после загрузки профиля вк и соединения с сервером пытаемся загрузить профиль пользователя облака
 	useEffect(() => {
-		// нужно узнать город, далее если этого города нет в списке поддерживаемых, предлжить выбрать другой город и отправить заявку на добавление города. Всё это в модалке
-		// другой вопрос. если кто-то создает фейковый сбор, как гарантировать другим, что это не фейк?
-		// ввести в рейтинг поле "гарант сбора. если поступает жалоба на сбор (не было сбора), модератор засчитывает штрафной балл организатору"
-		// у людей, которые первый раз собирают, писать город из профиля, количество друзей и то, что человек еще не собирал ни разу, а значит может быть фейком
-		// еще нужно запрашивать права на доступ к инфе: город, дата рождения, друзья, 
-		// а еще в бэке надо сделать так, чтобы записи в Leg и City не плодились, а искали соответствующие из умбрако и ставили их Id
 		consoleLog("3 check if. Connected=" + (props.Connected) + " , vkProfile=" + (props.vkProfile!=null) + ", myProfile=" + (props.myProfile==null))
 		
-		if (props.Connected && props.vkProfile && props.vkProfile.city && !props.myProfile) {
+		if (props.Connected && !props.OblakoProfileLoaded) {
 			consoleLog("3 start getUserProfile()")
+			props.getAllCitiesFromServer();
 			props.getUserProfile(props.vkProfile);
 		}
 
-		if (props.Connected) {
-			consoleLog("3 timer stopped");
-			//clearInterval(connectionTimer);
-		}
-
-	}, [props.Connected, props.vkProfile])
-
-	// 4 загрузка профиля
-	useEffect(() => {
-
-		if (props.vkProfile && props.vkProfile.city && props.myProfile && props.myProfile.UserVkId != "") {
-			consoleLog("4 vkprofile and myprofile loaded")
-			if(
-				(props.vkProfile.bdate != undefined) 
-				&& (props.vkProfile.bdate.split('.').length > 2) 
-				&& (props.myProfile != null) 
-				&& (new Date(props.myProfile.Birth).getFullYear() > 1920)
-			) // 
-			{
-				consoleLog("4 no error in birthdate from vk")
-
-				props.setCurrentModalWindow(null);
-				props.getAllCitiesFromServer();
-				consoleLog("4 start getAllCitiesFromServer()")
-
-				if (props.myProfile.CityUmbracoId != null && props.myProfile.CityUmbracoId == -1) {
-				consoleLog("4 error in userprofile city")
-
-					//debugger
-					// предлагаем выбрать город
-					props.setGlobalPopout(false);
-					props.setCurrentModalWindow(<ModalCommon modalName="SelectCity" data={{ profile: props.myProfile, cities: props.cities }} action={props.setUserProfileCity} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
-				}
-			//props.getUser(19757699);
-			}
-			else{
-				consoleLog("4  error in birthdate from vk or myProfile.Birth.getFullYear < 1920")
-				
-			}
-		}
-		else{
-			// не загрузился город или вк профиль или мой профиль
-		}
-
-	}, [props.myProfile])
+	}, [props.Connected])
 	
 	// 5 регистрация пользователя
 	useEffect(() => {
 
-		if (props.vkProfile && props.vkProfile.city) {
-			if ((!props.myProfile) && (props.triedToGetProfile>0)) { // не зарегистрирован
-				consoleLog("5 not registred")
+		// корректируем дату рождения если данные с вк загружены, а с облака нет
+		if ((props.VkProfileLoaded) && ((!props.VkProfileBirthYearLoaded) || (!props.VkProfileBirthDateLoaded)) && (!props.OblakoProfileLoaded))
+		{
+			if ((props.vkProfile) && (props.vkProfile.bdate == undefined))
+			{
+				consoleLog("5 selectBirth")
 
-				if ((props.vkProfile) && (props.vkProfile.bdate == undefined))
-				{
-					consoleLog("5 selectBirth")
-
-					props.setGlobalPopout(false);
-					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirth" data={props.vkProfile} action={props.setVkProfileInfo} action2={props.setTriedToGetProfile} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
-				}
-				else if ((props.vkProfile) && (props.vkProfile.bdate.split('.').length == 2)) {
-					consoleLog("5 selectBirthYear")
-					
-					props.setGlobalPopout(false);
-					props.setCurrentModalWindow(<ModalCommon modalName="SelectBirthYear" data={props.vkProfile} action={props.setVkProfileInfo} action2={props.setTriedToGetProfile} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
-				}
-				else{
-					props.getAuthInfo(props.vkProfile); // регаем
-					consoleLog("5 start getAuthInfo() - register")
-
-				}
+				props.setGlobalPopout(false);
+				props.setCurrentModalWindow(<ModalCommon modalName="SelectBirth" data={props.vkProfile} action={props.setVkProfileInfo} action2={props.setTriedToLoadOblakoProfile} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
+			}
+			else if ((props.vkProfile) && (props.vkProfile.bdate.split('.').length == 2)) 
+			{
+				consoleLog("5 selectBirthYear")
+				
+				props.setGlobalPopout(false);
+				props.setCurrentModalWindow(<ModalCommon modalName="SelectBirthYear" data={props.vkProfile} action={props.setVkProfileInfo} action2={props.setTriedToLoadOblakoProfile} Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
 			}
 		}
-	}, [props.triedToGetProfile])
+
+		debugger
+		// если данные вк загружены, нет проблем с датой и профиль облака не загружен
+		if ((props.VkProfileLoaded) 
+			&& (props.TriedToLoadOblakoProfile > 0) 
+			&& (!props.OblakoProfileLoaded)
+			&& (props.vkProfile.bdate != undefined) 
+			&& (props.vkProfile.bdate.split('.').length > 2)
+			) 
+		{
+			props.registerUser(props.vkProfile); // регаем
+			consoleLog("5 start getAuthInfo() - register")	
+		}
+	}, [props.TriedToLoadOblakoProfile, props.VkProfileBirthYearLoaded, props.VkProfileBirthDateLoaded])
 	
+	// проверка указан ли город
+	useEffect(() => {
+		if (props.OblakoProfileLoaded) {
+			consoleLog("4 error in userprofile city")
+
+				if (!props.OblakoProfileCityLoaded){
+					// предлагаем выбрать город
+					props.setGlobalPopout(false);
+					props.setCurrentModalWindow(<ModalCommon modalName="SelectCity" 
+						data={{ profile: props.myProfile, cities: props.cities }} 
+						action={props.setUserProfileCity} 
+						Close={() => props.setCurrentModalWindow(null)}></ModalCommon>)
+				}
+			}
+	}, [props.OblakoProfileLoaded, props.OblakoProfileBirthDateLoaded, props.OblakoProfileCityLoaded])
+
+
 	// 6 загрузка мест, админов города, текущих турниров
 	useEffect(() => {
 		//consoleLog("6 cities fire")
 		// а это уже когда прогрузился и выбран город профиля
-		if (props.cities && props.cities.length > 0 && props.myProfile && props.myProfile.CityUmbracoId != null &&
-			props.myProfile.CityUmbracoId != -1 && new Date(props.myProfile.Birth).getFullYear() >= 1920 && props.places.length == 0) {
-			
-			consoleLog("6 start loadAll()")
-			// props.setGlobalPopout(false);
-			// props.setCurrentModalWindow(null);
+		if (props.OblakoProfileLoaded && props.OblakoProfileCityLoaded)
+		{
+			if (props.cities && props.cities.length > 0 && props.myProfile && props.myProfile.CityUmbracoId != null &&
+				props.myProfile.CityUmbracoId != -1 && new Date(props.myProfile.Birth).getFullYear() >= 1920 && props.places.length == 0) {
+				
+				consoleLog("6 start loadAll()")
+				// props.setGlobalPopout(false);
+				// props.setCurrentModalWindow(null);
 
-			// загружаем места этого города
-			props.goToPanel("hot", false)
+				// загружаем места этого города
+				props.goToPanel("hot", false)
 
-			// получаем список админов турниров города по umbId города
-			props.getAllCityTournamentAdminsByCityId(props.myProfile.CityUmbracoId);
+				// получаем список админов турниров города по umbId города
+				props.getAllCityTournamentAdminsByCityId(props.myProfile.CityUmbracoId);
 
-			// получаем список активных турниров города по umbId города и текущей дате
-			props.getTournamentsByCityId(props.myProfile.CityUmbracoId);
+				// получаем список активных турниров города по umbId города и текущей дате
+				props.getTournamentsByCityId(props.myProfile.CityUmbracoId);
 
-			// получаем список простых мест по umbId города
-			props.getAllSimplePlacesInCityByCityId(props.myProfile.CityUmbracoId);
+				// получаем список простых мест по umbId города
+				props.getAllSimplePlacesInCityByCityId(props.myProfile.CityUmbracoId);
 
-			// получаем список простых сборов
-			props.getAllSimpleCollectsInCityByCityUmbracoId(props.myProfile.CityUmbracoId);
+				// получаем список простых сборов
+				props.getAllSimpleCollectsInCityByCityUmbracoId(props.myProfile.CityUmbracoId);
 
-			// получаем список аренд
-			props.getAllRentsInCityByCityId(props.myProfile.CityUmbracoId);
+				// получаем список аренд
+				props.getAllRentsInCityByCityId(props.myProfile.CityUmbracoId);
 
 
-			if (!timerStarts)
-			{
-				setTimerStarts(true);
-				setTimeout(() => setInterval(() => checkMovings(), 20000), 20000)
+				if (!timerStarts)
+				{
+					setTimerStarts(true);
+					setTimeout(() => setInterval(() => checkMovings(), 20000), 20000)
 
+				}
 			}
 
 		}
@@ -350,7 +336,7 @@ const App = (props) => {
 		}
 
 
-	}, [ props.cities]) //props.myProfile, props.vkProfile,
+	}, [ props.cities, props.OblakoProfileLoaded, props.OblakoProfileCityLoaded]) //props.myProfile, props.vkProfile,
 
 	// 7 загрузка матчей в выбранном городе
 	useEffect(() => {
@@ -998,19 +984,31 @@ const mapStateToProps = (state) => {
 		ShowAdminTeamTab: state.system.ShowAdminTeamTab,
 		ShowGroupTab: state.system.ShowGroupTab,
 		CurrentModalWindow: state.system.CurrentModalWindow,
+		
+		errorObject: state.system.ErrorObject,
+		globalPopout: state.system.GlobalPopout,
 		Loading: state.system.Loading,
-		Connected: state.system.Connected,
 		CheckLoading: state.system.CheckLoading,
+		
+		Connected: state.system.Connected,
+		VkProfileLoaded: state.system.VkProfileLoaded,
+		VkProfileBirthDateLoaded: state.system.VkProfileBirthDateLoaded,
+		VkProfileBirthYearLoaded: state.system.VkProfileBirthYearLoaded,
+		VkProfileCityLoaded: state.system.VkProfileCityLoaded,
+		OblakoProfileLoaded: state.system.OblakoProfileLoaded,
+		OblakoProfileBirthDateLoaded: state.profileEntity.myProfile ? new Date(state.profileEntity.myProfile.Birth).getFullYear() > 1920 : false,
+		OblakoProfileCityLoaded: state.profileEntity.myProfile && (state.profileEntity.myProfile.CityUmbracoId >= 0 && state.profileEntity.myProfile.CityUmbracoId != 1267),
+    	TriedToLoadVkProfile: state.system.TriedToLoadVkProfile,
+    	TriedToLoadOblakoProfile: state.system.TriedToLoadOblakoProfile,
+		
+		vkProfile: state.profileEntity.vkProfile,
+		myProfile: state.profileEntity.myProfile,
+		
 		cities: state.cityEntity.cities,
 		//places: state.placeEntity.places,
 		places: state.simplePlaceEntity.places,
-		globalPopout: state.system.GlobalPopout,
-		vkProfile: state.profileEntity.vkProfile,
-		myProfile: state.profileEntity.myProfile,
 		appIsFirstStart: state.profileEntity.isFirstStart,
-		errorObject: state.system.ErrorObject,
 		//`errorMessage: state.system.ErrorObject.message,
-		triedToGetProfile: state.profileEntity.triedToGetProfile,
 		tournamentAdmins: state.tournamentsEntity.cityTournamentAdmins,
 		tournament: state.tournamentsEntity,
 		collect: state.collectEntity,
@@ -1028,11 +1026,11 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, { 
-	setGroup,
+	setGroup, setTriedToLoadOblakoProfile, setTriedToLoadVkProfile, 
 	setBirthDate, setSelectedMatch, setShowGroupTab, connectTeamWithGroup, getGroupTeamInfo, setUserIsGroupAdmin, getTeamSheduleByTeamId,
 	setCurrentModalWindow, setLoading, goToPanel, checkConnection, updateLoading, saveUserProfile, setUserName, setUserSurName, setMyTotalExpirience, 
 	getAllSimpleCollectsInCityByCityUmbracoId, getAllSimplePlacesInCityByCityId, getAllRentsInCityByCityId, getUser, setSelectedUser,
 	addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualTournamentsInCity, getTournamentsByCityId, setSelectedTournament, setTournamentMode, setCollectItemMode,
-	setActiveMenuItem, setVkProfileInfo, setGlobalPopout, getUserProfile, getAuthInfo, setTriedToGetProfile, setHotPanel, resetError, selectSimpleCollect,
+	setActiveMenuItem, setVkProfileInfo, setVkProfileInfoAndSetFlags, setGlobalPopout, getUserProfile, registerUser, setHotPanel, resetError, selectSimpleCollect,
 	getAllCitiesFromServer, setUserProfileCity, getAllCityTournamentAdminsByCityId, setShowAdminTourneyTab, getMatchesInCurrentCity,
 })(App);

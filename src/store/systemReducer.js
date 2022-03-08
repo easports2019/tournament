@@ -16,11 +16,27 @@ const SYSTEM_SET_ERROR_MESSAGE = "SYSTEM_SET_ERROR_MESSAGE";
 const SYSTEM_RESET_ERROR = "SYSTEM_RESET_ERROR";
 const SYSTEM_SET_SHOW_ADMIN_TOURNEY_TAB = "SYSTEM_SET_SHOW_ADMIN_TOURNEY_TAB";
 const SYSTEM_SET_SHOW_GROUP_TAB = "SYSTEM_SET_SHOW_GROUP_TAB";
+const SYSTEM_SET_OBLAKO_PROFILE_LOADED = "SYSTEM_SET_OBLAKO_PROFILE_LOADED";
+const SYSTEM_SET_VK_PROFILE_LOADED = "SYSTEM_SET_VK_PROFILE_LOADED";
+const SYSTEM_SET_VK_PROFILE_BIRTH_DATE_LOADED = "SYSTEM_SET_VK_PROFILE_BIRTH_DATE_LOADED";
+const SYSTEM_SET_VK_PROFILE_BIRTH_YEAR_LOADED = "SYSTEM_SET_VK_PROFILE_BIRTH_YEAR_LOADED";
+const SYSTEM_SET_VK_PROFILE_CITY_LOADED = "SYSTEM_SET_VK_PROFILE_CITY_LOADED";
+const SYSTEM_SET_TRIED_TO_LOAD_OBLAKO_PROFILE = "SYSTEM_SET_TRIED_TO_LOAD_OBLAKO_PROFILE";
+const SYSTEM_SET_TRIED_TO_LOAD_VK_PROFILE = "SYSTEM_SET_TRIED_TO_LOAD_VK_PROFILE";
 
 
 const initState = {
     currentMenu: {},
+
     Connected: false,
+    VkProfileLoaded: false,
+    VkProfileBirthDateLoaded: false,
+    VkProfileBirthYearLoaded: false,
+    VkProfileCityLoaded: false,
+    OblakoProfileLoaded: false,
+    TriedToLoadVkProfile: 0,
+    TriedToLoadOblakoProfile: 0,
+
     history: ["hot"],
     GlobalPopout: false,
     CurrentModalWindow: null,
@@ -57,6 +73,48 @@ export let systemReducer = (state = initState, action) =>
             
             return {...state,
                 Connected: true,
+            };
+        }
+        case SYSTEM_SET_TRIED_TO_LOAD_OBLAKO_PROFILE: {
+            
+            return {...state,
+                TriedToLoadOblakoProfile: action.tried,
+            };
+        }
+        case SYSTEM_SET_TRIED_TO_LOAD_VK_PROFILE: {
+            
+            return {...state,
+                TriedToLoadVkProfile: action.tried,
+            };
+        }
+        case SYSTEM_SET_OBLAKO_PROFILE_LOADED: {
+            
+            return {...state,
+                OblakoProfileLoaded: action.loaded,
+            };
+        }
+        case SYSTEM_SET_VK_PROFILE_LOADED: {
+            
+            return {...state,
+                VkProfileLoaded: action.loaded,
+            };
+        }
+        case SYSTEM_SET_VK_PROFILE_BIRTH_DATE_LOADED: {
+            
+            return {...state,
+                VkProfileBirthDateLoaded: action.loaded,
+            };
+        }
+        case SYSTEM_SET_VK_PROFILE_BIRTH_YEAR_LOADED: {
+            
+            return {...state,
+                VkProfileBirthYearLoaded: action.loaded,
+            };
+        }
+        case SYSTEM_SET_VK_PROFILE_CITY_LOADED: {
+            
+            return {...state,
+                VkProfileCityLoaded: action.loaded,
             };
         }
         case SYSTEM_SET_DISCONNECTED: {
@@ -128,6 +186,55 @@ export const anyActionCreator = (val) => {
     return {
         type: ANY_ACTION_TYPE,
         anyVal: val
+    }
+}
+
+export const setTriedToLoadOblakoProfile = (tried) => {
+    return {
+        type: SYSTEM_SET_TRIED_TO_LOAD_OBLAKO_PROFILE,
+        tried
+    }
+}
+
+export const setTriedToLoadVkProfile = (tried) => {
+    return {
+        type: SYSTEM_SET_TRIED_TO_LOAD_VK_PROFILE,
+        tried
+    }
+}
+
+export const setOblakoProfileLoaded = (loaded) => {
+    return {
+        type: SYSTEM_SET_OBLAKO_PROFILE_LOADED,
+        loaded
+    }
+}
+
+export const setVkProfileLoaded = (loaded) => {
+    return {
+        type: SYSTEM_SET_VK_PROFILE_LOADED,
+        loaded
+    }
+}
+
+export const setVkProfileBirthDateLoaded = (loaded) => {
+    return {
+        type: SYSTEM_SET_VK_PROFILE_BIRTH_DATE_LOADED,
+        loaded
+    }
+}
+
+export const setVkProfileBirthYearLoaded = (loaded) => {
+    return {
+        type: SYSTEM_SET_VK_PROFILE_BIRTH_YEAR_LOADED,
+        loaded
+    }
+}
+
+export const setVkProfileCityLoaded = (loaded) => {
+    return {
+        type: SYSTEM_SET_VK_PROFILE_CITY_LOADED,
+        loaded
     }
 }
 

@@ -19,18 +19,31 @@ let ModalCommon = (props) => {
         setSelectedDate(`${value.day}.${value.month}.${value.year}`)
     }
     
-    const saveDate = (value) => {
-        
-        props.action({...props.data, bdate: selectedDate != "" ? selectedDate : undefined})
-        props.action2(2);
+    const saveDate = () => {
+        debugger
+        if (selectedDate && (selectedDate.split('.').length > 2) && (+selectedDate.split('.')[2] > 1920)){
+            props.action({...props.data, bdate: selectedDate != "" ? selectedDate : undefined})
+            props.action2(2);
+        }
     }
     
-    const saveYear = (value) => {
-        
-        props.action(
-            {...props.data, 
-                bdate: props.data.bdate && props.data.bdate + ((!isNaN(selectedYear)) && (selectedYear > 0) && "." + selectedYear)});
-        props.action2(2);
+    const saveCity = () => {
+        debugger
+        if (selectedCity && selectedCity >= 0){
+            props.action({...props.data.profile, CityUmbracoId: selectedCity})
+            props.Close();
+        }
+    }
+    
+    const saveYear = () => {
+        debugger
+        if (selectedYear && selectedYear > 0)
+        {
+            props.action(
+                {...props.data, 
+                    bdate: props.data.bdate && props.data.bdate + ((!isNaN(selectedYear)) && (selectedYear > 0) && "." + selectedYear)});
+            props.action2(2);
+        }
     }
 
 
@@ -110,7 +123,7 @@ let ModalCommon = (props) => {
                 actions={<Button size="l" mode="primary" onClick={saveYear}>Закрыть</Button>}>
                     <FormLayout>
                         <FormLayoutGroup>
-                        <InfoRow header="Год рождения не определен">
+                        <InfoRow>
                             Год рождения не получилось загрузить из вашего профиля Вконтакте. Укажите реальный год вашего рождения.
                         </InfoRow>
                             <FormItem top="Год рождения">            
@@ -146,7 +159,7 @@ let ModalCommon = (props) => {
                 onClick={saveDate}>Закрыть</Button>}>
                     <FormLayout>
                         <FormLayoutGroup>
-                        <InfoRow header="Год рождения не определен">
+                        <InfoRow>
                             Дату рождения не получилось загрузить из вашего профиля Вконтакте. Укажите реальную дату вашего рождения.
                         </InfoRow>
                             <FormItem top="Дата рождения">
@@ -184,10 +197,7 @@ let ModalCommon = (props) => {
             <ModalCard id="SelectCity"
                 // onClose={props.Close}
                 header="Выберите город"
-                actions={<Button size="l" mode="primary" onClick={() => {
-                        props.action({...props.data.profile, CityUmbracoId: selectedCity})
-                        }
-                    }>Закрыть</Button>}>
+                actions={<Button size="l" mode="primary" onClick={() => saveCity()}>Закрыть</Button>}>
                     <FormLayout>
                         <FormLayoutGroup>
                             <InfoRow header="Город не найден">
