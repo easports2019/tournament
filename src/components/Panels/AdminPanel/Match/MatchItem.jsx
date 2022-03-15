@@ -42,7 +42,7 @@ const CardStyle = {
 
 const MatchItem = (props) => {
     
-    
+    let teamSelect = props.SelectTeam;
     let match=props.match;
     let place=props.Place;
     //let date = (match.When != null && !dateIsMin(match.When)) ? new Date(match.When) : null;
@@ -92,7 +92,7 @@ const MatchItem = (props) => {
             </FormItem>
             <FormItem></FormItem>
             <CardGrid size="s">
-                <Card style={CardStyle}>
+                <Card style={CardStyle} onClick={() => teamSelect(match.Team1Bid.TeamId)}>
                     <div  style={centering}>
                         {match.Team1Bid.TeamName} 
                     </div>
@@ -112,10 +112,10 @@ const MatchItem = (props) => {
                     </div>
                      
                 </Card>
-                <Card style={CardStyle}>
-                <div  style={centering}>
-                    {match.Team2Bid.TeamName}
-                </div>
+                <Card style={CardStyle} onClick={() => teamSelect(match.Team2Bid.TeamId)}>
+                    <div  style={centering}>
+                        {match.Team2Bid.TeamName}
+                    </div>
                 </Card>
             </CardGrid>
             <FormItem></FormItem>

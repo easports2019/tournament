@@ -46,7 +46,7 @@ const emptyTeam = {
 
 const initState = {
     teams: [], // все турниры
-    selected: emptyTeam, // выбранный для просмотра/создания/редактирования турнир
+    selected: emptyTeam, // выбранная для просмотра/создания/редактирования команда
     myTeams: [], // те, что я создал
     cityTeamAdmins: [], // админы текущего города
     mode: "view", // режим отображения команды ("view" - просмотр, "add" - добавление, "edit" - редактирование)
@@ -296,8 +296,8 @@ export const addMyTeam = (myteam) => {
     }
 }
 
+// установка выбранной команды 
 export const setSelectedTeam = (team) => {
-    debugger
     return {
         type: TEAM_SET_SELECTED_TEAM,
         team

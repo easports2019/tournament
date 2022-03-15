@@ -93,7 +93,7 @@ export const connectTeamWithGroup = (groupId, teamId = -1, userProfile) => {
     }
 }
 
-// проверка связи с сервисом
+// загрузка команды для группы вк
 export const getGroupTeamInfo = (groupId, userProfile) => {
     return dispatch => {
         dispatch(setGlobalPopout(true))

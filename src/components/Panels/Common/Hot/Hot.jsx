@@ -33,6 +33,7 @@ const Hot = (props) => {
 
                         return (
                             <MatchListItem 
+                                SelectTeam={props.SelectTeam}
                                 ClickHandler={() => props.ClickHandler(match)}
                                 Match={match} Place={match.Place}
                                 ></MatchListItem>

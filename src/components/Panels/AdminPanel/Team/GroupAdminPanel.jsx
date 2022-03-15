@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { RichCell, Avatar, Button, InfoRow, Header, FormItem, Group } from '@vkontakte/vkui'
+import { RichCell, Avatar, Button, InfoRow, Header, FormItem, Group, Cell } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
 import TeamAdminList from './TeamAdminList'
 import { setActiveMenuItem } from './../../../../store/mainMenuReducer';
@@ -36,6 +36,7 @@ let click = (match) => {
 
         return (
             <>
+                    
                 {/* <FormItem>
                     <InfoRow>При заявке указывается желаемая группа. Организатор в праве взять в другую группу</InfoRow>
                 </FormItem> */}
@@ -65,14 +66,19 @@ let click = (match) => {
                         }
                     </>
                     :
-                    <FormItem top="Команда группы">
-                        <RichCell
-                        >{props.TeamName 
-                            ? props.TeamName 
-                            : "Не выбрана админом группы"}</RichCell>
+                    // <FormItem top="Команда группы">
+                    //     <RichCell
+                    //     >{props.TeamName 
+                    //         ? props.TeamName 
+                    //         : "Не выбрана админом группы"}</RichCell>
                         
-                    </FormItem>
+                    // </FormItem>
+                    null
                 }
+                <>
+                {/* <FormItem>
+                    <Cell>{props.TeamName}</Cell>
+                </FormItem> */}
                 <Group>
                     {props.matchesByTeam
                     .sort((a, b) => new Date(b.When).valueOf() - new Date(a.When).valueOf())
@@ -89,6 +95,7 @@ let click = (match) => {
                         //return 
                     })}
                 </Group>
+                </>
                 {/* <FormItem>
                     <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="teamitem" data-story="teamitem">Создать команду</ButtonWithHistory>
                 </FormItem> */}

@@ -173,7 +173,6 @@ const App = (props) => {
 
 			if (+data.vk_group_id > 0){
 				bridge.send("VKWebAppGetGroupInfo", {"group_id": +data.vk_group_id}).then((info) => {
-					debugger
 					props.setGroup(info.id);
 					setGroupInfo(info);
 					// получаем информацию о команде, связанной с группой
@@ -505,6 +504,13 @@ const App = (props) => {
 		
 	}
 
+	// при клике по команде с панели просмотра матча (для перехода к просмотру команды)
+	let SelectTeam = (teamId) => {
+		props.getTeamSheduleByTeamId(teamId, props.myProfile);
+		//props.setShowGroupTab(true);
+		props.goToPanel("groupadmin", false)
+	}
+
 	let addToGroup = () => {
 		bridge.send("VKWebAppAddToCommunity")
 			.then(dat => {
@@ -625,7 +631,7 @@ const App = (props) => {
 							
 						</Group>
 						<Group header={<Header mode="secondary">Сыграны вчера</Header>}>
-							<Hot ClickHandler={goToViewMatch} Matches={props.matches.hot.yesterday}></Hot>
+							<Hot SelectTeam={SelectTeam} ClickHandler={goToViewMatch} Matches={props.matches.hot.yesterday}></Hot>
 						</Group>
 					</Panel>
 				
@@ -914,7 +920,7 @@ const App = (props) => {
 					<Group
 							// header={<Header>Матч</Header>}
 						>
-							<MatchItem match={props.matches.selected}></MatchItem>
+							<MatchItem SelectTeam={SelectTeam} match={props.matches.selected}></MatchItem>
 						</Group>
 					</Panel>
 				</View>

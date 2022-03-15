@@ -39,6 +39,7 @@ const initState = {
     selected: {},
     access: "user",
     mode: "list", // режим отображения турнира ("list" - список, "view" - просмотр, "add" - добавление, "edit" - редактирование)
+    selectedTeam: {}, // выбранная команда для просмотра ее расписания
 }
 
 
@@ -222,6 +223,7 @@ export const setSelectedMatch = (match) => {
         match
     }
 }
+
 
 
 
