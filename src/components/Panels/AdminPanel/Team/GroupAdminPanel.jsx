@@ -36,79 +36,50 @@ let click = (match) => {
 
         return (
             <>
-                    
-                {/* <FormItem>
-                    <InfoRow>При заявке указывается желаемая группа. Организатор в праве взять в другую группу</InfoRow>
-                </FormItem> */}
+                
                 {
                     props.UserIsGroupAdmin
                     ?
                     <>
-                    <FormItem top="Команда группы">
-                        <RichCell
-                            after={props.TeamId 
-                                ? <Button onClick={() => setShowSearch(true)}>Выбрать другую</Button> 
-                                : <Button onClick={() => setShowSearch(true)}>Выбрать</Button>}
-                        >{props.TeamId 
-                            ? teams.filter(x => x.Id == props.TeamId).length > 0 && teams.filter(x => x.Id == props.TeamId)[0].Name 
-                            : "Не выбрана"}</RichCell>
-                        
-                    </FormItem>
-                    {showSearch && 
-                        <FormItem top="Выбрать команду этой группы">
-                            {/* <p>Команда: {props.TeamId ? "" : "Не выбрана"}</p> */}
-                            <SimpleSearch List={teams}
-                            ActionOnSelect={(teamId) => SetOurTeam(teamId)}
-                            >
-
-                            </SimpleSearch>
+                        <FormItem top="Команда группы">
+                            <RichCell
+                                after={props.TeamId 
+                                    ? <Button onClick={() => setShowSearch(true)}>Выбрать другую</Button> 
+                                    : <Button onClick={() => setShowSearch(true)}>Выбрать</Button>}
+                            >{props.TeamId 
+                                ? teams.filter(x => x.Id == props.TeamId).length > 0 && teams.filter(x => x.Id == props.TeamId)[0].Name 
+                                : "Не выбрана"}</RichCell>
+                            
                         </FormItem>
+                        {showSearch && 
+                            <FormItem top="Выбрать команду этой группы">
+                                <SimpleSearch List={teams}
+                                ActionOnSelect={(teamId) => SetOurTeam(teamId)}
+                                >
+
+                                </SimpleSearch>
+                            </FormItem>
                         }
                     </>
                     :
-                    // <FormItem top="Команда группы">
-                    //     <RichCell
-                    //     >{props.TeamName 
-                    //         ? props.TeamName 
-                    //         : "Не выбрана админом группы"}</RichCell>
-                        
-                    // </FormItem>
                     null
                 }
                 <>
-                {/* <FormItem>
-                    <Cell>{props.TeamName}</Cell>
-                </FormItem> */}
-                <Group>
-                    {props.matchesByTeam
-                    .sort((a, b) => new Date(b.When).valueOf() - new Date(a.When).valueOf())
-                    .map(match => {
-                        return (
-                        <MatchListItem
-                            Match={match} Place={match.Place}
-                            ClickHandler={() => click(match)}
-                        ></MatchListItem>
-                        )
+                    <Group>
+                        <Cell><h2 style={{color: '#888'}}>Команда {props.SelectedTeam.Name}</h2></Cell>
+                        {props.matchesByTeam
+                        .sort((a, b) => new Date(b.When).valueOf() - new Date(a.When).valueOf())
+                        .map(match => {
+                            return (
+                            <MatchListItem
+                                Match={match} Place={match.Place}
+                                ClickHandler={() => click(match)}
+                            ></MatchListItem>
+                            )
 
-                                
-
-                        //return 
-                    })}
-                </Group>
+                        })}
+                    </Group>
                 </>
-                {/* <FormItem>
-                    <ButtonWithHistory handleClick={ButtonNewClick} toMenuName="teamitem" data-story="teamitem">Создать команду</ButtonWithHistory>
-                </FormItem> */}
-                {/* <Group>
-                    <TeamAdminList 
-                    CellClick={CellClick}
-                    Button1Handle = {PublishTeam}
-                    Button2Handle = {DeleteTeam}
-                    List={props.team.myTeams}
-                    >
-                        
-                    </TeamAdminList>
-                </Group> */}
                 
             </>
         )
@@ -120,10 +91,11 @@ const mapStateToProps = (state) => {
 		GroupId: state.groupEntity.GroupId,
 		TeamId: state.groupEntity.TeamId,
 		TeamName: state.groupEntity.TeamName,
+        SelectedTeam: state.teamsEntity.selected,
 		UserIsGroupAdmin: state.profileEntity.isGroupAdmin,
 		myProfile: state.profileEntity.myProfile,
         tournament: state.tournamentsEntity,
-		matchesByTeam: state.matches.matchesBySelectedTeam,
+		matchesByTeam: state.teamsEntity.matches,
         team: state.teamsEntity,
 	}
 }

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { RichCell, Avatar, Group, FormItem, Textarea, CardGrid, Card, Title, Caption } from '@vkontakte/vkui'
+import { RichCell, Avatar, Group, FormItem, Textarea, CardGrid, Card, Title, Caption, Link } from '@vkontakte/vkui'
 import {defaultPhotoPath} from '../../../../store/dataTypes/common'
 import { dateToString, TimeIsNotAssigned, timeToString, dateIsMin, datesWithoutTimeIsSame, addToDate } from '../../../../utils/convertors/dateUtils';
 
@@ -92,10 +92,11 @@ const MatchItem = (props) => {
             </FormItem>
             <FormItem></FormItem>
             <CardGrid size="s">
-                <Card style={CardStyle} onClick={() => teamSelect(match.Team1Bid.TeamId)}>
+                <Card style={CardStyle} onClick={() => teamSelect(match.Team1Bid.TeamId, match.Team1)}>
                     <div  style={centering}>
                         {match.Team1Bid.TeamName} 
                     </div>
+                    <Link style={{fontSize: '0.7em'}}>Перейти к команде</Link>
                 </Card>
                 <Card style={CardResultStyle} mode="shadow">
 
@@ -112,10 +113,11 @@ const MatchItem = (props) => {
                     </div>
                      
                 </Card>
-                <Card style={CardStyle} onClick={() => teamSelect(match.Team2Bid.TeamId)}>
+                <Card style={CardStyle} onClick={() => teamSelect(match.Team2Bid.TeamId, match.Team2)}>
                     <div  style={centering}>
                         {match.Team2Bid.TeamName}
                     </div>
+                    <Link style={{fontSize: '0.7em'}}>Перейти к команде</Link>
                 </Card>
             </CardGrid>
             <FormItem></FormItem>

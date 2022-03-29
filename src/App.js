@@ -27,11 +27,12 @@ import { addBidTeamToTournamentGroup, cancelBidTeamToTournamentGroup, getActualT
 import { getAllCitiesFromServer } from './store/cityReducer';
 import { getAllSimpleCollectsInCityByCityUmbracoId, selectSimpleCollect, setCollectItemMode } from './store/collectReducer';
 import { setActiveMenuItem } from './store/mainMenuReducer';
-import { getMatchesInCurrentCity, setHotPanel, setSelectedMatch, getTeamSheduleByTeamId } from './store/matchReducer';
+import { getMatchesInCurrentCity, setHotPanel, setSelectedMatch,  } from './store/matchReducer';
 import { registerUser, getUserProfile, setUserProfileCity, setBirthDate,
 	saveUserProfile, setVkProfileInfo, setVkProfileInfoAndSetFlags, setUserName, setUserSurName, setMyTotalExpirience, setUserIsGroupAdmin } from './store/profileReducer';
 import { getAllRentsInCityByCityId } from './store/rentReducer';
 import { connectTeamWithGroup, getGroupTeamInfo, setGroup } from './store/groupReducer';
+import { getTeamSheduleByTeamId,  } from './store/teamsReducer';
 import { getAllSimplePlacesInCityByCityId } from './store/simplePlaceReducer';
 import { goToPanel, resetError, setCurrentModalWindow, checkConnection, setGlobalPopout, 
 	setLoading, setShowAdminTourneyTab, updateLoading, setShowGroupTab, 
@@ -407,6 +408,7 @@ const App = (props) => {
 	useEffect(() => {
 		if (props.groupId && props.myProfile)
 		{
+			debugger
 			props.getGroupTeamInfo(props.groupId, props.myProfile);
 		}
 		
@@ -417,6 +419,7 @@ const App = (props) => {
 		
 		if (props.teamId && props.myProfile)
 		{
+			debugger
 			// переадресовываем на вкладку команды
 			// показываем вкладку Моя команда
 			props.setShowGroupTab(true);
@@ -505,8 +508,8 @@ const App = (props) => {
 	}
 
 	// при клике по команде с панели просмотра матча (для перехода к просмотру команды)
-	let SelectTeam = (teamId) => {
-		props.getTeamSheduleByTeamId(teamId, props.myProfile);
+	let SelectTeam = (teamId, team) => {
+		props.getTeamSheduleByTeamId(teamId, props.myProfile, -1, team);
 		//props.setShowGroupTab(true);
 		props.goToPanel("groupadmin", false)
 	}

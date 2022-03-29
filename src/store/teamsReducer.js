@@ -1,5 +1,5 @@
 import { setGlobalPopout, setErrorMessage } from "./systemReducer";
-import { TeamAdminAPI, TeamAPI, CityTournamentAdminAPI } from './../utils/api/api.js'
+import { TeamAdminAPI, TeamAPI, CityTournamentAdminAPI, MatchAPI } from './../utils/api/api.js'
 import { TeamAdmins } from './constants/commonConstants'
 
 import { authQueryString } from './../utils/api/server';
@@ -25,6 +25,7 @@ const TEAM_PUBLISH = "TEAM_PUBLISH";
 const TEAM_UNPUBLISH = "TEAM_UNPUBLISH";
 const TEAM_SET_MY_TEAMS = "TEAM_SET_MY_TEAMS";
 const TEAM_SET_TEAM_BY_ID = "TEAM_SET_TEAM_BY_ID";
+const TEAM_SET_ALL_MATCHES_SELECTED_TEAM = "TEAM_SET_ALL_MATCHES_SELECTED_TEAM";
 
 const currentDate = new Date();
 
@@ -50,6 +51,9 @@ const initState = {
     myTeams: [], // те, что я создал
     cityTeamAdmins: [], // админы текущего города
     mode: "view", // режим отображения команды ("view" - просмотр, "add" - добавление, "edit" - редактирование)
+    //selectedTeam: {}, // выбранная команда для просмотра ее расписания
+    //matchesBySelectedTeam: [],
+    matches: [],
 }
 
 
@@ -66,6 +70,12 @@ let teamReducer = (state = initState, action) => {
             return {
                 ...state,
                 myTeams: [...action.myTeams],
+            };
+        }
+        case TEAM_SET_ALL_MATCHES_SELECTED_TEAM: {
+            return {
+                ...state,
+                matches: [...action.matches],
             };
         }
         case TEAM_SET_MODE: {
@@ -282,6 +292,14 @@ export const setTeams = (teams) => {
     }
 }
 
+
+export const setAllMatchesBySelectedTeam = (matches) => {
+    return {
+        type: TEAM_SET_ALL_MATCHES_SELECTED_TEAM,
+        matches
+    }
+}
+
 export const setMyTeam = (myteam) => {
     return {
         type: TEAM_SET_MYTEAM,
@@ -405,6 +423,7 @@ export const editGroupInTeam = (teamId, groupId, groupName) => {
         groupName
     }
 }
+
 
 
 // все админы турниров города
@@ -730,7 +749,43 @@ export const getTeamInfo = (team = null) => {
     }
 }
 
+// возвращает расписание матчей выбранной команды во всех турнирах города
+export const getTeamSheduleByTeamId = (teamId, userProfile, groupId = -1, team=null) => {
+    return dispatch => {
+        if (userProfile != null) 
+            {
+                if (authQueryString && authQueryString.length > 0){
+                
+                    MatchAPI.getTeamSheduleByTeamId(groupId, teamId, userProfile)
+                        .then(pl => {
+                            if (pl && pl.data.length > 0) {
+                                dispatch(setAllMatchesBySelectedTeam(pl.data));
+                                if (team != null){
+                                    dispatch(setSelectedTeam(team))
+                                }
+                                dispatch(setGlobalPopout(false))
+                            }
+                            else {
+                                dispatch(setErrorMessage("Не получены данные MatchAPI.getTeamSheduleByTeamId"))
+                                dispatch(setGlobalPopout(false))
+                            }
+                        })
+                        .catch(error => {
 
+                            dispatch(setErrorMessage(error))
+                            dispatch(setGlobalPopout(false))
+                        })
+                    }
+                else {
+
+                    dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+                    dispatch(setGlobalPopout(false))
+
+                }
+            }
+        
+    }
+}
 
 
 export default teamReducer;

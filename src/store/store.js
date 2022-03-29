@@ -34,7 +34,6 @@ let reducers = combineReducers({
     hotEntity: hot,
     tournamentsEntity: tournaments,
     teamsEntity: teams,
-    teamsEntity: teams,
     bidTeamsEntity: bidTeams,
     matches: matchReducer,
     userEntity: userReducer,

@@ -8,7 +8,7 @@ import { authQueryString } from './../utils/api/server';
 let demoMatch = Match;
 
 const MATCH_SET_ALL_MATCHES = "MATCH_SET_ALL_MATCHES";
-const MATCH_SET_ALL_MATCHES_SELECTED_TEAM = "MATCH_SET_ALL_MATCHES_SELECTED_TEAM";
+//const MATCH_SET_ALL_MATCHES_SELECTED_TEAM = "MATCH_SET_ALL_MATCHES_SELECTED_TEAM"; перенесено в teamsReducer
 const MATCH_DEL_MATCH = "MATCH_DEL_MATCH";
 const MATCH_SET_SELECTED = "MATCH_SET_SELECTED";
 const MATCH_ADD_MATCH = "MATCH_ADD_MATCH";
@@ -17,6 +17,7 @@ const MATCH_SET_ACCESS = "MATCH_SET_ACCESS";
 const MATCH_SET_MODE = "MATCH_SET_MODE";
 const MATCH_SET_PLAYED = "MATCH_SET_PLAYED";
 const MATCH_SET_HOT_PANEL = "MATCH_SET_HOT_PANEL";
+const MATCH_SET_SELECTED_TEAM = "MATCH_SET_SELECTED_TEAM";
 
 Date.prototype.addDays = function(days) {
     var date = new Date(this.getFullYear(), this.getMonth(), this.getDate(), 0, 0, 0);
@@ -29,7 +30,7 @@ const emptyTournament = EmptyTournament
 
 const initState = {
     matches: [],
-    matchesBySelectedTeam: [],
+    //matchesBySelectedTeam: [], перенесено в teamsReducer
     hot: {
         yesterday: [],
         today: [],
@@ -39,7 +40,7 @@ const initState = {
     selected: {},
     access: "user",
     mode: "list", // режим отображения турнира ("list" - список, "view" - просмотр, "add" - добавление, "edit" - редактирование)
-    selectedTeam: {}, // выбранная команда для просмотра ее расписания
+    //selectedTeam: {}, // выбранная команда для просмотра ее расписания  перенесено в teamsReducer
 }
 
 
@@ -49,12 +50,6 @@ let matchReducer = (state = initState, action) => {
             return {
                 ...state,
                 matches: [...action.matches],
-            };
-        }
-        case MATCH_SET_ALL_MATCHES_SELECTED_TEAM: {
-            return {
-                ...state,
-                matchesBySelectedTeam: [...action.matches],
             };
         }
         case MATCH_SET_SELECTED: {
@@ -129,6 +124,12 @@ let matchReducer = (state = initState, action) => {
                 access: action.access,
             };
         }
+        case MATCH_SET_SELECTED_TEAM: {
+            return {
+                ...state,
+                selectedTeam: action.team,
+            };
+        }
         case MATCH_SET_PLAYED: {
             return {
                 ...state,
@@ -161,12 +162,12 @@ export const setAllMatches = (matches) => {
     }
 }
 
-export const setAllMatchesBySelectedTeam = (matches) => {
-    return {
-        type: MATCH_SET_ALL_MATCHES_SELECTED_TEAM,
-        matches
-    }
-}
+// export const setAllMatchesBySelectedTeam = (matches) => {
+//     return {
+//         type: MATCH_SET_ALL_MATCHES_SELECTED_TEAM,
+//         matches
+//     }
+// } перенесено в teamsReducer
 
 export const setHotMatches = (matches) => {
     return {
@@ -223,6 +224,14 @@ export const setSelectedMatch = (match) => {
         match
     }
 }
+
+// перенес в teamsReducer
+// export const setSelectedTeam = (team) => {
+//     return {
+//         type: MATCH_SET_SELECTED_TEAM,
+//         team
+//     }
+// }
 
 
 
@@ -378,40 +387,45 @@ export const getMatchesInCurrentCity = (userProfile = null) => {
     }
 }
 
-// возвращает расписание матчей выбранной команды во всех турнирах города
-export const getTeamSheduleByTeamId = (teamId, userProfile, groupId = -1) => {
-    return dispatch => {
-        if (userProfile != null) 
-            {
-                if (authQueryString && authQueryString.length > 0){
+
+// перенесено в teamsReducer
+// // возвращает расписание матчей выбранной команды во всех турнирах города
+// export const getTeamSheduleByTeamId = (teamId, userProfile, groupId = -1, team=null) => {
+//     return dispatch => {
+//         if (userProfile != null) 
+//             {
+//                 if (authQueryString && authQueryString.length > 0){
                 
-                    MatchAPI.getTeamSheduleByTeamId(groupId, teamId, userProfile)
-                        .then(pl => {
-                            if (pl && pl.data.length > 0) {
-                                dispatch(setAllMatchesBySelectedTeam(pl.data));
-                                dispatch(setGlobalPopout(false))
-                            }
-                            else {
-                                dispatch(setErrorMessage("Не получены данные MatchAPI.getTeamSheduleByTeamId"))
-                                dispatch(setGlobalPopout(false))
-                            }
-                        })
-                        .catch(error => {
+//                     MatchAPI.getTeamSheduleByTeamId(groupId, teamId, userProfile)
+//                         .then(pl => {
+//                             if (pl && pl.data.length > 0) {
+//                                 dispatch(setAllMatchesBySelectedTeam(pl.data));
+//                                 if (team != null){
+//                                     dispatch(setSelectedTeam(team))
+//                                 }
+//                                 dispatch(setGlobalPopout(false))
+//                             }
+//                             else {
+//                                 dispatch(setErrorMessage("Не получены данные MatchAPI.getTeamSheduleByTeamId"))
+//                                 dispatch(setGlobalPopout(false))
+//                             }
+//                         })
+//                         .catch(error => {
 
-                            dispatch(setErrorMessage(error))
-                            dispatch(setGlobalPopout(false))
-                        })
-                    }
-                else {
+//                             dispatch(setErrorMessage(error))
+//                             dispatch(setGlobalPopout(false))
+//                         })
+//                     }
+//                 else {
 
-                    dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
-                    dispatch(setGlobalPopout(false))
+//                     dispatch(setCityTournamentAdmins(demoCityTournamentAdmins))
+//                     dispatch(setGlobalPopout(false))
 
-                }
-            }
+//                 }
+//             }
         
-    }
-}
+//     }
+// }
 
 
 
